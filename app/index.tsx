@@ -1,44 +1,36 @@
 import { View, StyleSheet, Text } from "react-native";
-
-import Button from "@/components/Button";
 import { Colors } from "@/constants/Colors";
-import { Link } from "expo-router/build/exports";
+
+import Button from "@/components/Buttons/Button";
+import LinkButton from "@/components/Buttons/LinkButton";
+import PageContainer from "@/components/PageContainer";
 
 export default function Index() {
   return (
-    <View style={styles.pageContainer}>
+    <PageContainer>
       <View style={styles.titleContainer}>
         <Text style={styles.titleTop}>EZ</Text>
         <Text style={styles.titleBottom}>Workout Planner</Text>
       </View>
-      <View style={styles.mainContainer}>
-        <Button label="Start Workout" theme={0} />
-        <Link href="/workouts">
-          <Button label="Workouts" icon={"plus"} />
-        </Link>
-        <Button label="Exercises" icon={"dumbbell"} />
-        <Button label="History" icon={"history"} />
+      <View style={styles.buttonsContainer}>
+        <Button label="Start Workout" theme="primary" />
+        <LinkButton href='/workouts' label="Workouts" icon={"plus"} />
+        <LinkButton href='/exercises' label="Exercises" icon={"dumbbell"} />
+        <LinkButton href='/history' label="History" icon={"history"} />
       </View>
       <View style={styles.footerContainer}>
-          <Text style={{ flex: 1, flexShrink: 0, width: '100%', color: Colors.textDark }}>Version: 1.0.0</Text>
+        <Text style={styles.footerText}>Version: 1.0.0</Text>
       </View>
-    </View>
+    </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   titleContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 32,
+    paddingVertical: 64,
   },
   titleTop: {
     fontSize: 64,
@@ -52,13 +44,19 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",
   },
-  mainContainer: {
-    flex: 2,
+  buttonsContainer: {
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: 16,
   },
   footerContainer: {
-    flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 16,
+  },
+  footerText: {
+    color: Colors.textDark,
+    fontFamily: "Rubik-Regular",
+    fontSize: 16,
   },
 });
