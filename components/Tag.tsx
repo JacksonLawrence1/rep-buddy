@@ -32,5 +32,6 @@ const styles = StyleSheet.create({
   muscleGroupText: {
     color: Colors.text,
     fontFamily: "Rubik-Regular",
+    textTransform: "capitalize",
   },
 });

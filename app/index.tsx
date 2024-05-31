@@ -13,10 +13,10 @@ export default function Index() {
         <Text style={styles.titleBottom}>Workout Planner</Text>
       </View>
       <View style={styles.buttonsContainer}>
-        <Button label="Start Workout" theme="primary" />
-        <LinkButton href='/workouts' label="Workouts" icon={"plus"} />
-        <LinkButton href='/exercises' label="Exercises" icon={"dumbbell"} />
-        <LinkButton href='/history' label="History" icon={"history"} />
+        <Button height={64} label="Start Workout" theme="primary" />
+        <LinkButton height={64} href='/workouts' label="Workouts" icon={"plus"} />
+        <LinkButton height={64} href='/exercises' label="Exercises" icon={"dumbbell"} />
+        <LinkButton height={64} href='/history' label="History" icon={"history"} />
       </View>
       <View style={styles.footerContainer}>
         <Text style={styles.footerText}>Version: 1.0.0</Text>

@@ -3,13 +3,15 @@ import { Colors } from '@/constants/Colors';
 
 export interface InputBaseProps {
   placeholder?: string;
+  onChangeText?: (text: string) => void;
 }
 
-export default function InputBase({ placeholder }: InputBaseProps) {
+export default function InputBase({ placeholder, onChangeText }: InputBaseProps) {
   return <TextInput
         style={styles.inputStyle}
         placeholder={placeholder || "Search..."}
         placeholderTextColor={Colors.textDark}
+        onChangeText={onChangeText}
       />
 }
 

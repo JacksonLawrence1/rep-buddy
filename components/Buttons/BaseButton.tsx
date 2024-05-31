@@ -11,16 +11,17 @@ export interface ButtonProps {
   theme?: Theme;
   icon?: keyof typeof FontAwesome5.glyphMap;
   size?: number;
+  height?: number;
   onPress?: () => void;
 }
 
 const BaseButton = React.forwardRef<View, ButtonProps>(
-  ({ label, theme, icon, size, onPress = () => undefined }, ref) => {
+  ({ label, height, theme, icon, size, onPress = () => undefined }, ref) => {
     const isPrimary: boolean = theme === ThemeEnum.Primary;
 
     return (
       <Pressable
-        style={[styles.button, isPrimary && styles.primaryButton, icon === undefined && {justifyContent: "center"}]}
+        style={[styles.button, {height: height || 48}, isPrimary && styles.primaryButton, icon === undefined && {justifyContent: "center"}]}
         onPress={onPress}
         ref={ref}
       >
@@ -42,7 +43,6 @@ export default BaseButton;
 
 const styles = StyleSheet.create({
   button: {
-    height: 64,
     width: "100%",
     borderRadius: 8,
     justifyContent: "space-between",
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: Colors.text,
-    fontSize: 24,
+    fontSize: 20,
     paddingHorizontal: 16,
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",

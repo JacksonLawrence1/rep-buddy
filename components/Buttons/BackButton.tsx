@@ -1,4 +1,5 @@
-import { View, Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
+import { router } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 
@@ -16,7 +17,7 @@ export default function BackButton({ type = "visible" }: BackButtonProps) {
   }
 
   return (
-    <Pressable style={styles.buttonContainer}>
+    <Pressable onPress={router.back} style={styles.buttonContainer}>
       <FontAwesome5 name="arrow-left" size={16} color={Colors.text} />
     </Pressable>
   );

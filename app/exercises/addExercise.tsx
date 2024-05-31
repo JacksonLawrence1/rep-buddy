@@ -1,56 +1,52 @@
-import { StyleSheet, View, Text } from "react-native";
+import { useState } from "react";
+import { router } from "expo-router";
+
+import { StyleSheet, View } from "react-native";
 
 import DefaultPage from "@/components/DefaultPage";
 import TextInput from "@/components/inputs/TextInput";
 import Tag from "@/components/Tag";
 import Button from "@/components/Buttons/Button";
+import InputField from "@/components/inputs/InputField";
 
 import { Colors } from "@/constants/Colors";
+import MuscleGroup from "@/constants/enums/muscleGroups";
 
-const testMuscleGroups = [
-  { label: "Chest" },
-  { label: "Back" },
-  { label: "Legs" },
-  { label: "Arms" },
-  { label: "Shoulders" },
-  { label: "Abs" },
-  { label: "Cardio" },
-  { label: "Full Body" },
-];
+import exerciseService from "@/constants/storage/exercises";
 
 export default function addExercise() {
+  const [exerciseName, setExerciseName] = useState("Exercise Name");
+
+  function updateExerciseName(text: string) {
+    setExerciseName(text);
+  }
+
+  async function saveExercise() {
+    await exerciseService.addExercise({ id: exerciseName, name: exerciseName, muscleGroups: [] });
+    router.back();
+  }
+
   return (
     <DefaultPage title="New Exercise" back>
       <View style={styles.newExerciseContainer}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputTitle}>Exercise Name:</Text>
-          <TextInput placeholder="Enter exercise name" />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputTitle}>Muscle Groups:</Text>
+        <InputField title="Exercise Name">
+          <TextInput placeholder="Enter exercise name" onChangeText={updateExerciseName} />
+        </InputField>
+        <InputField title={"Muscle Groups"}>
           <View style={styles.muscleGroupsContainer}>
-            {testMuscleGroups.map((muscleGroup, i) => <Tag key={i} label={muscleGroup.label} />)}
+            {MuscleGroup.map((muscleGroup, i) => <Tag key={i} label={muscleGroup} />)}
           </View>
-        </View>
+        </InputField>
       </View>
-      <Button theme="primary" label="Save" />
+      <Button theme="primary" label="Save" onPress={saveExercise} />
     </DefaultPage>
   );
 }
 
 const styles = StyleSheet.create({
-  inputTitle: {
-    color: Colors.text,
-    fontSize: 16,
-    fontFamily: "Rubik-Regular",
-    textTransform: "uppercase",
-    marginBottom: 12,
-  },
-  inputContainer: {
-    paddingVertical: 16,
-  },
   newExerciseContainer: {
     flex: 1,
+    alignSelf: 'stretch', 
     backgroundColor: Colors.backgroundDark, 
     borderRadius: 8,
     paddingVertical: 32,

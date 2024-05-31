@@ -5,10 +5,10 @@ import { InputBaseProps } from "./InputBase";
 
 import { Colors } from "@/constants/Colors";
 
-export default function TextInput({ placeholder }: InputBaseProps) {
+export default function TextInput({ ...inputProps }: InputBaseProps) {
   return (
     <View style={styles.textInputContainer}>
-      <InputBase placeholder={placeholder} />
+      <InputBase {...inputProps} />
     </View>
   );
 }
