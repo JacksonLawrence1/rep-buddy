@@ -1,6 +1,6 @@
 import { View, StyleSheet, Text } from "react-native";
 
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 
 type InputFieldProps = {
   title: string;
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   inputTitle: {
-    color: Colors.text,
+    color: colors.text,
     fontSize: 16,
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",

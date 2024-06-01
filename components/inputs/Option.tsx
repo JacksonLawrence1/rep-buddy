@@ -3,7 +3,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 import { useState } from "react";
 
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import OptionList from "./OptionList";
 
 interface OptionProps {
@@ -25,7 +25,7 @@ export default function Option({ selected, select, options }: OptionProps) {
       <View style={styles.inputContainer}>
         <Text style={styles.optionText}>{selected || 'Options'}</Text>
         
-        <FontAwesome5 name={open ? "chevron-up" : "chevron-down"} size={16} color={Colors.text} />
+        <FontAwesome5 name={open ? "chevron-up" : "chevron-down"} size={16} color={colors.text} />
       </View>
       {open && <OptionList selected={selected} options={options} setSelected={changeSelected} />}
     </Pressable>
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     gap: 12,
     height: 48,
     width: "100%",
-    backgroundColor: Colors.inputBackground,
+    backgroundColor: colors.inputBackground,
     borderRadius: 8,
   },
   inputContainer: {
@@ -51,13 +51,13 @@ const styles = StyleSheet.create({
     height: 48,
     width: "100%",
     paddingHorizontal: 8,
-    backgroundColor: Colors.inputBackground,
+    backgroundColor: colors.inputBackground,
     borderRadius: 8,
     zIndex: 5,
   },
   optionText: {
     fontSize: 16,
-    color: Colors.text,
+    color: colors.text,
     textTransform: "capitalize",
   },
 });

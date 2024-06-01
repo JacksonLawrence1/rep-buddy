@@ -5,16 +5,16 @@ import { InputBaseProps } from "./InputBase";
 
 import { colors } from "@/constants/colors";
 
-export default function TextInput({ ...inputProps }: InputBaseProps) {
+export default function NumericInput({ ...inputProps }: InputBaseProps) {
   return (
-    <View style={styles.textInputContainer}>
-      <InputBase {...inputProps} />
+    <View style={styles.numericInputContainer}>
+      <InputBase {...inputProps} inputMode="numeric" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  textInputContainer: {
+  numericInputContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,

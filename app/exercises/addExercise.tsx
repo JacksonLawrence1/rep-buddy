@@ -1,28 +1,32 @@
-import { useState } from "react";
 import { router } from "expo-router";
+import { useState } from "react";
 
 import { StyleSheet, View } from "react-native";
 
+import Button from "@/components/Buttons/Button";
 import DefaultPage from "@/components/DefaultPage";
+import InputField from "@/components/inputs/InputField";
 import TextInput from "@/components/inputs/TextInput";
 import Tag from "@/components/Tag";
-import Button from "@/components/Buttons/Button";
-import InputField from "@/components/inputs/InputField";
 
-import { Colors } from "@/constants/Colors";
-import MuscleGroup from "@/constants/enums/muscleGroups";
+import { colors } from "@/constants/colors";
+import { MuscleGroup, MuscleGroups, MuscleGroupStrings } from "@/constants/enums/muscleGroups";
 
 import exerciseService from "@/constants/storage/exercises";
 
-export default function addExercise() {
+export default function AddExercise() {
   const [exerciseName, setExerciseName] = useState("Exercise Name");
+  const chosenMuscleGroupSet: Set<MuscleGroupStrings> = new Set();
 
   function updateExerciseName(text: string) {
     setExerciseName(text);
   }
 
   async function saveExercise() {
-    await exerciseService.addExercise({ id: exerciseName, name: exerciseName, muscleGroups: [] });
+    await exerciseService.addExercise({ 
+      id: exerciseName, 
+      name: exerciseName, 
+      muscleGroups: Array.from(chosenMuscleGroupSet).map((group) => MuscleGroup[group])});
     router.back();
   }
 
@@ -34,7 +38,7 @@ export default function addExercise() {
         </InputField>
         <InputField title={"Muscle Groups"}>
           <View style={styles.muscleGroupsContainer}>
-            {MuscleGroup.map((muscleGroup, i) => <Tag key={i} label={muscleGroup} />)}
+            {MuscleGroups.map((muscleGroup, i) => <Tag key={i} label={muscleGroup} setToAddTo={chosenMuscleGroupSet} />)}
           </View>
         </InputField>
       </View>
@@ -46,8 +50,7 @@ export default function addExercise() {
 const styles = StyleSheet.create({
   newExerciseContainer: {
     flex: 1,
-    alignSelf: 'stretch', 
-    backgroundColor: Colors.backgroundDark, 
+    backgroundColor: colors.backgroundDark, 
     borderRadius: 8,
     paddingVertical: 32,
     paddingHorizontal: 16,

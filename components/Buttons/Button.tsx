@@ -1,7 +1,7 @@
-import { StyleSheet, View } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { View } from "react-native";
 import { ButtonProps } from "./BaseButton";
 
+import { buttonStyles as styles } from "./BaseButton";
 import ButtonBase from "./BaseButton";
 
 export default function Button({ ...buttonProps }: ButtonProps) {
@@ -12,11 +12,3 @@ export default function Button({ ...buttonProps }: ButtonProps) {
   );
 }
 
-export const styles = StyleSheet.create({
-  buttonContainer: {
-    alignItems: "center",
-    borderRadius: 8,
-    flexDirection: "row",
-    width: "100%",
-  },
-});

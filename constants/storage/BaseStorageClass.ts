@@ -1,15 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type dataType<T> = Map<string, T>;
-
 interface hasId {
   id: string;
 };
 
-export abstract class BaseStorageClass<T extends hasId, Callback> {
+// specifies how you want data to be received by subscribers
+type CallbackType = (data: any) => void;
+
+export abstract class BaseStorageClass<T extends hasId, TFn extends CallbackType> {
   private key: string;
-  private cache: dataType<T>;
-  callbacks: Map<string, Callback>;
+  private cache: Map<string, T>;
+  callbacks: Map<string, TFn>; 
 
   constructor(key: string) {
     this.key = key;
@@ -21,13 +22,13 @@ export abstract class BaseStorageClass<T extends hasId, Callback> {
     return this.cache.size;
   }
 
-  get data(): dataType<T> {
+  get data(): Map<string, T> {
     return this.cache;
   }
 
   // add a 'setState' method to the list of callbacks
   // not responsible for non-unique keys
-  subscribe(id: string, callback: Callback) {
+  subscribe(id: string, callback: TFn) {
     this.callbacks.set(id, callback);
   }
 
@@ -35,7 +36,7 @@ export abstract class BaseStorageClass<T extends hasId, Callback> {
     this.callbacks.delete(id);
   }
 
-  // implement this in the child class
+  // implement how you want to be received 
   abstract sendDataToSubscribers(): void; 
 
   // get updated data from device storage

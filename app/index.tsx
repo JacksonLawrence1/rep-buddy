@@ -1,5 +1,5 @@
-import { View, StyleSheet, Text } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
+import { StyleSheet, Text, View } from "react-native";
 
 import Button from "@/components/Buttons/Button";
 import LinkButton from "@/components/Buttons/LinkButton";
@@ -34,13 +34,13 @@ const styles = StyleSheet.create({
   },
   titleTop: {
     fontSize: 64,
-    color: Colors.text,
+    color: colors.text,
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",
   },
   titleBottom: {
     fontSize: 24,
-    color: Colors.text,
+    color: colors.text,
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",
   },
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   footerText: {
-    color: Colors.textDark,
+    color: colors.textDark,
     fontFamily: "Rubik-Regular",
     fontSize: 16,
   },

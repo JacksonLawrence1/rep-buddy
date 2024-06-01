@@ -1,19 +1,7 @@
 import { MuscleGroup } from "@/constants/enums/muscleGroups";
-import { BaseStorageClass } from "./BaseStorageClass";
+import { BaseStorageClass } from "./baseStorageClass";
 
-export type Exercise = {
-  id: string;
-  name: string;
-  muscleGroups: MuscleGroup[];
-};
-
-// TODO: ids should be generated
-const baseExercises: Exercise[] = [
-  { id: "Military Press", name: "Military Press", muscleGroups: [MuscleGroup.SHOULDERS] },
-  { id: "Barbell Bench Press", name: "Barbell Bench Press", muscleGroups: [MuscleGroup.CHEST] },
-  { id: "Overhead Press", name: "Overhead Press", muscleGroups: [MuscleGroup.SHOULDERS] },
-  { id: "Deadlift", name: "Deadlift", muscleGroups: [MuscleGroup.BACK] },
-];
+import { type Exercise } from "@/constants/types";
 
 type Callback = (data: Exercise[]) => void;
 
@@ -45,9 +33,18 @@ class ExerciseService extends BaseStorageClass<Exercise, Callback> {
 const exerciseService = new ExerciseService();
 
 // TODO: remove when done testing 
-exerciseService.clearData();
-exerciseService.syncCache();
 
+// TODO: ids should be generated
+const baseExercises: Exercise[] = [
+  { id: "Military Press", name: "Military Press", muscleGroups: [MuscleGroup.SHOULDERS] },
+  { id: "Barbell Bench Press", name: "Barbell Bench Press", muscleGroups: [MuscleGroup.CHEST] },
+  { id: "Overhead Press", name: "Overhead Press", muscleGroups: [MuscleGroup.SHOULDERS] },
+  { id: "Deadlift", name: "Deadlift", muscleGroups: [MuscleGroup.BACK] },
+];
+exerciseService.clearData();
+
+
+exerciseService.syncCache();
 if (exerciseService.size === 0) {
   exerciseService.addExercise(baseExercises);
 }

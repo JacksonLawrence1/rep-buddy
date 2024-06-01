@@ -1,16 +1,15 @@
-import { StyleSheet, FlatList, View } from "react-native";
+import { FlatList, View } from "react-native";
 
 import { useEffect, useState } from "react";
 
+import LinkButton from "@/components/Buttons/LinkButton";
 import DefaultPage from "@/components/DefaultPage";
 import Searchbar from "@/components/inputs/Searchbar";
-import LinkButton from "@/components/Buttons/LinkButton";
 import ExerciseItem from "@/components/listItems/ExerciseItem";
 
-import { Colors } from "@/constants/Colors";
+import { globalStyles } from "@/constants/styles";
 
 import exerciseService from "@/constants/storage/exercises";
-import { Exercise } from "@/constants/storage/exercises";
 
 export default function Index() {
   const [exercises, setExercises] = useState(exerciseService.exercises);
@@ -25,7 +24,7 @@ export default function Index() {
   return (
     <DefaultPage title="Your Exercises" back>
       <Searchbar placeholder="Search for Exercise" />
-      <View style={styles.exerciseContainer}>
+      <View style={globalStyles.scrollContainer}>
         <FlatList
           data={exercises}
           renderItem={({ item }) => <ExerciseItem exerciseName={item.name} />}
@@ -36,13 +35,3 @@ export default function Index() {
     </DefaultPage>
   );
 }
-
-const styles = StyleSheet.create({
-  exerciseContainer: {
-    flex: 1,
-    backgroundColor: Colors.backgroundDark, 
-    width: "100%",
-    borderRadius: 8,
-    padding: 8,
-  },
-});

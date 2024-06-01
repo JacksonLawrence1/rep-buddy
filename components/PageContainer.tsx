@@ -1,6 +1,7 @@
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { Colors } from '@/constants/Colors';
+import { globalStyles } from "@/constants/styles";
 
 type PageContainerProps = {
   children: React.ReactNode;
@@ -8,19 +9,10 @@ type PageContainerProps = {
 
 export default function PageContainer({ children }: PageContainerProps) {
   return (
-    <SafeAreaView style={styles.pageContainer}>
-      {children}
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={globalStyles.pageContainer}>
+        {children}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.background,
-    paddingHorizontal: 16,
-  },
-});

@@ -1,17 +1,19 @@
-import { TextInput, StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { TextInput, StyleSheet, TextInputProps } from 'react-native';
+import { colors } from '@/constants/colors';
 
 export interface InputBaseProps {
   placeholder?: string;
   onChangeText?: (text: string) => void;
+  inputMode?: TextInputProps["inputMode"];
 }
 
-export default function InputBase({ placeholder, onChangeText }: InputBaseProps) {
+export default function InputBase({ placeholder, onChangeText, inputMode = "text" }: InputBaseProps) {
   return <TextInput
         style={styles.inputStyle}
         placeholder={placeholder || "Search..."}
-        placeholderTextColor={Colors.textDark}
+        placeholderTextColor={colors.textDark}
         onChangeText={onChangeText}
+        inputMode={inputMode}
       />
 }
 
@@ -22,8 +24,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 4,
     fontFamily: "Rubik-Regular",
-    color: Colors.text,
+    color: colors.text,
   },
-
 });
 

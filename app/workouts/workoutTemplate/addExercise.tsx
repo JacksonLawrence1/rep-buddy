@@ -4,7 +4,7 @@ import { useState } from 'react';
 import DefaultPage from '@/components/DefaultPage';
 import Button from '@/components/Buttons/Button';
 
-import { Colors } from '@/constants/Colors';
+import { colors } from '@/constants/colors';
 import InputField from '@/components/inputs/InputField';
 import Option from '@/components/inputs/Option';
 import ExerciseVariation from '@/components/ExerciseVariation';
@@ -45,13 +45,13 @@ const styles = StyleSheet.create({
   exerciseContainer: {
     flex: 1,
     alignSelf: 'stretch', // thank you
-    backgroundColor: Colors.backgroundDark, 
+    backgroundColor: colors.backgroundDark, 
     borderRadius: 8,
     paddingVertical: 32,
     paddingHorizontal: 16,
   },
   label: {
     fontSize: 50,
-    color: Colors.text,
+    color: colors.text,
   },
 });

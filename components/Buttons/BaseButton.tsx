@@ -3,7 +3,7 @@ import React from "react";
 import { View, StyleSheet, Pressable, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Theme, ThemeEnum } from "@/constants/enums/theme";
 
 export interface ButtonProps {
@@ -21,16 +21,16 @@ const BaseButton = React.forwardRef<View, ButtonProps>(
 
     return (
       <Pressable
-        style={[styles.button, {height: height || 48}, isPrimary && styles.primaryButton, icon === undefined && {justifyContent: "center"}]}
+        style={[buttonStyles.button, {height: height || 48}, isPrimary && buttonStyles.primaryButton, icon === undefined && {justifyContent: "center"}]}
         onPress={onPress}
         ref={ref}
       >
-        <Text style={styles.text}>{label}</Text>
+        <Text style={buttonStyles.text}>{label}</Text>
         {icon && (
           <FontAwesome5
             name={icon}
             size={size || 24}
-            style={styles.buttonIcon}
+            style={buttonStyles.buttonIcon}
           />
         )}
       </Pressable>
@@ -41,7 +41,13 @@ const BaseButton = React.forwardRef<View, ButtonProps>(
 BaseButton.displayName = "BaseButton";
 export default BaseButton;
 
-const styles = StyleSheet.create({
+export const buttonStyles = StyleSheet.create({
+  buttonContainer: {
+    alignItems: "center",
+    borderRadius: 8,
+    flexDirection: "row",
+    width: "100%",
+  },
   button: {
     width: "100%",
     borderRadius: 8,
@@ -49,19 +55,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     borderWidth: 2,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   primaryButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     borderWidth: 0,
   },
   buttonIcon: {
     paddingHorizontal: 16,
     paddingTop: 2,
-    color: Colors.text,
+    color: colors.text,
   },
   text: {
-    color: Colors.text,
+    color: colors.text,
     fontSize: 20,
     paddingHorizontal: 16,
     fontFamily: "Rubik-Regular",

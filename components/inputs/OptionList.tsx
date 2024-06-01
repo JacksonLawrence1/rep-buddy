@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 
 interface OptionListProps {
   selected: string;
@@ -35,17 +35,17 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: Colors.tertiary,
+    backgroundColor: colors.tertiary,
     borderRadius: 8,
   },
   offset: {
     height: 48,
-    borderColor: Colors.secondary,
+    borderColor: colors.secondary,
     borderRadius: 8,
   },
   optionText: {
     fontSize: 16,
-    color: Colors.textDark,
+    color: colors.textDark,
     paddingVertical: 12,
     paddingHorizontal: 8,
     textTransform: "capitalize",

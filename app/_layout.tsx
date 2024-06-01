@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
@@ -21,7 +21,8 @@ export default function Layout() {
   return (
     <View style={styles.pageContainer}>
       <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{headerShown: false}}>
+      </Stack>
     </View>
   );
 }
@@ -29,7 +30,7 @@ export default function Layout() {
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
     borderWidth: 2,
     paddingVertical: 48,
   },

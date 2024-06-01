@@ -1,7 +1,7 @@
 import ListItem from './ListItem';
 
-import { Colors }from '@/constants/Colors';
-import { Icon } from '@/constants/Icon';
+import { colors }from '@/constants/colors';
+import { icon } from '@/constants/icon';
 
 interface WorkoutBaseProps {
   workoutName: string;
@@ -9,9 +9,9 @@ interface WorkoutBaseProps {
 
 export default function WorkoutBase({ workoutName }: WorkoutBaseProps) {
   // TODO: add icon onPress functions
-  const icons: Icon[] = [
+  const icons: icon[] = [
     { name: 'ellipsis-h' },
   ];
 
-  return <ListItem label={workoutName} backgroundColor={Colors.primary} icons={icons} />;
+  return <ListItem label={workoutName} backgroundColor={colors.primary} icons={icons} />;
 }

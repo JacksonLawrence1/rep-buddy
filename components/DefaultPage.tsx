@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { Text, View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { router } from "expo-router";
 
-import BackButton from "@/components/Buttons/BackButton";
-
+import IconButton from "@/components/Buttons/IconButton";
 import PageContainer from "@/components/PageContainer";
+
+import { globalStyles } from "@/constants/styles";
 
 type DefaultPageProps = {
   title: string;
@@ -18,51 +19,16 @@ export default function DefaultPage({
 }: DefaultPageProps) {
   return (
     <PageContainer>
-      <View style={styles.mainContainer}>
-        <View style={styles.titleContainer}>
-          <BackButton type={back ? 'visible' : 'hidden'} />
-          <Text style={styles.title}>{title}</Text>
-          <BackButton type={'hidden'} />
+      <TouchableWithoutFeedback accessible={false} onPress={() => Keyboard.dismiss()}>
+      <View style={globalStyles.contentContainer}>
+        <View style={globalStyles.titleContainer}>
+          <IconButton disabled={!back} icon={"arrow-left"} onPress={router.back} />
+          <Text style={globalStyles.title}>{title}</Text>
+          <IconButton disabled={true} icon={"arrow-left"} />
         </View>
         {children}
       </View>
+      </TouchableWithoutFeedback>
     </PageContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
-  },
-  titleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 8,
-    width: "100%",
-  },
-  titleTextContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "white",
-  },
-  title: {
-    fontSize: 20,
-    color: Colors.text,
-    textAlign: "center",
-    fontFamily: "Rubik-Regular",
-    textTransform: "uppercase",
-  },
-  mainContainer: {
-    flex: 1,
-    alignItems: "center",
-    gap: 16,
-    marginBottom: 16,
-  },
-});

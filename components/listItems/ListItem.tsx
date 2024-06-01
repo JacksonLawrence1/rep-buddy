@@ -1,20 +1,22 @@
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 
-import { Icon } from "@/constants/Icon";
+import { icon } from "@/constants/icon";
 
 interface ExerciseBaseProps {
   label: string;
-  backgroundColor: (typeof Colors)[keyof typeof Colors]; // only allow colors from Colors
-  icons?: Icon[]; // ordered from left to right
+  backgroundColor: (typeof colors)[keyof typeof colors]; // only allow colors from colors
+  icons?: icon[]; // ordered from left to right
+  size?: number;
+  onPress?: () => void;
 }
 
-export default function ExerciseBase({ label, backgroundColor, icons }: ExerciseBaseProps) {
+export default function ListItem({ label, backgroundColor, size = 24, icons, onPress }: ExerciseBaseProps) {
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
-      <View style={styles.buttonContainer}>
+      <Pressable style={styles.buttonContainer} onPress={onPress}>
         <View style={styles.textContainer}>
           <Text style={styles.text}>{label}</Text>
         </View>
@@ -22,11 +24,11 @@ export default function ExerciseBase({ label, backgroundColor, icons }: Exercise
         <View style={styles.iconsContainer}>
           {icons && icons.map((icon, index) => ( // map over the icons array
             <Pressable key={index} onPress={icon.onPress} style={styles.iconContainer}>
-              <FontAwesome5 name={icon.name} size={24} color={Colors.text} />
+              <FontAwesome5 name={icon.name} size={size} color={colors.text} />
             </Pressable>
           ))}
         </View>
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -35,8 +37,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     padding: 16,
     borderRadius: 8,
+    minHeight: 48,
   },
   iconsContainer: {
     flexDirection: "row",
@@ -47,6 +51,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   buttonContainer: {
+    flex: 1,
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
@@ -58,7 +63,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    color: Colors.text,
+    color: colors.text,
     fontFamily: "Rubik-Regular",
   },
 });

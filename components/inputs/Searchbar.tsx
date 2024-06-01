@@ -4,12 +4,12 @@ import { FontAwesome5  } from "@expo/vector-icons";
 import InputBase from "./InputBase";
 import { InputBaseProps } from "./InputBase";
 
-import { Colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 
 export default function Searchbar({ placeholder }: InputBaseProps) {
   return (
     <View style={styles.searchbarContainer}>
-      <FontAwesome5 name="search" size={16} color={Colors.textDark} />
+      <FontAwesome5 name="search" size={16} color={colors.textDark} />
       <InputBase placeholder={placeholder} />
     </View>
   );
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     height: 48,
     width: "100%",
     paddingHorizontal: 16,
-    backgroundColor: Colors.inputBackground,
+    backgroundColor: colors.inputBackground,
     borderRadius: 8,
   },
 });

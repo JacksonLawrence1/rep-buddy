@@ -9,7 +9,9 @@ export enum MuscleGroup {
   FULL_BODY = 'Full Body',
 }
 
+export type MuscleGroupStrings = keyof typeof MuscleGroup;
+
 // get MuscleGroup values as strings
-export default (
+export const MuscleGroups: string[] = (
   Object.keys(MuscleGroup) as (keyof typeof MuscleGroup)[]
 ).map((key) => MuscleGroup[key]);

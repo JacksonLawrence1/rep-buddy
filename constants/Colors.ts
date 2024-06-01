@@ -2,7 +2,7 @@
  * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
  */
 
-export const Colors = {
+export const colors = {
     primary: '#FF3E01',
     secondary: '#1F1F1F',
     tertiary: '#111111',
