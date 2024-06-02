@@ -8,7 +8,6 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: colors.backgroundDark,
     borderRadius: 8,
     padding: 8,
-    width: "100%",
     alignSelf: 'stretch', 
   },
   pageContainer: {
@@ -17,7 +16,6 @@ export const globalStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: colors.background,
-    paddingHorizontal: 16,
   },
   titleContainer: {
     flexDirection: "row",
@@ -37,6 +35,23 @@ export const globalStyles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     gap: 16,
+    paddingHorizontal: 8,
     marginBottom: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 60,
+    borderWidth: 2,
+    borderColor: colors.backgroundDark,
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    gap: 8,
+    borderRadius: 8,
+    padding: 8,
   },
 });

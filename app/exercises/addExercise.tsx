@@ -1,12 +1,12 @@
 import { router } from "expo-router";
 import { useState } from "react";
 
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
-import Button from "@/components/Buttons/Button";
-import DefaultPage from "@/components/DefaultPage";
+import Button from "@/components/buttons/Button";
+import { TextInput } from "@/components/inputs/FormFields";
 import InputField from "@/components/inputs/InputField";
-import TextInput from "@/components/inputs/TextInput";
+import DefaultPage from "@/components/pages/DefaultPage";
 import Tag from "@/components/Tag";
 
 import { colors } from "@/constants/colors";
@@ -15,14 +15,19 @@ import { MuscleGroup, MuscleGroups, MuscleGroupStrings } from "@/constants/enums
 import exerciseService from "@/constants/storage/exercises";
 
 export default function AddExercise() {
-  const [exerciseName, setExerciseName] = useState("Exercise Name");
   const chosenMuscleGroupSet: Set<MuscleGroupStrings> = new Set();
+  let exerciseName: string;
 
   function updateExerciseName(text: string) {
-    setExerciseName(text);
+    exerciseName = text;
   }
 
   async function saveExercise() {
+    if (exerciseName === undefined || exerciseName === "") {
+      Alert.alert("Invalid Exercise Name", "Please enter a name for the exercise.");
+      return;
+    }
+
     await exerciseService.addExercise({ 
       id: exerciseName, 
       name: exerciseName, 
@@ -33,9 +38,8 @@ export default function AddExercise() {
   return (
     <DefaultPage title="New Exercise" back>
       <View style={styles.newExerciseContainer}>
-        <InputField title="Exercise Name">
-          <TextInput placeholder="Enter exercise name" onChangeText={updateExerciseName} />
-        </InputField>
+        <TextInput title={"Exercise Name"} placeholder="Enter exercise name" onChangeText={updateExerciseName} />
+
         <InputField title={"Muscle Groups"}>
           <View style={styles.muscleGroupsContainer}>
             {MuscleGroups.map((muscleGroup, i) => <Tag key={i} label={muscleGroup} setToAddTo={chosenMuscleGroupSet} />)}

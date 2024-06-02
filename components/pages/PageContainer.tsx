@@ -1,4 +1,4 @@
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { globalStyles } from "@/constants/styles";
@@ -10,8 +10,10 @@ type PageContainerProps = {
 export default function PageContainer({ children }: PageContainerProps) {
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={globalStyles.pageContainer}>
-        {children}
+      <SafeAreaView style={{flex: 1}}>
+        <View style={globalStyles.pageContainer}>
+          {children}
+        </View>
       </SafeAreaView>
     </SafeAreaProvider>
   );

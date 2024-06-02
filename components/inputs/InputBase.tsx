@@ -20,11 +20,14 @@ export default function InputBase({ placeholder, onChangeText, inputMode = "text
 const styles = StyleSheet.create({
   inputStyle: {
     flex: 1,
-    width: "100%",
     fontSize: 16,
     paddingVertical: 4,
     fontFamily: "Rubik-Regular",
     color: colors.text,
+    maxHeight: 48,
+    backgroundColor: colors.inputBackground,
+    borderRadius: 8,
+    paddingHorizontal: 16,
   },
 });
 

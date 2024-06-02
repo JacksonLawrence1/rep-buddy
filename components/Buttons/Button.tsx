@@ -1,13 +1,11 @@
 import { View } from "react-native";
-import { ButtonProps } from "./BaseButton";
 
-import { buttonStyles as styles } from "./BaseButton";
-import ButtonBase from "./BaseButton";
+import BaseButton, { ButtonProps, buttonStyles as styles } from "./BaseButton";
 
 export default function Button({ ...buttonProps }: ButtonProps) {
   return (
     <View style={styles.buttonContainer}>
-      <ButtonBase {...buttonProps} />
+      <BaseButton {...buttonProps} />
     </View>
   );
 }

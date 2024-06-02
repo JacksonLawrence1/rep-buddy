@@ -1,13 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-interface hasId {
+export interface baseStorageItem {
   id: string;
 };
 
 // specifies how you want data to be received by subscribers
 type CallbackType = (data: any) => void;
 
-export abstract class BaseStorageClass<T extends hasId, TFn extends CallbackType> {
+export abstract class baseStorageClass<T extends baseStorageItem, TFn extends CallbackType> {
   private key: string;
   private cache: Map<string, T>;
   callbacks: Map<string, TFn>; 
@@ -24,6 +24,10 @@ export abstract class BaseStorageClass<T extends hasId, TFn extends CallbackType
 
   get data(): Map<string, T> {
     return this.cache;
+  }
+
+  get dataAsArray(): T[] {
+    return Array.from(this.cache.values());
   }
 
   // add a 'setState' method to the list of callbacks

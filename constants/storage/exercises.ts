@@ -1,11 +1,11 @@
 import { MuscleGroup } from "@/constants/enums/muscleGroups";
-import { BaseStorageClass } from "./baseStorageClass";
+  import { baseStorageClass } from "./baseStorageClass";
 
 import { type Exercise } from "@/constants/types";
 
 type Callback = (data: Exercise[]) => void;
 
-class ExerciseService extends BaseStorageClass<Exercise, Callback> {
+class ExerciseService extends baseStorageClass<Exercise, Callback> {
   constructor() {
     super("exercises");
   }
@@ -17,10 +17,6 @@ class ExerciseService extends BaseStorageClass<Exercise, Callback> {
     });
   }
 
-  get exercises(): Exercise[] {
-    return Array.from(this.data.values());
-  }
-  
   async getExercise(id: string): Promise<Exercise | string> {
     return await this.getData(id) || "Exercise not found";
   }
@@ -40,6 +36,8 @@ const baseExercises: Exercise[] = [
   { id: "Barbell Bench Press", name: "Barbell Bench Press", muscleGroups: [MuscleGroup.CHEST] },
   { id: "Overhead Press", name: "Overhead Press", muscleGroups: [MuscleGroup.SHOULDERS] },
   { id: "Deadlift", name: "Deadlift", muscleGroups: [MuscleGroup.BACK] },
+  { id: "Barbell Squat", name: "Barbell Squat", muscleGroups: [MuscleGroup.LEGS] },
+  { id: "Dumbbell Curls", name: "Dumbbell Curls", muscleGroups: [MuscleGroup.BICEPS]}
 ];
 exerciseService.clearData();
 

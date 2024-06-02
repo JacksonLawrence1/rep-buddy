@@ -3,17 +3,16 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 import { colors } from "@/constants/colors";
 
-import { icon } from "@/constants/icon";
-
 interface ExerciseBaseProps {
   label: string;
   backgroundColor: (typeof colors)[keyof typeof colors]; // only allow colors from colors
-  icons?: icon[]; // ordered from left to right
+  icon?: keyof typeof FontAwesome5.glyphMap;
   size?: number;
   onPress?: () => void;
 }
 
-export default function ListItem({ label, backgroundColor, size = 24, icons, onPress }: ExerciseBaseProps) {
+export default function ListItem({ label, backgroundColor, size = 24, icon, onPress = () => undefined }: ExerciseBaseProps) {
+  // TODO: add icon onPress functions
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <Pressable style={styles.buttonContainer} onPress={onPress}>
@@ -22,11 +21,11 @@ export default function ListItem({ label, backgroundColor, size = 24, icons, onP
         </View>
 
         <View style={styles.iconsContainer}>
-          {icons && icons.map((icon, index) => ( // map over the icons array
-            <Pressable key={index} onPress={icon.onPress} style={styles.iconContainer}>
-              <FontAwesome5 name={icon.name} size={size} color={colors.text} />
+          {icon && (
+            <Pressable style={styles.iconContainer}>
+              <FontAwesome5 name={icon} size={size} color={colors.text} />
             </Pressable>
-          ))}
+          )}
         </View>
       </Pressable>
     </View>
@@ -35,12 +34,12 @@ export default function ListItem({ label, backgroundColor, size = 24, icons, onP
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
     borderRadius: 8,
-    minHeight: 48,
+    height: 52, 
+    width: "100%",
   },
   iconsContainer: {
     flexDirection: "row",

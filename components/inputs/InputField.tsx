@@ -18,7 +18,8 @@ export default function InputField({ title, children }: InputFieldProps) {
 
 const styles = StyleSheet.create({
   inputFieldContainer: {
-    paddingVertical: 16,
+    paddingVertical: 8,
+    height: 'auto',
   },
   inputTitle: {
     color: colors.text,

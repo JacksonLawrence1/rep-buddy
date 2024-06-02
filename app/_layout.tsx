@@ -1,9 +1,10 @@
-import { Stack } from "expo-router/stack";
-import { View, StyleSheet, Text } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
+import { Stack } from "expo-router/stack";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, TouchableWithoutFeedback, Keyboard } from "react-native";
 
 import { colors } from "@/constants/colors";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
@@ -19,11 +20,18 @@ export default function Layout() {
   }
 
   return (
-    <View style={styles.pageContainer}>
-      <StatusBar style="light" />
-      <Stack screenOptions={{headerShown: false}}>
-      </Stack>
-    </View>
+    <GestureHandlerRootView>
+      <TouchableWithoutFeedback
+        accessible={false}
+        onPress={() => Keyboard.dismiss()}
+      >
+      <View style={styles.pageContainer}>
+        <StatusBar style="light" />
+        <Stack screenOptions={{headerShown: false}}>
+        </Stack>
+      </View>
+      </TouchableWithoutFeedback>
+    </GestureHandlerRootView>
   );
 }
 

@@ -1,8 +1,7 @@
-import { ButtonProps } from "./BaseButton";
 import { Link } from "expo-router";
+import { ButtonProps } from "@/components/buttons/BaseButton";
 
-import BaseButton from "./BaseButton";
-import { buttonStyles as styles } from "./BaseButton";
+import BaseButton, { buttonStyles as styles } from "@/components/buttons/BaseButton";
 
 interface LinkButtonProps extends ButtonProps {
   href: string;

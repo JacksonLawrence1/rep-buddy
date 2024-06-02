@@ -1,21 +1,14 @@
-import { FontAwesome5 }from "@expo/vector-icons";
-
+import { Exercise } from "@/constants/types";
 import ListItem from "./ListItem";
-
 import { colors } from "@/constants/colors";
-import { icon } from "@/constants/icon";
 
-interface ExerciseBaseProps {
-  exerciseName: string;
+interface ExerciseBaseProps extends Exercise {
   onPress?: () => void;
-  size?: number;
-  icons?: (keyof typeof FontAwesome5.glyphMap)[];
 }
 
-export default function ExerciseBase({ exerciseName, size, icons = ["ellipsis-h"], onPress }: ExerciseBaseProps) {
-  // TODO: add icon onPress functions
-  const itemIcons: icon[] = icons.map((icon) => ({ name: icon }) as icon);
+export default function ExerciseBase({ name, onPress }: ExerciseBaseProps) {
+  const icon: string = "ellipsis-h";
 
-  return <ListItem onPress={onPress} size={size} label={exerciseName} backgroundColor={colors.tertiary} icons={itemIcons} />;
+  return <ListItem label={name} onPress={onPress} backgroundColor={colors.tertiary} icon={icon} />;
 }
 

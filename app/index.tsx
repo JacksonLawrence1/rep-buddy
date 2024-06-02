@@ -1,9 +1,9 @@
 import { colors } from "@/constants/colors";
 import { StyleSheet, Text, View } from "react-native";
 
-import Button from "@/components/Buttons/Button";
-import LinkButton from "@/components/Buttons/LinkButton";
-import PageContainer from "@/components/PageContainer";
+import Button from "@/components/buttons/Button";
+import LinkButton from "@/components/buttons/LinkButton";
+import PageContainer from "@/components/pages/PageContainer";
 
 export default function Index() {
   return (
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     gap: 16,
+    paddingHorizontal: 32,
   },
   footerContainer: {
     justifyContent: "center",
