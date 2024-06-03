@@ -1,20 +1,11 @@
 import { MuscleGroup } from "@/constants/enums/muscleGroups";
-  import { baseStorageClass } from "./baseStorageClass";
+import { BaseStorageClass } from "@/constants/storage/BaseStorageClass";
 
 import { type Exercise } from "@/constants/types";
 
-type Callback = (data: Exercise[]) => void;
-
-class ExerciseService extends baseStorageClass<Exercise, Callback> {
+class ExerciseService extends BaseStorageClass<Exercise> {
   constructor() {
     super("exercises");
-  }
-
-  // send data as an array
-  sendDataToSubscribers(): void {
-    this.callbacks.forEach((callback) => {
-      callback(Array.from(this.data.values()));
-    });
   }
 
   async getExercise(id: string): Promise<Exercise | string> {
@@ -28,7 +19,7 @@ class ExerciseService extends baseStorageClass<Exercise, Callback> {
 
 const exerciseService = new ExerciseService();
 
-// TODO: remove when done testing 
+// WARNING: remove when done testing 
 
 // TODO: ids should be generated
 const baseExercises: Exercise[] = [

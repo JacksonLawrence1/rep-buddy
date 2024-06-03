@@ -4,13 +4,12 @@ export interface baseStorageItem {
   id: string;
 };
 
-// specifies how you want data to be received by subscribers
-type CallbackType = (data: any) => void;
+type Callback<T> = (data: Map<string, T>) => void;
 
-export abstract class baseStorageClass<T extends baseStorageItem, TFn extends CallbackType> {
+export abstract class BaseStorageClass<T extends baseStorageItem> {
   private key: string;
   private cache: Map<string, T>;
-  callbacks: Map<string, TFn>; 
+  callbacks: Map<string, (data: Map<string, T>) => void>; 
 
   constructor(key: string) {
     this.key = key;
@@ -32,7 +31,7 @@ export abstract class baseStorageClass<T extends baseStorageItem, TFn extends Ca
 
   // add a 'setState' method to the list of callbacks
   // not responsible for non-unique keys
-  subscribe(id: string, callback: TFn) {
+  subscribe(id: string, callback: Callback<T>) {
     this.callbacks.set(id, callback);
   }
 
@@ -40,8 +39,12 @@ export abstract class baseStorageClass<T extends baseStorageItem, TFn extends Ca
     this.callbacks.delete(id);
   }
 
-  // implement how you want to be received 
-  abstract sendDataToSubscribers(): void; 
+  // call all the callbacks with the current data
+  sendDataToSubscribers(): void {
+    this.callbacks.forEach((callback) => {
+      callback(this.cache);
+    });
+  }
 
   // get updated data from device storage
   // make sure you call this on startup
@@ -76,7 +79,12 @@ export abstract class baseStorageClass<T extends baseStorageItem, TFn extends Ca
     this.syncStorage();
   }
 
-  // TODO: remove this when finished testing
+  async deleteData(id: string): Promise<void> {
+    this.cache.delete(id);
+    this.syncStorage();
+  }
+
+  // WARNING: remove this when finished testing
   async clearData(): Promise<void> {
     this.cache.clear();
     await AsyncStorage.removeItem(this.key);

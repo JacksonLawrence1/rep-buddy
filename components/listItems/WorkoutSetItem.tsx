@@ -9,11 +9,9 @@ interface WorkoutBaseProps extends WorkoutSet {
 }
 
 export default function WorkoutBase({ exercise, sets, onPress }: WorkoutBaseProps) {
-  const icon: string = 'ellipsis-h';
-  
   return (
     <View style={styles.workoutContainer}>
-      <ListItem label={exercise.name} onPress={onPress} backgroundColor={colors.tertiary} icon={icon} />
+      <ListItem label={exercise.name} onPress={onPress} backgroundColor={colors.tertiary} />
       <View style={{flex: 1, alignItems: "center", flexDirection: "row", justifyContent: "center"}}>
         <ListItem label={`Minimum Sets: ${sets}`} onPress={onPress} backgroundColor={colors.inputBackground} />
       </View>

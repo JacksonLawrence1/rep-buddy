@@ -41,11 +41,7 @@ export const globalStyles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background,
-    borderRadius: 8,
     alignItems: "center",
-    marginTop: 60,
-    borderWidth: 2,
-    borderColor: colors.backgroundDark,
   },
   formContainer: {
     flex: 1,

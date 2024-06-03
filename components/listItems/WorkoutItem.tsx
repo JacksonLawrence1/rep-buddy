@@ -8,7 +8,5 @@ interface WorkoutBaseProps extends Workout {
 }
 
 export default function WorkoutBase({ name, onPress }: WorkoutBaseProps) {
-  const icon: string = 'ellipsis-h';
-
-  return <ListItem label={name} onPress={onPress} backgroundColor={colors.primary} icon={icon} />;
+  return <ListItem label={name} onPress={onPress} backgroundColor={colors.primary} />;
 }

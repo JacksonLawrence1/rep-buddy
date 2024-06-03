@@ -7,15 +7,15 @@ import Searchbar from "@/components/inputs/Searchbar";
 import { globalStyles } from "@/constants/styles";
 import workoutService from "@/constants/storage/workouts";
 import {
-  baseStorageClass,
+  BaseStorageClass,
   baseStorageItem,
-} from "@/constants/storage/baseStorageClass";
+} from "@/constants/storage/BaseStorageClass";
 
 interface PageItemListProps<T extends baseStorageItem> {
   callerId: string; // Unique identifier for the caller
   title: string; // title to display at the top of the page
   searchPlaceholder: string; // placeholder text for the search bar
-  service: baseStorageClass<T, (data: T[]) => void>; // service to get data from
+  service: BaseStorageClass<T>; // service to get data from
   ListComponent: React.ComponentType<T & { onPress?: () => void }>; // component to render for each item
   onItemPress?: (item: T) => void; // function to call when a specific item is pressed
   FooterComponent?: React.ReactNode; // optional component to render at the bottom of the page
@@ -37,7 +37,10 @@ export default function PageItemList<T extends baseStorageItem>({
   const [items, setItems] = useState(service.dataAsArray);
 
   useEffect(() => {
-    service.subscribe(callerId, setItems);
+    const handleItemPress = (data: Map<string, T>) =>
+      setItems(Array.from(data.values()));
+
+    service.subscribe(callerId, handleItemPress);
     return () => workoutService.unsubscribe(callerId);
   }, [callerId, service]);
 
@@ -48,7 +51,9 @@ export default function PageItemList<T extends baseStorageItem>({
         <FlatList
           data={items}
           keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item }) => <ListComponent {...item} onPress={() => onItemPress(item)} />}
+          renderItem={({ item }) => (
+            <ListComponent {...item} onPress={() => onItemPress(item)} />
+          )}
           ItemSeparatorComponent={() => (
             <View style={{ height: seperatorHeight }} />
           )}

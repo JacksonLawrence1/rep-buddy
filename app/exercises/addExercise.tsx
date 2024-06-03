@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { useState } from "react";
 
 import { Alert, StyleSheet, View } from "react-native";
 
@@ -7,7 +6,7 @@ import Button from "@/components/buttons/Button";
 import { TextInput } from "@/components/inputs/FormFields";
 import InputField from "@/components/inputs/InputField";
 import DefaultPage from "@/components/pages/DefaultPage";
-import Tag from "@/components/Tag";
+import Tag from "@/components/primitives/Tag";
 
 import { colors } from "@/constants/colors";
 import { MuscleGroup, MuscleGroups, MuscleGroupStrings } from "@/constants/enums/muscleGroups";

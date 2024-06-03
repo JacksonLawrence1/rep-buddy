@@ -1,18 +1,15 @@
 import { Pressable, Text, View, StyleSheet } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
-
 import { colors } from "@/constants/colors";
 
 interface ExerciseBaseProps {
   label: string;
   backgroundColor: (typeof colors)[keyof typeof colors]; // only allow colors from colors
-  icon?: keyof typeof FontAwesome5.glyphMap;
   size?: number;
   onPress?: () => void;
+  PopoutMenu?: React.ReactNode;
 }
 
-export default function ListItem({ label, backgroundColor, size = 24, icon, onPress = () => undefined }: ExerciseBaseProps) {
-  // TODO: add icon onPress functions
+export default function ListItem({ label, backgroundColor, onPress = () => undefined, PopoutMenu }: ExerciseBaseProps) {
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <Pressable style={styles.buttonContainer} onPress={onPress}>
@@ -21,11 +18,7 @@ export default function ListItem({ label, backgroundColor, size = 24, icon, onPr
         </View>
 
         <View style={styles.iconsContainer}>
-          {icon && (
-            <Pressable style={styles.iconContainer}>
-              <FontAwesome5 name={icon} size={size} color={colors.text} />
-            </Pressable>
-          )}
+          {PopoutMenu}
         </View>
       </Pressable>
     </View>

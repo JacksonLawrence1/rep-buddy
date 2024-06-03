@@ -1,19 +1,9 @@
-import { baseStorageClass } from "./baseStorageClass";
-
+import { BaseStorageClass } from "@/constants/storage/BaseStorageClass";
 import { Workout } from "@/constants/types";
 
-type Callback = (data: Workout[]) => void;
-
-class WorkoutService extends baseStorageClass<Workout, Callback> {
+class WorkoutService extends BaseStorageClass<Workout> {
   constructor() {
     super("workouts");
-  }
-
-  // send data as an array
-  sendDataToSubscribers(): void {
-    this.callbacks.forEach((callback) => {
-      callback(Array.from(this.data.values()));
-    });
   }
   
   async getWorkout(id: string): Promise<Workout | string> {

@@ -1,9 +1,11 @@
-import { Alert, Modal } from "react-native";
+import { Alert, Modal, View } from "react-native";
 
 import WorkoutSetBuilderForm from "@/components/forms/WorkoutSetBuilderForm";
 import DefaultPage from "@/components/pages/DefaultPage";
 
 import { Exercise, WorkoutSet } from "@/constants/types";
+import { globalStyles } from "@/constants/styles";
+import { MenuProvider } from "react-native-popup-menu";
 
 interface AddExerciseProps {
   visibility: boolean;
@@ -52,13 +54,17 @@ export default function WorkoutSetBuilderPage({
       animationType="slide"
       presentationStyle="overFullScreen"
     >
-      <DefaultPage title="Add New Set" toggleModal={toggleVisibility}>
-        <WorkoutSetBuilderForm
-          onSetsChange={handleSetsChange}
-          onAddExercise={handleExerciseChange}
-          saveExerciseSet={saveExerciseSet}
-        />
-      </DefaultPage>
+      <MenuProvider skipInstanceCheck>
+        <View style={globalStyles.modalContainer}>
+          <DefaultPage title="Add New Set" toggleModal={toggleVisibility}>
+            <WorkoutSetBuilderForm
+              onSetsChange={handleSetsChange}
+              onAddExercise={handleExerciseChange}
+              saveExerciseSet={saveExerciseSet}
+            />
+          </DefaultPage>
+        </View>
+      </MenuProvider>
     </Modal>
   );
 }

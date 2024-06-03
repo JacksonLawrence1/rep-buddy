@@ -27,7 +27,6 @@ export default function Tag<T>({ label, enumValue, setToAddTo }: TagProps<T>) {
     }
   };
 
-  // TODO: Forward the enabled state to the parent component
   return (
     <Pressable
       onPress={onPress}

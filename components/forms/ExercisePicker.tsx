@@ -7,6 +7,7 @@ import { globalStyles } from "@/constants/styles";
 import { Exercise } from "@/constants/types";
 
 import exerciseService from "@/constants/storage/exercises";
+import { MenuProvider } from "react-native-popup-menu";
 
 interface ChooseExerciseProps {
   visibility: boolean;
@@ -21,7 +22,6 @@ export default function ExercisePicker({
   toggleVisibility,
   onPress,
 }: ChooseExerciseProps) {
-
   function handlePress(exercise: Exercise) {
     onPress(exercise);
     toggleVisibility();
@@ -34,17 +34,19 @@ export default function ExercisePicker({
       animationType="slide"
       presentationStyle="overFullScreen"
     >
-      <View style={globalStyles.modalContainer}>
-        <PageItemList
-          callerId={serviceName}
-          title="Choose Exercise"
-          searchPlaceholder="Search for Exercise"
-          service={exerciseService}
-          ListComponent={ExerciseItem}
-          onItemPress={handlePress}
-          toggleModal={toggleVisibility}
-        />
-      </View>
+      <MenuProvider skipInstanceCheck>
+        <View style={globalStyles.modalContainer}>
+          <PageItemList
+            callerId={serviceName}
+            title="Choose Exercise"
+            searchPlaceholder="Search for Exercise"
+            service={exerciseService}
+            ListComponent={ExerciseItem}
+            onItemPress={handlePress}
+            toggleModal={toggleVisibility}
+          />
+        </View>
+      </MenuProvider>
     </Modal>
   );
 }
