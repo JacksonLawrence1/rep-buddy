@@ -50,7 +50,13 @@ export abstract class BaseStorageClass<T extends baseStorageItem> {
   // make sure you call this on startup
   async syncCache(): Promise<void> {
     const data = await AsyncStorage.getItem("exercises");
-    this.cache = new Map(JSON.parse(data || "{}"));
+
+    const parsedData = JSON.parse(data || "{}");
+    if (!parsedData.size || parsedData.size === 0) {
+      return;
+    }
+
+    this.cache = new Map(parsedData);
   }
 
   // update device storage with new data
@@ -61,7 +67,7 @@ export abstract class BaseStorageClass<T extends baseStorageItem> {
     this.sendDataToSubscribers();
   }
 
-  protected async getData(id: string): Promise<T | undefined> {
+  protected getData(id: string): T | undefined {
     return this.cache.get(id);
   }
 

@@ -2,6 +2,7 @@ import { SafeAreaView, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { globalStyles } from "@/constants/styles";
+import { colors } from "@/constants/colors";
 
 type PageContainerProps = {
   children: React.ReactNode;
@@ -9,7 +10,7 @@ type PageContainerProps = {
 
 export default function PageContainer({ children }: PageContainerProps) {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={{backgroundColor: colors.background}}>
       <SafeAreaView style={{flex: 1}}>
         <View style={globalStyles.pageContainer}>
           {children}

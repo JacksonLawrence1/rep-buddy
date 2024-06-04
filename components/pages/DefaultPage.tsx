@@ -6,27 +6,50 @@ import PageContainer from "@/components/pages/PageContainer";
 
 import { globalStyles } from "@/constants/styles";
 
+type theme = {
+  icon: "back" | "modal";
+  path: string; // a path must be supplied as a fallback
+}
+
 type DefaultPageProps = {
   title: string;
-  back?: boolean; // If we want to show a back button
-  toggleModal?: () => void; // If we want to show a close button
+  theme?: theme;
   children: React.ReactNode;
 };
 
-function TitleBackStyle(title: string, back: boolean): React.ReactNode {
+// HACK: ideally, define exactly how a route goes back to main menu
+function goBack(path: string | undefined) {
+  if (router.canGoBack() && path !== undefined) {
+    router.navigate(path);
+  } else {
+    router.replace('/');
+  }
+}
+
+function TitleBackStyle(
+  title: string,
+  path: string | undefined,
+): React.ReactNode {
   return (
     <View style={globalStyles.titleContainer}>
-      <IconButton disabled={!back} icon={"arrow-left"} onPress={router.back} />
+      <IconButton
+        disabled={path === undefined}
+        icon={"arrow-left"}
+        onPress={() => goBack(path)}
+      />
       <Text style={globalStyles.title}>{title}</Text>
       <IconButton disabled={true} icon={"arrow-left"} />
     </View>
   );
 }
 
-function TitleModalStyle(title: string, toggleModal: () => void): React.ReactNode {
+function TitleModalStyle(
+  title: string,
+  path: string,
+): React.ReactNode {
   return (
     <View style={globalStyles.titleContainer}>
-      <IconButton icon={"times"} onPress={toggleModal} />
+      <IconButton icon={"times"} onPress={() => goBack(path)} />
       <Text style={globalStyles.title}>{title}</Text>
       <IconButton disabled={true} icon={"times"} />
     </View>
@@ -35,14 +58,15 @@ function TitleModalStyle(title: string, toggleModal: () => void): React.ReactNod
 
 export default function DefaultPage({
   title,
-  back = false,
+  theme,
   children,
-  toggleModal,
 }: DefaultPageProps) {
   return (
     <PageContainer>
       <View style={globalStyles.contentContainer}>
-        {toggleModal ? TitleModalStyle(title, toggleModal) : TitleBackStyle(title, back)}
+        {theme?.icon === "modal"
+          ? TitleModalStyle(title, theme.path)
+          : TitleBackStyle(title, theme?.path || undefined)}
         {children}
       </View>
     </PageContainer>

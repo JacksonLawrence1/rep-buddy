@@ -1,15 +1,16 @@
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { colors } from "@/constants/colors";
+import { PopoutMenu, PopoutMenuOptions } from "@/components/primitives/PopoutMenus";
 
 interface ExerciseBaseProps {
   label: string;
   backgroundColor: (typeof colors)[keyof typeof colors]; // only allow colors from colors
   size?: number;
   onPress?: () => void;
-  PopoutMenu?: React.ReactNode;
+  popoutMenuOptions?: PopoutMenuOptions;
 }
 
-export default function ListItem({ label, backgroundColor, onPress = () => undefined, PopoutMenu }: ExerciseBaseProps) {
+export default function ListItem({ label, backgroundColor, onPress, popoutMenuOptions }: ExerciseBaseProps) {
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <Pressable style={styles.buttonContainer} onPress={onPress}>
@@ -18,7 +19,7 @@ export default function ListItem({ label, backgroundColor, onPress = () => undef
         </View>
 
         <View style={styles.iconsContainer}>
-          {PopoutMenu}
+          {popoutMenuOptions && <PopoutMenu {...popoutMenuOptions} />}
         </View>
       </Pressable>
     </View>

@@ -7,8 +7,8 @@ export const globalStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.backgroundDark,
     borderRadius: 8,
-    padding: 8,
     alignSelf: 'stretch', 
+    padding: 8,
   },
   pageContainer: {
     flex: 1,
@@ -36,7 +36,6 @@ export const globalStyles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     paddingHorizontal: 8,
-    marginBottom: 16,
   },
   modalContainer: {
     flex: 1,
@@ -46,8 +45,8 @@ export const globalStyles = StyleSheet.create({
   formContainer: {
     flex: 1,
     justifyContent: "flex-start",
-    gap: 8,
+    gap: 16,
     borderRadius: 8,
-    padding: 8,
+    paddingHorizontal: 8,
   },
 });

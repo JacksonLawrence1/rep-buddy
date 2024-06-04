@@ -2,6 +2,7 @@ import { Modal, View } from "react-native";
 
 import PageItemList from "@/components/pages/PageItemList";
 import ExerciseItem from "@/components/listItems/ExerciseItem";
+import LinkButton from "@/components/buttons/LinkButton";
 
 import { globalStyles } from "@/constants/styles";
 import { Exercise } from "@/constants/types";
@@ -27,6 +28,10 @@ export default function ExercisePicker({
     toggleVisibility();
   }
 
+  function FooterComponent(): React.ReactNode {
+    return <LinkButton href="/exercises/addExercise" theme="primary" label="Add Exercise" icon={"plus"} />
+  }
+
   return (
     <Modal
       transparent={true}
@@ -41,8 +46,10 @@ export default function ExercisePicker({
             title="Choose Exercise"
             searchPlaceholder="Search for Exercise"
             service={exerciseService}
+            backRoute="/workouts"
             ListComponent={ExerciseItem}
             onItemPress={handlePress}
+            FooterComponent={FooterComponent()}
             toggleModal={toggleVisibility}
           />
         </View>

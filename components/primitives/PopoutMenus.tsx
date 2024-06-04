@@ -15,14 +15,21 @@ import {
   BaseStorageClass,
   baseStorageItem,
 } from "@/constants/storage/BaseStorageClass";
-
-export interface PopoutMenuOptions {
-  options: React.ReactNode[];
-}
+import { router } from "expo-router";
 
 interface DeleteOptionProps<T extends baseStorageItem> {
   id: string;
   service: BaseStorageClass<T>;
+}
+
+interface EditOptionProps {
+  id: string;
+  path: string; // navigate to this dynamic route with the id
+}
+
+export interface PopoutMenuOptions {
+  icon: keyof typeof FontAwesome5.glyphMap;
+  options: React.ReactNode[];
 }
 
 export function DeleteOption<T extends baseStorageItem>({
@@ -31,7 +38,7 @@ export function DeleteOption<T extends baseStorageItem>({
 }: DeleteOptionProps<T>): React.ReactNode {
   return (
     <MenuOption onSelect={() => service.deleteData(id)}>
-      <Text style={[styles.text, { color: colors.error }]}>Delete</Text>
+      <Text style={styles.errorText}>Delete</Text>
       <View style={{ paddingRight: 4 }}>
         <FontAwesome5 name="trash" size={16} color={colors.error} />
       </View>
@@ -39,7 +46,21 @@ export function DeleteOption<T extends baseStorageItem>({
   );
 }
 
-export default function PopoutMenu({ options }: PopoutMenuOptions) {
+export function EditOption({
+  id,
+  path // MUST be a dynamic route (e.g. "exercises/[id]", "workouts/[id]")
+}: EditOptionProps): React.ReactNode {
+  return (
+    <MenuOption onSelect={() => router.navigate({pathname: path, params: { id: id }})}>
+      <Text style={styles.text}>Edit</Text>
+      <View style={{ paddingRight: 4 }}>
+        <FontAwesome5 name="edit" size={16} color={colors.text} />
+      </View>
+    </MenuOption>
+  );
+}
+
+export function PopoutMenu({ icon, options }: PopoutMenuOptions) {
   return (
     <View>
       <Menu
@@ -50,10 +71,10 @@ export default function PopoutMenu({ options }: PopoutMenuOptions) {
         }}
       >
         <MenuTrigger>
-          <FontAwesome5 name="ellipsis-h" size={20} color={colors.text} />
+          <FontAwesome5 name={icon} size={20} color={colors.text} />
         </MenuTrigger>
         <MenuOptions customStyles={menuStyles}>
-          {options.map((option) => option)}
+          {options.map(option => option)}
         </MenuOptions>
       </Menu>
     </View>
@@ -64,7 +85,7 @@ const menuStyles = StyleSheet.create({
   optionsContainer: {
     alignItems: "center",
     backgroundColor: colors.backgroundDark,
-    maxWidth: 200,
+    width: 200,
     padding: 8,
     borderRadius: 8,
     shadowOpacity: 0,
@@ -72,6 +93,7 @@ const menuStyles = StyleSheet.create({
   },
   optionsWrapper: {
     gap: 8,
+    width: "100%",
   },
   optionWrapper: {
     flexDirection: "row",
@@ -86,6 +108,10 @@ const menuStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   text: {
     color: colors.text,
+    fontSize: 16,
+  },
+  errorText: {
+    color: colors.error,
     fontSize: 16,
   },
 });

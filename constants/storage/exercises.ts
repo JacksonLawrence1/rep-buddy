@@ -8,8 +8,8 @@ class ExerciseService extends BaseStorageClass<Exercise> {
     super("exercises");
   }
 
-  async getExercise(id: string): Promise<Exercise | string> {
-    return await this.getData(id) || "Exercise not found";
+  getExercise(id: string): Exercise | undefined {
+    return this.getData(id);
   }
 
   async addExercise(exercises: Exercise | Exercise[]): Promise<void> {
@@ -23,12 +23,12 @@ const exerciseService = new ExerciseService();
 
 // TODO: ids should be generated
 const baseExercises: Exercise[] = [
-  { id: "Military Press", name: "Military Press", muscleGroups: [MuscleGroup.SHOULDERS] },
-  { id: "Barbell Bench Press", name: "Barbell Bench Press", muscleGroups: [MuscleGroup.CHEST] },
-  { id: "Overhead Press", name: "Overhead Press", muscleGroups: [MuscleGroup.SHOULDERS] },
-  { id: "Deadlift", name: "Deadlift", muscleGroups: [MuscleGroup.BACK] },
-  { id: "Barbell Squat", name: "Barbell Squat", muscleGroups: [MuscleGroup.LEGS] },
-  { id: "Dumbbell Curls", name: "Dumbbell Curls", muscleGroups: [MuscleGroup.BICEPS]}
+  { id: "Military Press", name: "Military Press", muscleGroups: new Set([MuscleGroup.SHOULDERS]) },
+  { id: "Barbell Bench Press", name: "Barbell Bench Press", muscleGroups: new Set([MuscleGroup.CHEST]) },
+  { id: "Overhead Press", name: "Overhead Press", muscleGroups: new Set([MuscleGroup.SHOULDERS]) },
+  { id: "Deadlift", name: "Deadlift", muscleGroups: new Set([MuscleGroup.BACK]) },
+  { id: "Barbell Squat", name: "Barbell Squat", muscleGroups: new Set([MuscleGroup.LEGS]) },
+  { id: "Dumbbell Curls", name: "Dumbbell Curls", muscleGroups: new Set([MuscleGroup.BICEPS]) },
 ];
 exerciseService.clearData();
 

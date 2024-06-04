@@ -6,8 +6,8 @@ class WorkoutService extends BaseStorageClass<Workout> {
     super("workouts");
   }
   
-  async getWorkout(id: string): Promise<Workout | string> {
-    return await this.getData(id) || "Exercise not found";
+  getWorkout(id: string): Workout | undefined  {
+    return this.getData(id);
   }
 
   async addWorkout(workout: Workout | Workout[]): Promise<void> {
@@ -20,9 +20,9 @@ const workoutService = new WorkoutService();
 // TODO: remove when done testing 
 
 const testWorkoutTemplates: Workout[] = [
-  { id: "mcaa", name: "Monday Chest and Arms", sets: [{exerciseId: "Barbell Bench Press", sets: 2}, {exerciseId: "Dumbbell Curls", sets: 3}] },
-  { id: "wl", name: "Wednesday Legs", sets: [{exerciseId: "Barbell Squat", sets: 3}, {exerciseId: "Deadlift", sets: 3}] },
-  { id: "fs", name: "Friday Shoulders", sets: [{exerciseId: "Military Press", sets: 3}, {exerciseId: "Overhead Press", sets: 3}] }
+  { id: "mcaa", name: "Monday Chest and Arms", sets: [{id: "Barbell Bench Press", sets: 2}, {id: "Dumbbell Curls", sets: 3}] },
+  { id: "wl", name: "Wednesday Legs", sets: [{id: "Barbell Squat", sets: 3}, {id: "Deadlift", sets: 3}] },
+  { id: "fs", name: "Friday Shoulders", sets: [{id: "Military Press", sets: 3}, {id: "Overhead Press", sets: 3}] }
 ];
 workoutService.clearData();
 

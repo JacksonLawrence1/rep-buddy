@@ -18,7 +18,6 @@ export default function InputField({ title, children }: InputFieldProps) {
 
 const styles = StyleSheet.create({
   inputFieldContainer: {
-    paddingVertical: 8,
     height: 'auto',
   },
   inputTitle: {
@@ -26,6 +25,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",
-    marginBottom: 12,
+    paddingBottom: 12,
   },
 });

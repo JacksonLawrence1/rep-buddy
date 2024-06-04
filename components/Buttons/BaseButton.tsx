@@ -56,6 +56,7 @@ export const buttonStyles = StyleSheet.create({
     flexDirection: "row",
     borderWidth: 2,
     borderColor: colors.border,
+    minHeight: 48,
   },
   primaryButton: {
     backgroundColor: colors.primary,

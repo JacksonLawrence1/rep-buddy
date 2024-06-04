@@ -3,33 +3,25 @@ import { colors } from "@/constants/colors";
 
 import React, { useState } from "react";
 
-type TagProps<T> = {
+type TagProps = {
   label: string;
-  enumValue?: T;
-  setToAddTo?: Set<T>; 
+  callback: (state: boolean) => void;
+  enabledOnStart?: boolean;
 };
 
-export default function Tag<T>({ label, enumValue, setToAddTo }: TagProps<T>) {
-  const [enabled, setEnabled] = useState(false);
+export default function Tag({label, callback, enabledOnStart = false}: TagProps) {
+  const [enabled, setEnabled] = useState(enabledOnStart);
 
-  const onPress = () => {
-    // we need to cache the state because the state is async
-    const state: boolean = !enabled;
+  function toggleState() {
+    const state = !enabled;
+
     setEnabled(state);
-
-    // optionally add/remove tag to a set
-    if (setToAddTo && enumValue) {
-      if (state) {
-        setToAddTo.delete(enumValue);
-      } else {
-        setToAddTo.add(enumValue);
-      }
-    }
-  };
+    callback(state);
+  }
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={toggleState}
       style={[
         styles.tagContainer,
         { backgroundColor: enabled ? colors.success : colors.primary },

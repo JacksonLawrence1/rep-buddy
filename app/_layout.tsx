@@ -7,6 +7,7 @@ import {
   View,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from "react-native";
 
 import { colors } from "@/constants/colors";
@@ -26,16 +27,27 @@ export default function Layout() {
     );
   }
 
+  function backgroundPressHandler() {
+    // on web, ignore as it won't let us type otherwise
+    if (Platform.OS === "web") {
+      return;
+    }
+
+    Keyboard.dismiss();
+  }
+
   return (
     <GestureHandlerRootView>
       <MenuProvider>
         <TouchableWithoutFeedback
           accessible={false}
-          onPress={() => Keyboard.dismiss()}
+          onPress={backgroundPressHandler}
         >
           <View style={styles.pageContainer}>
             <StatusBar style="light" />
-            <Stack screenOptions={{ headerShown: false }}></Stack>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="exercises/[id]" options={{ presentation: "modal" }} />
+            </Stack>
           </View>
         </TouchableWithoutFeedback>
       </MenuProvider>

@@ -3,13 +3,15 @@ import { colors } from '@/constants/colors';
 
 export interface InputBaseProps {
   placeholder?: string;
+  defaultValue?: string;
   onChangeText?: (text: string) => void;
   inputMode?: TextInputProps["inputMode"];
 }
 
-export default function InputBase({ placeholder, onChangeText, inputMode = "text" }: InputBaseProps) {
+export default function InputBase({ placeholder, defaultValue, onChangeText, inputMode = "text" }: InputBaseProps) {
   return <TextInput
         style={styles.inputStyle}
+        defaultValue={defaultValue}
         placeholder={placeholder || "Search..."}
         placeholderTextColor={colors.textDark}
         onChangeText={onChangeText}
@@ -25,6 +27,7 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik-Regular",
     color: colors.text,
     maxHeight: 48,
+    minHeight: 48,
     backgroundColor: colors.inputBackground,
     borderRadius: 8,
     paddingHorizontal: 16,

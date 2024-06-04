@@ -3,7 +3,7 @@ import { MuscleGroup } from "./enums/muscleGroups";
 export type Exercise = {
   id: string;
   name: string;
-  muscleGroups: MuscleGroup[];
+  muscleGroups: Set<MuscleGroup>;
 };
 
 export type WorkoutSet = { // eventually change to take different types of exercises (i.e. superset, choice)
@@ -12,7 +12,7 @@ export type WorkoutSet = { // eventually change to take different types of exerc
 }
 
 export type WorkoutSetCompressed = {
-  exerciseId: string; // this points to the exercise
+  id: string; // this points to the exercise
   sets: number;
 }
 

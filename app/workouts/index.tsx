@@ -15,6 +15,7 @@ export default function Workouts() {
     callerId={callerId}
     title="Your Workouts"
     searchPlaceholder="Search for workout"
+    backRoute="/"
     service={workoutService}
     ListComponent={WorkoutItem}
     FooterComponent={FooterComponent()}
