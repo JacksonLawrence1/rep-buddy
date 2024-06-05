@@ -13,7 +13,7 @@ interface ExerciseBaseProps {
 export default function ListItem({ label, backgroundColor, onPress, popoutMenuOptions }: ExerciseBaseProps) {
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
-      <Pressable style={styles.buttonContainer} onPress={onPress}>
+      <Pressable style={styles.buttonContainer} disabled={onPress === undefined} onPress={onPress}>
         <View style={styles.textContainer}>
           <Text style={styles.text}>{label}</Text>
         </View>

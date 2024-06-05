@@ -17,7 +17,7 @@ interface PageItemListProps<T extends baseStorageItem> {
   searchPlaceholder: string; // placeholder text for the search bar
   service: BaseStorageClass<T>; // service to get data from
   ListComponent: React.ComponentType<{ item: T, onPress?: () => void }>; // component to render for each item
-  backRoute: string; // the route the user goes to when they press the back button
+  onBack: () => void; // function to call when the back button is pressed
   onItemPress?: (item: T) => void; // function to call when a specific item is pressed
   FooterComponent?: React.ReactNode; // optional component to render at the bottom of the page
   seperatorHeight?: number; // height of the seperator between items
@@ -30,8 +30,8 @@ export default function PageItemList<T extends baseStorageItem>({
   searchPlaceholder,
   service,
   ListComponent,
-  backRoute,
-  onItemPress = () => undefined,
+  onBack,
+  onItemPress,
   seperatorHeight = 8,
   FooterComponent,
 }: PageItemListProps<T>) {
@@ -46,14 +46,14 @@ export default function PageItemList<T extends baseStorageItem>({
   }, [callerId, service]);
 
   return (
-    <DefaultPage title={title} theme={{icon: "back", path: backRoute}}>
+    <DefaultPage title={title} onBack={onBack}>
       <Searchbar placeholder={searchPlaceholder} />
       <View style={globalStyles.scrollContainer}>
         <FlatList
           data={items}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
-            <ListComponent item={item} onPress={() => onItemPress(item)} />
+            <ListComponent item={item} onPress={onItemPress && (() => onItemPress(item))} />
           )}
           ItemSeparatorComponent={() => (
             <View style={{ height: seperatorHeight }} />

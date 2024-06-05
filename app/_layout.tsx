@@ -46,7 +46,6 @@ export default function Layout() {
           <View style={styles.pageContainer}>
             <StatusBar style="light" />
             <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="exercises/[id]" options={{ presentation: "modal" }} />
             </Stack>
           </View>
         </TouchableWithoutFeedback>
