@@ -1,9 +1,9 @@
 import { MuscleGroup } from "@/constants/enums/muscleGroups";
-import { BaseStorageClass } from "@/constants/storage/BaseStorageClass";
+import { StorageService } from "@/services/storage/StorageService";
 
 import { type Exercise } from "@/constants/types";
 
-class ExerciseService extends BaseStorageClass<Exercise> {
+class ExerciseService extends StorageService<Exercise> {
   constructor() {
     super("exercises");
   }
@@ -15,6 +15,8 @@ class ExerciseService extends BaseStorageClass<Exercise> {
   async addExercise(exercises: Exercise | Exercise[]): Promise<void> {
     this.addData(exercises);
   }
+
+  // TODO: What happens when we delete an exercise that is in a workout?
 }
 
 const exerciseService = new ExerciseService();

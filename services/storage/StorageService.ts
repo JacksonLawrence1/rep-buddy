@@ -1,20 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Service } from "../Service";
 
-export interface baseStorageItem {
+export interface StorageItem {
   id: string;
 };
 
-type Callback<T> = (data: Map<string, T>) => void;
+type CallbackData<T> = Map<string, T>;
 
-export abstract class BaseStorageClass<T extends baseStorageItem> {
+export abstract class StorageService<T extends StorageItem> extends Service<CallbackData<T>> {
   private key: string;
   private cache: Map<string, T>;
-  callbacks: Map<string, (data: Map<string, T>) => void>; 
 
   constructor(key: string) {
+    super();
     this.key = key;
     this.cache = new Map();
-    this.callbacks = new Map();
   }
 
   get size(): number {
@@ -27,23 +27,6 @@ export abstract class BaseStorageClass<T extends baseStorageItem> {
 
   get dataAsArray(): T[] {
     return Array.from(this.cache.values());
-  }
-
-  // add a 'setState' method to the list of callbacks
-  // not responsible for non-unique keys
-  subscribe(id: string, callback: Callback<T>) {
-    this.callbacks.set(id, callback);
-  }
-
-  unsubscribe(id: string) {
-    this.callbacks.delete(id);
-  }
-
-  // call all the callbacks with the current data
-  sendDataToSubscribers(): void {
-    this.callbacks.forEach((callback) => {
-      callback(this.cache);
-    });
   }
 
   // get updated data from device storage
@@ -64,7 +47,7 @@ export abstract class BaseStorageClass<T extends baseStorageItem> {
     await AsyncStorage.setItem(this.key, JSON.stringify(this.cache));
     
     // call all the callbacks with the new data
-    this.sendDataToSubscribers();
+    this.notify(this.cache);
   }
 
   protected getData(id: string): T | undefined {

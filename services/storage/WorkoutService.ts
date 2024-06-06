@@ -1,7 +1,7 @@
-import { BaseStorageClass } from "@/constants/storage/BaseStorageClass";
+import { StorageService } from "@/services/storage/StorageService";
 import { Workout } from "@/constants/types";
 
-class WorkoutService extends BaseStorageClass<Workout> {
+class WorkoutService extends StorageService<Workout> {
   constructor() {
     super("workouts");
   }

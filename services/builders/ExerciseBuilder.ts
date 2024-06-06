@@ -1,8 +1,7 @@
 import { Exercise } from "@/constants/types";
+import { MuscleGroup } from "@/constants/enums/muscleGroups";
 
-import { MuscleGroup } from "../enums/muscleGroups";
-
-import exerciseService from "@/constants/storage/exercises";
+import exerciseService from "@/services/storage/ExerciseService";
 
 class ExerciseBuilder {
   exercise: Exercise;

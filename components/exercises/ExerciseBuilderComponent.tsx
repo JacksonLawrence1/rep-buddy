@@ -10,15 +10,14 @@ import { globalStyles } from "@/constants/styles";
 import { MuscleGroupValues } from "@/constants/enums/muscleGroups";
 import { Exercise } from "@/constants/types";
 
-import ExerciseBuilder from "@/constants/storage/exerciseBuilder";
+import ExerciseBuilder from "@/services/builders/ExerciseBuilder";
 
-interface ExerciseBuilderProps {
+interface ExerciseBuilderComponentProps {
   id?: string; // optionally pass in an id to edit an exercise
   onSave: (exercise: Exercise) => void; // callback to save exercise
-  onBack: () => void; // how we navigate if discarding changes
 }
 
-export default function ExerciseBuilderComponent({ id, onSave, onBack }: ExerciseBuilderProps) {
+export default function ExerciseBuilderComponent({ id, onSave }: ExerciseBuilderComponentProps) {
   const exercise = new ExerciseBuilder(id);
 
   async function saveExercise() {
@@ -36,7 +35,7 @@ export default function ExerciseBuilderComponent({ id, onSave, onBack }: Exercis
   }
 
   return (
-    <DefaultPage title="New Exercise" onBack={onBack} theme={"modal"}>
+    <DefaultPage title="New Exercise" theme={"modal"}>
       <View style={globalStyles.formContainer}>
         <TextInput
           title={"Exercise Name"}

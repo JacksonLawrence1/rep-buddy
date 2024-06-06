@@ -6,12 +6,12 @@ import ExerciseItem from "@/components/exercises/ExerciseItem";
 import { Exercise } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
 
-import exerciseService from "@/constants/storage/exercises";
+import exerciseService from "@/services/storage/ExerciseService";
 
 interface ExerciseListProps {
-  callerId: string;
-  onItemPress?: (exercise: Exercise) => void;
-  onEdit?: (exercise: Exercise) => void;
+  callerId: string; // to identify page requesting updates from service
+  onItemPress?: (exercise: Exercise) => void; // when item is pressed
+  onEdit?: (exercise: Exercise) => void; // if we should have an edit button on the popout menu
 }
 
 export default function ExerciseList({
@@ -26,6 +26,7 @@ export default function ExerciseList({
     exerciseService.deleteData(exercise.id);
   }
 
+  // update state of list whenever data changes
   useEffect(() => {
     const handleItemPress = (data: Map<string, Exercise>) =>
       setExercises(Array.from(data.values()));

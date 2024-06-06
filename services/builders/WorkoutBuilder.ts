@@ -4,15 +4,15 @@ import {
   WorkoutUncompressed,
 } from "@/constants/types";
 
-import workoutService from "@/constants/storage/workouts";
-import exerciseService from "@/constants/storage/exercises";
+import workoutService from "@/services/storage/WorkoutService";
+import exerciseService from "@/services/storage/ExerciseService";
+import { Service } from "../Service";
 
-class WorkoutBuilder {
+class WorkoutBuilder extends Service<WorkoutSetUncompressed[]> {
   workout: WorkoutUncompressed;
-  callbacks: Map<string, ((workoutSets: WorkoutSetUncompressed[]) => void)>;
 
   constructor(id?: string) {
-    this.callbacks = new Map();
+    super();
 
     if (id) {
       const workout = workoutService.getWorkout(id);
@@ -47,20 +47,6 @@ class WorkoutBuilder {
     this.workout.name = name;
   }
 
-  subscribe(callerId: string, callback: (workoutSet: WorkoutSetUncompressed[]) => void): void {
-    this.callbacks.set(callerId, callback);
-  }
-
-  unsubscribe(callerId: string): void {
-    this.callbacks.delete(callerId);
-  }
-
-  notifySubscribers(): void {
-    this.callbacks.forEach((callback) => {
-      callback(this.workout.sets);
-    });
-  }
-
   // if i exists, then we are replacing it, but not replacing its sets
   addExercise(exerciseId: string, i: number): void {
     const exercise = exerciseService.getExercise(exerciseId);
@@ -79,29 +65,22 @@ class WorkoutBuilder {
   }
 
   addWorkoutSet(set: WorkoutSetUncompressed, i: number): void {
-    // this should never happen, but just in case
-    if (i < 0 || i > this.setsLength) {
-      throw new Error(`Index ${i} out of bounds`);
-    }
-
     // places the set at the index, or at the end if i is the length
     // NOTE: must be done like this to trigger reactivity
     this.workout.sets = [...this.workout.sets.slice(0, i), set, ...this.workout.sets.slice(i + 1)];
-    this.notifySubscribers();
+    this.notify(this.workout.sets);
   }
 
   removeWorkoutSet(i: number): void {
     this.workout.sets = [...this.workout.sets.slice(0, i), ...this.workout.sets.slice(i + 1)]
-    this.notifySubscribers();
+    this.notify(this.workout.sets);
   }
   
   // returns the saved workout if needed
   saveWorkout(): Workout {
     if (!this.name) {
       throw new Error("No name for the workout.");
-    } else if (this.setsLength === 0) {
-      throw new Error("No sets added to the workout.");
-    }
+    } 
 
     // TODO: id generation
     if (!this.id) {

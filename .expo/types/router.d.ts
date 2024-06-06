@@ -3,9 +3,9 @@ import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
 export namespace ExpoRouter {
-  type StaticRoutes = `/` | `/..\components\exercises\ExerciseBuilder` | `/..\components\primitives\PopoutMenus` | `/..\components\workouts\WorkoutBuilder` | `/..\constants\storage\workoutBuilder` | `/..\constants\types` | `/_sitemap` | `/exercises` | `/exercises/exerciseBuilder` | `/log` | `/workouts` | `/workouts/workoutBuilder`;
-  type DynamicRoutes<T extends string> = `/exercises/${SingleRoutePart<T>}` | `/workouts/${SingleRoutePart<T>}`;
-  type DynamicRouteTemplate = `/exercises/[id]` | `/workouts/[id]`;
+  type StaticRoutes = `/` | `/..\components\pages\DefaultPage` | `/_sitemap` | `/exercises` | `/exercises/builder/new` | `/log` | `/workouts` | `/workouts/builder/exercises` | `/workouts/builder/new`;
+  type DynamicRoutes<T extends string> = `/exercises/builder/${SingleRoutePart<T>}` | `/workouts/builder/${SingleRoutePart<T>}`;
+  type DynamicRouteTemplate = `/exercises/builder/[id]` | `/workouts/builder/[id]`;
 
   export type RelativePathString = `./${string}` | `../${string}` | '..';
   export type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;

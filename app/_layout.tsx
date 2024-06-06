@@ -38,18 +38,36 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView>
-      <MenuProvider>
-        <TouchableWithoutFeedback
-          accessible={false}
-          onPress={backgroundPressHandler}
-        >
-          <View style={styles.pageContainer}>
-            <StatusBar style="light" />
-            <Stack screenOptions={{ headerShown: false }}>
-            </Stack>
-          </View>
-        </TouchableWithoutFeedback>
-      </MenuProvider>
+      <TouchableWithoutFeedback
+        accessible={false}
+        onPress={backgroundPressHandler}
+      >
+        <MenuProvider style={styles.pageContainer}>
+          <StatusBar style="light" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+
+            <Stack.Screen name="workouts/index" />
+            <Stack.Screen name="workouts/builder/new" />
+            <Stack.Screen name="workouts/builder/[id]" />
+            <Stack.Screen
+              name="workouts/builder/exercises"
+              options={{ presentation: "modal" }}
+            />
+
+            <Stack.Screen name="exercises/index" />
+
+            <Stack.Screen
+              name="exercises/builder/new"
+              options={{ presentation: "modal" }}
+            />
+            <Stack.Screen
+              name="exercises/builder/[id]"
+              options={{ presentation: "modal" }}
+            />
+          </Stack>
+        </MenuProvider>
+      </TouchableWithoutFeedback>
     </GestureHandlerRootView>
   );
 }

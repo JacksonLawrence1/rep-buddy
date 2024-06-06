@@ -6,12 +6,11 @@ import { Workout } from "@/constants/types";
 
 interface WorkoutItemProps {
   workout: Workout;
-  onPress?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export default function WorkoutItem({ workout, onPress, onEdit, onDelete }: WorkoutItemProps) {
+export default function WorkoutItem({ workout, onEdit, onDelete }: WorkoutItemProps) {
   // options on the popout menu 
   const popoutMenuOptions: React.ReactNode[] = [];
 
@@ -27,7 +26,6 @@ export default function WorkoutItem({ workout, onPress, onEdit, onDelete }: Work
   return (
     <ListItem
       label={workout.name}
-      onPress={onPress}
       backgroundColor={colors.primary}
       popoutMenuOptions={{ icon: "ellipsis-h", options: popoutMenuOptions }}
     />
