@@ -1,28 +1,20 @@
-import { router, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 
 import WorkoutBuilderComponent from "@/components/workouts/WorkoutBuilderComponent";
 
-import { Workout } from "@/constants/types";
+import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
 import { resetState } from "@/hooks/useModal";
 
-// when we want to save a workout
-export function onSave(_: Workout) {
-  router.navigate("/workouts");
-}
-
-// what we do when we want to create a new set for a workout
-export function onAddExercise() {
-  router.navigate("/workouts/builder/exercises");
-}
-
 export default function NewWorkout() {
+  // on reload: index -> workouts -> here as navigation state
   resetState(useNavigation(), ["index", "workouts"])
+
+  // object representing the workout we're creating
+  // we don't need any state changes so we declare it here
+  const workoutBuilder = new WorkoutBuilder();
 
   // no id given for workout, representing workout from scratch
   return (
-    <WorkoutBuilderComponent
-      onSave={onSave}
-      onAddExercise={onAddExercise}
-    />
+    <WorkoutBuilderComponent workoutBuilder={workoutBuilder} />
   );
 }

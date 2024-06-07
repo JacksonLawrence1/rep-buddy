@@ -1,16 +1,12 @@
 import { router, useNavigation } from "expo-router";
 
-import DefaultPage from "@/components/pages/DefaultPage";
-import Searchbar from "@/components/inputs/Searchbar";
-import WorkoutList from "@/components/workouts/WorkoutList";
-import Button from "@/components/buttons/Button";
-
 import { Workout } from "@/constants/types";
 import { resetState } from "@/hooks/useModal";
 
-const callerId: string = "workouts";
+import WorkoutPicker from "@/components/workouts/WorkoutPicker";
 
 export default function Workouts() {
+  // navigation state on reload: index -> here
   resetState(useNavigation(), ["index"]);
 
   function onNewWorkout() {
@@ -25,15 +21,6 @@ export default function Workouts() {
   }
 
   return (
-    <DefaultPage title="Your Workouts">
-      <Searchbar placeholder="Search for an exercise" />
-      <WorkoutList callerId={callerId} onEdit={onEdit} />
-      <Button
-        label="Create Workout"
-        theme="primary"
-        icon={"plus"}
-        onPress={onNewWorkout}
-      />
-    </DefaultPage>
+    <WorkoutPicker onEdit={onEdit} onAdd={onNewWorkout} />
   );
 }

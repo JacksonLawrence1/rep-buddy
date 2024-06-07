@@ -31,3 +31,30 @@ export type WorkoutUncompressed = {
   sets: WorkoutSetUncompressed[];
 }
 
+export type WorkoutLogSet = {
+  reps: number | null;
+  weight: number | null;
+}
+
+export type WorkoutLogSetComplete = {
+  reps: number;
+  weight: number;
+}
+
+export type WorkoutLogExerciseUncompressed = {
+  exercise: Exercise;
+  sets: WorkoutLogSet[];
+  isComplete: boolean;
+}
+
+export type WorkoutLogExercise = {
+  exerciseId: string; // need to consider what happens if the exercise is deleted
+  sets: WorkoutLogSetComplete[];
+}
+
+export type WorkoutLog = {
+  id: string;
+  date: string;
+  duration: number;
+  sets: WorkoutLogExercise[];
+}

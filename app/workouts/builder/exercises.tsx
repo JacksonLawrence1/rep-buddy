@@ -5,11 +5,16 @@ import ExercisePicker from "@/components/exercises/ExercisePicker";
 import { onEdit, onNewExercise } from "@/app/exercises";
 import { useModal } from "@/hooks/useModal";
 import { MenuProvider } from "react-native-popup-menu";
+import exerciseProvider from "@/services/providers/ExerciseProvider";
 
-const callerId: string = "exercisesPage";
-
-export function onPress() {
+// when we click an item, or back button
+function onPress() {
   router.back();
+}
+
+// when we exit the exercise picker
+function onExit() {
+  exerciseProvider.clearSubscribers();
 }
 
 export default function Exercises() {
@@ -18,12 +23,7 @@ export default function Exercises() {
 
   return (
     <MenuProvider skipInstanceCheck>
-      <ExercisePicker
-        callerId={callerId}
-        onAdd={onNewExercise}
-        onPress={onPress}
-        onEdit={onEdit}
-      />
+      <ExercisePicker title={"Choose Exercise"} onAdd={onNewExercise} onPress={onPress} onEdit={onEdit} onExit={onExit} />
     </MenuProvider>
   );
 }

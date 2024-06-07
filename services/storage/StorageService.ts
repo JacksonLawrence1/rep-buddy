@@ -5,9 +5,7 @@ export interface StorageItem {
   id: string;
 };
 
-type CallbackData<T> = Map<string, T>;
-
-export abstract class StorageService<T extends StorageItem> extends Service<CallbackData<T>> {
+export abstract class StorageService<T extends StorageItem> extends Service {
   private key: string;
   private cache: Map<string, T>;
 
@@ -29,6 +27,10 @@ export abstract class StorageService<T extends StorageItem> extends Service<Call
     return Array.from(this.cache.values());
   }
 
+  protected getItem(id: string): T | undefined {
+    return this.cache.get(id);
+  }
+
   // get updated data from device storage
   // make sure you call this on startup
   async syncCache(): Promise<void> {
@@ -45,14 +47,9 @@ export abstract class StorageService<T extends StorageItem> extends Service<Call
   // update device storage with new data
   private async syncStorage(): Promise<void> {
     await AsyncStorage.setItem(this.key, JSON.stringify(this.cache));
-    
-    // call all the callbacks with the new data
-    this.notify(this.cache);
+    this.notify();
   }
 
-  protected getData(id: string): T | undefined {
-    return this.cache.get(id);
-  }
 
   // TODO: add a check if data already exists
   protected async addData(data: T | T[]): Promise<void> {

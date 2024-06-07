@@ -1,5 +1,6 @@
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import NumberPicker from "@/components/inputs/NumberPicker";
 import ListItem from "@/components/primitives/ListItem";
 import { Delete, GenericMenuOption } from "@/components/primitives/PopoutMenus";
 
@@ -8,11 +9,12 @@ import { WorkoutSetUncompressed } from "@/constants/types";
 
 interface WorkoutBaseProps {
   item: WorkoutSetUncompressed;
+  onSetChange?: (sets: number) => void;
   onDelete?: () => void;
   onSwap?: () => void;
 }
 
-export default function WorkoutBase({ item, onDelete, onSwap }: WorkoutBaseProps) {
+export default function WorkoutSetItem({ item, onSetChange, onDelete, onSwap }: WorkoutBaseProps) {
   // options on the popout menu
   const popoutMenuOptions: React.ReactNode[] = [];
 
@@ -22,7 +24,7 @@ export default function WorkoutBase({ item, onDelete, onSwap }: WorkoutBaseProps
 
   // Ideally, use generic function to create this array, but this would involve annoying prop passing
   if (onSwap) {
-    popoutMenuOptions.push(<GenericMenuOption key={1} label="Swap" icon="exchange" onPress={onSwap} />);
+    popoutMenuOptions.push(<GenericMenuOption key={1} label="Swap" icon="exchange-alt" onPress={onSwap} />);
   }
 
   return (
@@ -41,12 +43,10 @@ export default function WorkoutBase({ item, onDelete, onSwap }: WorkoutBaseProps
           alignItems: "center",
           flexDirection: "row",
           justifyContent: "center",
+          width: "100%",
         }}
       >
-        <ListItem
-          label={`Minimum Sets: ${item.sets}`}
-          backgroundColor={colors.inputBackground}
-        />
+        <NumberPicker start={item.sets} onChange={onSetChange || (() => undefined)} />
       </View>
     </View>
   );

@@ -6,12 +6,11 @@ import { InputBaseProps } from "./InputBase";
 
 import { colors } from "@/constants/colors";
 
-export default function Searchbar({ placeholder }: InputBaseProps) {
-  // TODO: add onChangeText function to update search results
+export default function Searchbar({ ...inputProps }: InputBaseProps) {
   return (
     <View style={styles.searchbarContainer}>
       <FontAwesome5 name="search" size={16} color={colors.textDark} />
-      <InputBase placeholder={placeholder} />
+      <InputBase {...inputProps} />
     </View>
   );
 }

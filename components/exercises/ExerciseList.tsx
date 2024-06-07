@@ -1,44 +1,38 @@
-import { useState, useEffect } from "react";
 import { FlatList, View } from "react-native";
+import { useMemo } from "react";
 
 import ExerciseItem from "@/components/exercises/ExerciseItem";
 
 import { Exercise } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
-
 import exerciseService from "@/services/storage/ExerciseService";
 
 interface ExerciseListProps {
-  callerId: string; // to identify page requesting updates from service
+  exercises: Exercise[];
+  filter?: string;
   onItemPress?: (exercise: Exercise) => void; // when item is pressed
   onEdit?: (exercise: Exercise) => void; // if we should have an edit button on the popout menu
 }
 
 export default function ExerciseList({
-  callerId,
+  exercises,
+  filter,
   onItemPress,
   onEdit,
 }: ExerciseListProps) {
-  const [exercises, setExercises] = useState(exerciseService.dataAsArray);
 
-  // TODO: confirmation dialog before deleting
   function onDelete(exercise: Exercise) {
     exerciseService.deleteData(exercise.id);
   }
 
-  // update state of list whenever data changes
-  useEffect(() => {
-    const handleItemPress = (data: Map<string, Exercise>) =>
-      setExercises(Array.from(data.values()));
-
-    exerciseService.subscribe(callerId, handleItemPress);
-    return () => exerciseService.unsubscribe(callerId);
-  }, [callerId]);
+  const filteredExercises: Exercise[] = useMemo(() => {
+    return exercises.filter((exercise) => exercise.name.toLowerCase().includes(filter?.toLowerCase() || ""));
+  }, [exercises, filter]);
 
   return (
     <View style={globalStyles.scrollContainer}>
       <FlatList
-        data={exercises}
+        data={filteredExercises}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
           <ExerciseItem

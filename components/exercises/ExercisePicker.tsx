@@ -6,19 +6,23 @@ import Button from "@/components/buttons/Button";
 import { Exercise } from "@/constants/types";
 
 import exerciseProvider from "@/services/providers/ExerciseProvider";
+import { useExerciseService } from "@/hooks/services/useExerciseService";
+import { useState } from "react";
 
 interface ChooseExerciseProps {
-  callerId: string; // the id of the caller
+  title?: string;
   onPress?: (exercise: Exercise) => void; // when an exercise is selected
   onAdd?: () => void; // called when user clicks new exercise button
   onEdit?: (exercise: Exercise) => void; // called when an exercise is edited
+  onExit?: () => void; // called when user exits the exercise picker
 }
 
 export default function ExercisePicker({
-  callerId,
+  title,
   onPress,
   onAdd,
   onEdit,
+  onExit,
 }: ChooseExerciseProps) {
   // wrap the onPress function to also call the exercise provider
   const handleExerciseSelection = onPress
@@ -28,11 +32,15 @@ export default function ExercisePicker({
       }
     : undefined;
 
+  const exercises: Exercise[] = useExerciseService();
+  const [filter, setFilter] = useState("");
+
   return (
-    <DefaultPage title="Choose Exercise">
-      <Searchbar placeholder="Search for an exercise" />
+    <DefaultPage title={title || "Your Exercises"} callback={onExit}>
+      <Searchbar placeholder="Search for an exercise" onChangeText={setFilter} />
       <ExerciseList
-        callerId={callerId}
+        exercises={exercises}
+        filter={filter}
         onItemPress={handleExerciseSelection}
         onEdit={onEdit}
       />

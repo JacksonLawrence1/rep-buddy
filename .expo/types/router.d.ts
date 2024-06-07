@@ -3,9 +3,9 @@ import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
 export namespace ExpoRouter {
-  type StaticRoutes = `/` | `/..\components\pages\DefaultPage` | `/_sitemap` | `/exercises` | `/exercises/builder/new` | `/log` | `/workouts` | `/workouts/builder/exercises` | `/workouts/builder/new`;
-  type DynamicRoutes<T extends string> = `/exercises/builder/${SingleRoutePart<T>}` | `/workouts/builder/${SingleRoutePart<T>}`;
-  type DynamicRouteTemplate = `/exercises/builder/[id]` | `/workouts/builder/[id]`;
+  type StaticRoutes = `/` | `/..\components\log\WorkoutLog` | `/..\components\log\WorkoutLogExercise` | `/..\services\builders\WorkoutLogBuilder` | `/_sitemap` | `/exercises` | `/exercises/builder/new` | `/log` | `/workouts` | `/workouts/builder/exercises` | `/workouts/builder/new`;
+  type DynamicRoutes<T extends string> = `/exercises/builder/${SingleRoutePart<T>}` | `/log/start/${SingleRoutePart<T>}` | `/workouts/builder/${SingleRoutePart<T>}`;
+  type DynamicRouteTemplate = `/exercises/builder/[id]` | `/log/start/[id]` | `/workouts/builder/[id]`;
 
   export type RelativePathString = `./${string}` | `../${string}` | '..';
   export type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;

@@ -1,22 +1,17 @@
 // T is the type of data the service will give to subscribers
-export abstract class Service<T> {
-  protected callbacks: Map<string | number, Function>;
+export abstract class Service {
+  protected callbacks: Set<Function>;
 
   constructor() {
-    this.callbacks = new Map();
+    this.callbacks = new Set();
   }
 
-  subscribe(id: string | number, callback: Function) {
-    this.callbacks.set(id, callback);
+  subscribe(callback: () => void): () => void {
+    this.callbacks.add(callback);
+    return () => this.callbacks.delete(callback);
   }
 
-  unsubscribe(id: string | number) {
-    this.callbacks.delete(id);
-  }
-
-  notify(data: T): void {
-    this.callbacks.forEach((callback) => {
-      callback(data);
-    });
+  notify(): void {
+    this.callbacks.forEach(notify => notify());
   }
 }

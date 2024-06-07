@@ -7,7 +7,11 @@ class WorkoutService extends StorageService<Workout> {
   }
   
   getWorkout(id: string): Workout | undefined  {
-    return this.getData(id);
+    return this.getItem(id);
+  }
+
+  getWorkouts(): Workout[] {
+    return this.dataAsArray;
   }
 
   async addWorkout(workout: Workout | Workout[]): Promise<void> {
@@ -28,6 +32,7 @@ workoutService.clearData();
 
 
 workoutService.syncCache();
+
 if (workoutService.size === 0) {
   workoutService.addWorkout(testWorkoutTemplates);
 }

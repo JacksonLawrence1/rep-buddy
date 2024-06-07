@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
 import { Alert, FlatList, View } from "react-native";
 
 import Button from "@/components/buttons/Button";
@@ -7,66 +6,46 @@ import DefaultPage from "@/components/pages/DefaultPage";
 import WorkoutSetItem from "./WorkoutSetItem";
 
 import { globalStyles } from "@/constants/styles";
-import { Exercise, Workout, WorkoutSetUncompressed } from "@/constants/types";
 
 import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
+
+import { useWorkoutBuilder } from "@/hooks/services/useWorkoutBuilder";
 import exerciseProvider from "@/services/providers/ExerciseProvider";
+import { router } from "expo-router";
 
 type WorkoutBuilderComponentProps = {
-  id?: string; // if given, we are editing an existing workout
-  onSave: (workout: Workout) => void;
-  onAddExercise: () => void; // when user clicks new set button
+  workoutBuilder: WorkoutBuilder;
 };
 
 export default function WorkoutBuilderComponent({
-  id,
-  onSave,
-  onAddExercise,
+  workoutBuilder,
 }: WorkoutBuilderComponentProps) {
-  const workout = useMemo(() => new WorkoutBuilder(id), [id]);
-  const [workoutSets, setWorkoutSets] = useState<WorkoutSetUncompressed[]>(
-    workout.workout.sets,
-  );
+  // this reactively updates our workout sets
+  const workoutSets = useWorkoutBuilder(workoutBuilder);
 
-  function handleAddExercise(i: number) {
-    onAddExercise();
-    exerciseProvider.subscribe(i, (exercise: Exercise) => {
-      workout.addExercise(exercise.id, i); 
-      exerciseProvider.unsubscribe(i);
+  // TODO: handle more complex set nodes
+  function handleAddExercise(i?: number) {
+    router.navigate("/workouts/builder/exercises");
+
+    // on exercise selection, add to workout at the correct index
+    const unsubscribe = exerciseProvider.subscribe((exercise) => {
+      workoutBuilder.addExercise(exercise.id, i);
+      unsubscribe();
     });
   }
 
-  // PERF: this could use some optimization
-  useEffect(() => {
-    function updateWorkoutSets(set: WorkoutSetUncompressed[]) {
-      setWorkoutSets(set);
-    }
-
-    // subscribe for updates in case we want to remove sets
-    workout.subscribe("workoutBuilder", updateWorkoutSets);
-
-    return () => {
-      workout.unsubscribe("workoutBuilder");
-
-      // ensure we unsubscribe from all exercise providers
-      for (let i = 0; i < workout.setsLength; i++) {
-        exerciseProvider.unsubscribe(i);
-      }
-    }
-  }, [workout]);
-
   // save to storage
   function saveWorkout() {
-    if (!workout.name) {
+    if (!workoutBuilder.name || workoutBuilder.name === "") {
       Alert.alert(
         "Invalid Workout Name",
         "Please enter a name for the workout.",
       );
       return;
     }
-
-    const savedWorkout: Workout = workout.saveWorkout();
-    onSave(savedWorkout);
+    
+    workoutBuilder.saveWorkout();
+    router.back();
   }
 
   return (
@@ -75,8 +54,8 @@ export default function WorkoutBuilderComponent({
         <TextInput
           title="Workout Name"
           placeholder="Workout Name"
-          defaultValue={workout.name}
-          onChangeText={workout.updateName.bind(workout)}
+          defaultValue={workoutBuilder.name}
+          onChangeText={(text) => workoutBuilder.name = text}
         />
         <View style={globalStyles.scrollContainer}>
           <FlatList
@@ -86,13 +65,15 @@ export default function WorkoutBuilderComponent({
               <WorkoutSetItem
                 key={index}
                 item={item}
-                onDelete={workout.removeWorkoutSet.bind(workout, index)}
+                onSetChange={(set) => workoutBuilder.updateWorkoutSet(index, set)}
+                onSwap={() => handleAddExercise(index)}
+                onDelete={() => workoutBuilder.removeWorkoutSet(index)}
               />
             )}
             ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
             ListFooterComponent={() => (
               <View style={{ paddingVertical: 8 }}>
-                <Button label="Add Exercise" theme="primary" onPress={() => handleAddExercise(workout.setsLength)} />
+                <Button label="Add Exercise" theme="primary" onPress={() => handleAddExercise()} />
               </View>
             )}
           />

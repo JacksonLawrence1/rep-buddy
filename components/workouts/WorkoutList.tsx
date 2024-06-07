@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { FlatList, View } from "react-native";
+import { useMemo } from "react";
 
 import WorkoutItem from "@/components/workouts/WorkoutItem";
 
@@ -9,35 +9,31 @@ import { globalStyles } from "@/constants/styles";
 import workoutService from "@/services/storage/WorkoutService";
 
 interface WorkoutListProps {
-  callerId: string; // to identify page requesting updates from service
+  workouts: Workout[];
+  filter?: string;
+  onPress?: (workout: Workout) => void; // when item is pressed
   onEdit?: (workout: Workout) => void; // if we should have an edit button on the popout menu
 }
 
-export default function WorkoutList({ callerId, onEdit }: WorkoutListProps) {
-  const [workouts, setWorkouts] = useState(workoutService.dataAsArray);
-
-  // TODO: confirmation dialog before deleting
+export default function WorkoutList({ workouts, filter, onPress, onEdit }: WorkoutListProps) {
   function onDelete(workout: Workout) {
     workoutService.deleteData(workout.id);
   }
 
-  useEffect(() => {
-    const handleItemPress = (data: Map<string, Workout>) =>
-      setWorkouts(Array.from(data.values()));
-
-    workoutService.subscribe(callerId, handleItemPress);
-    return () => workoutService.unsubscribe(callerId);
-  }, [callerId]);
+  const filtered = useMemo(() => {
+    return workouts.filter((workout) => workout.name.toLowerCase().includes(filter?.toLowerCase() || ""));
+  }, [workouts, filter]);
 
   return (
     <View style={globalStyles.scrollContainer}>
       <FlatList
-        data={workouts}
+        data={filtered}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
           <WorkoutItem
             key={index}
             workout={item}
+            onPress={onPress && (() => onPress(item))}
             onDelete={() => onDelete(item)}
             onEdit={onEdit && (() => onEdit(item))}
           />

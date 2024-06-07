@@ -2,9 +2,6 @@ import ExercisePicker from "@/components/exercises/ExercisePicker";
 import { Exercise } from "@/constants/types";
 import { resetState } from "@/hooks/useModal";
 import { router, useNavigation } from "expo-router";
-import { MenuProvider } from "react-native-popup-menu";
-
-const callerId: string = "exercisesPage";
 
 // In this route, functions we perform on the exercises are defined here
 
@@ -28,12 +25,11 @@ export function onEdit(exercise: Exercise) {
 }
 
 export default function Exercises() {
-  // on refresh back buttons still work
+  // navigation state on reload: index -> here
   resetState(useNavigation(), ["index"]);
 
   return (
     <ExercisePicker
-      callerId={callerId}
       onAdd={onNewExercise}
       onEdit={onEdit}
     />

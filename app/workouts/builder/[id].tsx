@@ -1,24 +1,18 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
 
 import WorkoutBuilderComponent from "@/components/workouts/WorkoutBuilderComponent";
+import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
 
-import { onSave, onAddExercise } from "./new";
 import { resetState } from "@/hooks/useModal";
 
 export default function NewWorkout() {
-  // include id, as opposed to new
-  const { id } = useLocalSearchParams<{
-    id: string;
-  }>();
+  resetState(useNavigation(), ["index", "workouts"]);
 
-  resetState(useNavigation(), ["index", "workouts"])
+  // include id, as opposed to new
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  const workoutBuilder = new WorkoutBuilder(id);
 
   // no id given for workout, representing workout from scratch
-  return (
-    <WorkoutBuilderComponent
-      id={id}
-      onSave={onSave}
-      onAddExercise={onAddExercise}
-    />
-  );
+  return <WorkoutBuilderComponent workoutBuilder={workoutBuilder} />;
 }

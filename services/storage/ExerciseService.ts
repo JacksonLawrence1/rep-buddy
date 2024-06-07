@@ -9,7 +9,11 @@ class ExerciseService extends StorageService<Exercise> {
   }
 
   getExercise(id: string): Exercise | undefined {
-    return this.getData(id);
+    return this.getItem(id);
+  }
+
+  getExercises(): Exercise[] {
+    return this.dataAsArray;
   }
 
   async addExercise(exercises: Exercise | Exercise[]): Promise<void> {
@@ -41,3 +45,4 @@ if (exerciseService.size === 0) {
 }
 
 export default exerciseService;
+

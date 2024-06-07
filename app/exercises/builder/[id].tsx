@@ -9,6 +9,7 @@ export default function EditExerciseWithId() {
   useModal();
 
   const { id } = useLocalSearchParams<{id: string}>();
+
   return <ExerciseBuilderComponent id={id} onSave={onSave} />;
 }
 

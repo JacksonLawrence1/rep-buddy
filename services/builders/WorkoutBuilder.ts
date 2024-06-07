@@ -1,5 +1,6 @@
 import {
   Workout,
+  WorkoutSet,
   WorkoutSetUncompressed,
   WorkoutUncompressed,
 } from "@/constants/types";
@@ -8,7 +9,9 @@ import workoutService from "@/services/storage/WorkoutService";
 import exerciseService from "@/services/storage/ExerciseService";
 import { Service } from "../Service";
 
-class WorkoutBuilder extends Service<WorkoutSetUncompressed[]> {
+type WorkoutSetIndexObject = number | [number, number] | undefined;
+
+class WorkoutBuilder extends Service {
   workout: WorkoutUncompressed;
 
   constructor(id?: string) {
@@ -39,69 +42,88 @@ class WorkoutBuilder extends Service<WorkoutSetUncompressed[]> {
     return this.workout.name;
   }
 
-  get setsLength(): number {
-    return this.workout.sets.length;
-  }
-
-  updateName(name: string): void {
+  set name(name: string) {
     this.workout.name = name;
   }
 
+  get length(): number {
+    return this.workout.sets.length;
+  }
+
+  private addWorkoutSet(set: WorkoutSetUncompressed, i: number): void {
+    // places the set at the index, or at the end if i is the length
+    // NOTE: must be done like this to trigger reactivity
+    this.workout.sets = this.workout.sets.toSpliced(i, 0, set);
+    this.notify();
+  }
+
   // if i exists, then we are replacing it, but not replacing its sets
-  addExercise(exerciseId: string, i: number): void {
+  // might be good to implement some unit tests for this
+  addExercise(exerciseId: string, i: WorkoutSetIndexObject): void {
     const exercise = exerciseService.getExercise(exerciseId);
 
     if (!exercise) {
       throw new Error(`Exercise with id ${exerciseId} not found`);
     }
-
-    // make sure don't lose the sets if overwriting
-    let sets: number = 1;
-    if (this.workout.sets[i]) { // we are overwriting, so use their sets
-      sets = this.workout.sets[i].sets;
+  
+    // add to the end if we didn't pass in an index
+    if (i === undefined) {
+      this.addWorkoutSet({exercise: exercise, sets: 1}, this.length);
+      return;
     }
 
-    this.addWorkoutSet({exercise: exercise, sets: sets}, i);
-  }
-
-  addWorkoutSet(set: WorkoutSetUncompressed, i: number): void {
-    // places the set at the index, or at the end if i is the length
-    // NOTE: must be done like this to trigger reactivity
-    this.workout.sets = [...this.workout.sets.slice(0, i), set, ...this.workout.sets.slice(i + 1)];
-    this.notify(this.workout.sets);
+    if (typeof i === "number") {
+      // if the exercise already exists, make sure we use its sets
+      const sets: number = this.workout.sets[i]?.sets || 1;
+      this.addWorkoutSet({exercise: exercise, sets: sets}, i);
+      return;
+    }
+    
+    // TODO: when we want pass in a more complex index (i.e. editing a choice or superset)
+    throw new Error("Not implemented " + i.toString());
   }
 
   removeWorkoutSet(i: number): void {
-    this.workout.sets = [...this.workout.sets.slice(0, i), ...this.workout.sets.slice(i + 1)]
-    this.notify(this.workout.sets);
+    this.workout.sets = this.workout.sets.toSpliced(i, 1);
+    this.notify();
+  }
+
+  // for a given index, update the sets
+  updateWorkoutSet(i: WorkoutSetIndexObject, sets: number): void {
+    if (typeof i !== "number") {
+      throw new Error("Invalid index given" + (i || "undefined").toString());
+    }
+
+    if (i < 0 || i >= this.length) {
+      throw new Error("Index out of bounds: " + i.toString());
+    }
+
+    // we don't need to notify, as the ui should be updating itself 
+    this.workout.sets[i].sets = sets;
   }
   
   // returns the saved workout if needed
   saveWorkout(): Workout {
-    if (!this.name) {
-      throw new Error("No name for the workout.");
+    if (this.name === "") {
+      // this should never happen, as we're already doing a check in the ui
+      throw new Error("Name given to workout was empty.");
     } 
-
+    
     // TODO: id generation
     if (!this.id) {
       this.workout.id = this.name;
     }
 
+    // compress so it takes less space in storage
     const workout: Workout = WorkoutBuilder.compressWorkout(this.workout);
+
+    // adds/overwrites this workout to storage 
     workoutService.addWorkout(workout);
     return workout;
   }
 
   static uncompressWorkout(workout: Workout): WorkoutUncompressed {
-    const unpackedSets: WorkoutSetUncompressed[] = workout.sets.map((set) => {
-      const exercise = exerciseService.getExercise(set.id);
-
-      if (!exercise) {
-        throw new Error(`Exercise with id ${set.id} not found`);
-      }
-
-      return {exercise: exercise, sets: set.sets};
-    });
+    const unpackedSets: WorkoutSetUncompressed[] = WorkoutBuilder.uncompressSets(workout.sets);
 
     return {
       id: workout.id,
@@ -110,16 +132,32 @@ class WorkoutBuilder extends Service<WorkoutSetUncompressed[]> {
     } as WorkoutUncompressed;
   }
 
+  static uncompressSets(sets: WorkoutSet[]): WorkoutSetUncompressed[] {
+    return sets.map((set) => {
+      const exercise = exerciseService.getExercise(set.id);
+
+      if (!exercise) {
+        throw new Error(`Exercise with id ${set.id} not found`);
+      }
+
+      return {exercise: exercise, sets: set.sets};
+    });
+  }
+
+  static compressSets(sets: WorkoutSetUncompressed[]): WorkoutSet[] {
+    return sets.map((set) => {
+      return {
+        id: set.exercise.id,
+        sets: set.sets,
+      };
+    });
+  }
+
   static compressWorkout(workout: WorkoutUncompressed): Workout {
     return {
       id: workout.id,
       name: workout.name,
-      sets: workout.sets.map((set) => {
-        return {
-          id: set.exercise.id,
-          sets: set.sets,
-        };
-      }),
+      sets: WorkoutBuilder.compressSets(workout.sets),
     } as Workout;
   }
 }
