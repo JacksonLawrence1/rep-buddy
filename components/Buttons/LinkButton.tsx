@@ -9,7 +9,7 @@ interface LinkButtonProps extends ButtonProps {
   extra?: { [key: string]: string };
 }
 
-export default function Button({ href, replace = false, extra, ...buttonProps }: LinkButtonProps) {
+export default function LinkButton({ href, replace = false, extra, ...buttonProps }: LinkButtonProps) {
   return (
       <Link replace={replace} href={href} style={styles.buttonContainer} asChild>
           <BaseButton {...buttonProps} />

@@ -31,6 +31,10 @@ export abstract class StorageService<T extends StorageItem> extends Service {
     return this.cache.get(id);
   }
 
+  exists(id: string): boolean {
+    return this.cache.has(id);
+  }
+
   // get updated data from device storage
   // make sure you call this on startup
   async syncCache(): Promise<void> {

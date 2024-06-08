@@ -8,8 +8,14 @@ class ExerciseService extends StorageService<Exercise> {
     super("exercises");
   }
 
-  getExercise(id: string): Exercise | undefined {
-    return this.getItem(id);
+  getExercise(id: string): Exercise {
+    const exercise: Exercise | undefined = this.getItem(id);
+
+    if (!exercise) {
+      throw new Error(`No exercise found with id: ${id}`);
+    }
+
+    return exercise;
   }
 
   getExercises(): Exercise[] {

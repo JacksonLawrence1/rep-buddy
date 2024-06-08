@@ -14,6 +14,6 @@ export const colors = {
     warning: '#FFA500',
     success: '#2DAC00',
     greenTint: '#509937',
-    border: '#DADADA',
+    border: '#787878',
     textDark: '#898989',
 };

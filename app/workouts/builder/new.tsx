@@ -10,7 +10,7 @@ export default function NewWorkout() {
   resetState(useNavigation(), ["index", "workouts"])
 
   // object representing the workout we're creating
-  // we don't need any state changes so we declare it here
+  // we don't need any state changes on this component, so we declare it here
   const workoutBuilder = new WorkoutBuilder();
 
   // no id given for workout, representing workout from scratch

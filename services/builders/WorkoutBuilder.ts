@@ -1,8 +1,8 @@
 import {
   Workout,
+  WorkoutCompressed,
   WorkoutSet,
-  WorkoutSetUncompressed,
-  WorkoutUncompressed,
+  WorkoutSetCompressed,
 } from "@/constants/types";
 
 import workoutService from "@/services/storage/WorkoutService";
@@ -12,7 +12,7 @@ import { Service } from "../Service";
 type WorkoutSetIndexObject = number | [number, number] | undefined;
 
 class WorkoutBuilder extends Service {
-  workout: WorkoutUncompressed;
+  workout: Workout;
 
   constructor(id?: string) {
     super();
@@ -50,7 +50,7 @@ class WorkoutBuilder extends Service {
     return this.workout.sets.length;
   }
 
-  private addWorkoutSet(set: WorkoutSetUncompressed, i: number): void {
+  private addWorkoutSet(set: WorkoutSet, i: number): void {
     // places the set at the index, or at the end if i is the length
     // NOTE: must be done like this to trigger reactivity
     this.workout.sets = this.workout.sets.toSpliced(i, 0, set);
@@ -103,7 +103,7 @@ class WorkoutBuilder extends Service {
   }
   
   // returns the saved workout if needed
-  saveWorkout(): Workout {
+  saveWorkout(): WorkoutCompressed {
     if (this.name === "") {
       // this should never happen, as we're already doing a check in the ui
       throw new Error("Name given to workout was empty.");
@@ -115,24 +115,24 @@ class WorkoutBuilder extends Service {
     }
 
     // compress so it takes less space in storage
-    const workout: Workout = WorkoutBuilder.compressWorkout(this.workout);
+    const workout: WorkoutCompressed = WorkoutBuilder.compressWorkout(this.workout);
 
     // adds/overwrites this workout to storage 
     workoutService.addWorkout(workout);
     return workout;
   }
 
-  static uncompressWorkout(workout: Workout): WorkoutUncompressed {
-    const unpackedSets: WorkoutSetUncompressed[] = WorkoutBuilder.uncompressSets(workout.sets);
+  static uncompressWorkout(workout: WorkoutCompressed): Workout {
+    const unpackedSets: WorkoutSet[] = WorkoutBuilder.uncompressSets(workout.sets);
 
     return {
       id: workout.id,
       name: workout.name,
       sets: unpackedSets,
-    } as WorkoutUncompressed;
+    } as Workout;
   }
 
-  static uncompressSets(sets: WorkoutSet[]): WorkoutSetUncompressed[] {
+  static uncompressSets(sets: WorkoutSetCompressed[]): WorkoutSet[] {
     return sets.map((set) => {
       const exercise = exerciseService.getExercise(set.id);
 
@@ -144,7 +144,7 @@ class WorkoutBuilder extends Service {
     });
   }
 
-  static compressSets(sets: WorkoutSetUncompressed[]): WorkoutSet[] {
+  static compressSets(sets: WorkoutSet[]): WorkoutSetCompressed[] {
     return sets.map((set) => {
       return {
         id: set.exercise.id,
@@ -153,12 +153,12 @@ class WorkoutBuilder extends Service {
     });
   }
 
-  static compressWorkout(workout: WorkoutUncompressed): Workout {
+  static compressWorkout(workout: Workout): WorkoutCompressed {
     return {
       id: workout.id,
       name: workout.name,
       sets: WorkoutBuilder.compressSets(workout.sets),
-    } as Workout;
+    } as WorkoutCompressed;
   }
 }
 
