@@ -5,7 +5,7 @@ import { FlatList } from "react-native-gesture-handler";
 
 import { colors } from "@/constants/colors";
 import { LogSet } from "@/constants/types";
-import LogBuilder, { WorkoutLogContext } from "@/services/builders/LogBuilder";
+import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
 import { useContext } from "react";
 import settings from "@/constants/settings";
 
@@ -59,7 +59,7 @@ function SetItem({ log, i, j, reps, weight }: SetItemProps) {
 }
 
 export default function LogExerciseSetItem({ i }: WorkoutLogSetItemProps) {
-  const log: LogBuilder | null = useContext(WorkoutLogContext);
+  const log: LogBuilder | null = useContext(LogContext);
 
   if (!log) return null;
 

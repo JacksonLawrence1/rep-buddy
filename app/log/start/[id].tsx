@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import DefaultPage from "@/components/pages/DefaultPage";
 import Log from "@/components/log/Log";
 
-import LogBuilder, { WorkoutLogContext } from "@/services/builders/LogBuilder";
+import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
 
 import { Text } from "react-native";
 
@@ -21,8 +21,8 @@ export default function StartWorkout() {
   const log: LogBuilder = new LogBuilder(id);
 
   return (
-    <WorkoutLogContext.Provider value={log}>
+    <LogContext.Provider value={log}>
       <Log log={log} />
-    </WorkoutLogContext.Provider>
+    </LogContext.Provider>
   );
 }

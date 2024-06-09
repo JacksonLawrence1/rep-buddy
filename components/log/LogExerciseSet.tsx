@@ -9,7 +9,7 @@ import { Delete, GenericMenuOption } from "@/components/primitives/PopoutMenus";
 import { colors } from "@/constants/colors";
 import { LogExerciseSet as LogExerciseSetType } from "@/constants/types";
 
-import LogBuilder, { WorkoutLogContext } from "@/services/builders/LogBuilder";
+import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
 
 interface WorkoutExerciseProps {
   index: number,
@@ -18,7 +18,7 @@ interface WorkoutExerciseProps {
 }
 
 export default function LogExerciseSet({ index, exerciseSet, onSwap }: WorkoutExerciseProps) {
-  const log: LogBuilder | null = useContext(WorkoutLogContext);
+  const log: LogBuilder | null = useContext(LogContext);
 
   if (!log) return null;
 

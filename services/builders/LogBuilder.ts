@@ -1,10 +1,10 @@
 import {
-    Exercise,
-    Log,
-    LogExerciseSet,
-    LogExerciseSetCompressed,
-    LogSet,
-    WorkoutCompressed,
+  Exercise,
+  Log,
+  LogExerciseSet,
+  LogExerciseSetCompressed,
+  LogSet,
+  WorkoutCompressed,
 } from "@/constants/types";
 import { Service } from "@/services/Service";
 import exerciseService from "../storage/ExerciseService";
@@ -21,7 +21,8 @@ export default class LogBuilder extends Service {
   constructor(id: string) {
     super();
 
-    const workout: WorkoutCompressed | undefined = workoutService.getWorkout(id);
+    const workout: WorkoutCompressed | undefined =
+      workoutService.getWorkout(id);
 
     if (!workout) {
       throw new Error(`No workout found with id: ${id}`);
@@ -36,23 +37,38 @@ export default class LogBuilder extends Service {
     this.sets = WorkoutBuilder.uncompressSets(workout.sets) // convert to full exercise data
       .map((set) => ({
         exercise: set.exercise,
-        sets: Array.from({length: set.sets}, () => ({ reps: null, weight: null })),
+        sets: Array.from({ length: set.sets }, () => ({
+          reps: null,
+          weight: null,
+        })),
         isComplete: false,
-      })); 
+      }));
 
     // TODO: store that we've started a workout in storage, with the date
     // if we lost the state, we can then recover it
   }
 
-  private setDates(): void {
-  }
+  private setDates(): void {}
 
   get isComplete(): boolean {
     return this.sets.every((set) => set.isComplete);
   }
 
-  get duration(): number {
+  get durationNum(): number {
     return Date.now() - this.date.getTime();
+  }
+
+  get duration(): string {
+    const duration: number = this.durationNum;
+
+    // format to hh:mm:ss, as a string
+    const time: [number, number, number] = [
+      Math.floor(duration / 3600000),
+      Math.floor((duration % 3600000) / 60000),
+      Math.floor((duration % 60000) / 1000),
+    ];
+    
+    return time.map((t) => (t < 10 ? `0${t}` : t)).join(":");
   }
 
   addSet(i: number): void {
@@ -147,22 +163,22 @@ export default class LogBuilder extends Service {
     if (!this.isComplete) {
       throw new Error("Workout log is not complete");
     }
-    
+
     const log: Log = {
       id: this.id,
       date: this.date.toISOString(),
-      duration: this.duration,
+      duration: this.durationNum,
       sets: LogBuilder.compressSets(this.sets),
-    }
+    };
 
     // TODO: save to storage
     // workoutLogService.addWorkoutLog(log);
-    
+
     return log;
   }
 
   static compressSets(exercises: LogExerciseSet[]): LogExerciseSetCompressed[] {
-    const compressed: LogExerciseSetCompressed[] = []; 
+    const compressed: LogExerciseSetCompressed[] = [];
 
     for (const exerciseSet of exercises) {
       const completeSets: LogSet[] = [];
@@ -173,7 +189,7 @@ export default class LogBuilder extends Service {
           completeSets.push(set as LogSet);
         }
       }
-      
+
       // only include if there is at least one complete set
       if (completeSets.length > 0) {
         compressed.push({
@@ -187,4 +203,4 @@ export default class LogBuilder extends Service {
   }
 }
 
-export const WorkoutLogContext = createContext<LogBuilder | null>(null);
+export const LogContext = createContext<LogBuilder | null>(null);
