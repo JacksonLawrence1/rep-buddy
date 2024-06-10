@@ -46,6 +46,10 @@ class WorkoutBuilder extends Service {
     this.workout.name = name;
   }
 
+  nameExists(name: string): boolean {
+    return workoutService.nameExists(name);
+  }
+
   get length(): number {
     return this.workout.sets.length;
   }
@@ -108,11 +112,13 @@ class WorkoutBuilder extends Service {
       // this should never happen, as we're already doing a check in the ui
       throw new Error("Name given to workout was empty.");
     } 
-    
-    // TODO: id generation
-    if (!this.id) {
-      this.workout.id = this.name;
+
+    if (this.workout.id) {
+      workoutService.deleteData(this.workout.id);
     }
+
+    const id: string = workoutService.generateId(this.name);
+    this.workout.id = id;
 
     // compress so it takes less space in storage
     const workout: WorkoutCompressed = WorkoutBuilder.compressWorkout(this.workout);

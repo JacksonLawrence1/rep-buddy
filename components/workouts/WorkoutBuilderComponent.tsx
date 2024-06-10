@@ -36,6 +36,14 @@ export default function WorkoutBuilderComponent({
 
   // save to storage
   function saveWorkout() {
+    if (workoutBuilder.nameExists(workoutBuilder.name)) {
+      Alert.alert(
+        "Duplicate Workout Name",
+        "A workout with this name already exists.",
+      );
+      return;
+    }
+
     if (!workoutBuilder.name || workoutBuilder.name === "") {
       Alert.alert(
         "Invalid Workout Name",

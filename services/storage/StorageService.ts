@@ -35,6 +35,15 @@ export abstract class StorageService<T extends StorageItem> extends Service {
     return this.cache.has(id);
   }
 
+  nameExists(name: string): boolean {
+    const id = this.generateId(name);
+    return this.exists(id);
+  }
+
+  generateId(name: string): string {
+    return name.toLowerCase().replace(/\s/g, "_");
+  }
+
   // get updated data from device storage
   // make sure you call this on startup
   async syncCache(): Promise<void> {
@@ -54,8 +63,6 @@ export abstract class StorageService<T extends StorageItem> extends Service {
     this.notify();
   }
 
-
-  // TODO: add a check if data already exists
   protected async addData(data: T | T[]): Promise<void> {
     if (Array.isArray(data)) {
       data.forEach((item) => {

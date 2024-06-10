@@ -21,6 +21,14 @@ export default function ExerciseBuilderComponent({ id, onSave }: ExerciseBuilder
   const exercise = new ExerciseBuilder(id);
 
   async function saveExercise() {
+    if (exercise.nameExists(exercise.name)) {
+      Alert.alert(
+        "Duplicate Exercise Name",
+        "An exercise with this name already exists.",
+      );
+      return;
+    }
+
     // prevent saving if no exercise name (but allow no muscle groups)
     if (!exercise.name || exercise.name === "") {
       Alert.alert(
@@ -40,7 +48,7 @@ export default function ExerciseBuilderComponent({ id, onSave }: ExerciseBuilder
         <TextInput
           title={"Exercise Name"}
           placeholder="Enter exercise name"
-          onChangeText={exercise.updateName.bind(exercise)}
+          onChangeText={(text) => exercise.name = text}
           defaultValue={exercise.name}
         />
         <View style={globalStyles.scrollContainer}>

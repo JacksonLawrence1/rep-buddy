@@ -3,7 +3,7 @@ import { MuscleGroup } from "@/constants/enums/muscleGroups";
 
 import exerciseService from "@/services/storage/ExerciseService";
 
-class ExerciseBuilder {
+export default class ExerciseBuilder {
   exercise: Exercise;
 
   constructor(id?: string) {
@@ -27,6 +27,10 @@ class ExerciseBuilder {
   get name(): string {
     return this.exercise.name;
   }
+  
+  set name(name: string) {
+    this.updateName(name);
+  }
 
   get id(): string {
     return this.exercise.id;
@@ -34,6 +38,15 @@ class ExerciseBuilder {
 
   get muscleGroups(): Set<MuscleGroup> {
     return this.exercise.muscleGroups;
+  }
+
+  // delete this after testing
+  set muscleGroups(muscleGroups: Set<MuscleGroup>) {
+    this.exercise.muscleGroups = muscleGroups;
+  }
+
+  nameExists(name: string): boolean {
+    return exerciseService.nameExists(name);
   }
 
   updateName(name: string): void {
@@ -53,18 +66,18 @@ class ExerciseBuilder {
   }
   
   saveExercise(): Exercise { // returns the saved exercise
-    if (!this.name) {
+    if (!this.name || this.name === "") {
       throw new Error("No name for the workout.");
     } 
 
-    // TODO: replace with proper id generation
-    if (!this.id || this.id === "") {
-      this.exercise.id = this.name;
-    }
+    // if we change the name, id changes so delete the old one
+    exerciseService.deleteData(this.id);
+  
+    const id: string = exerciseService.generateId(this.name);
 
     // create the exercise
     const exercise: Exercise = {
-      id: this.id,
+      id: id, 
       name: this.name,
       muscleGroups: this.muscleGroups,
     };
@@ -75,4 +88,19 @@ class ExerciseBuilder {
   }
 }
 
-export default ExerciseBuilder;
+const baseExercises = [
+  { name: "Military Press", muscleGroups: new Set([MuscleGroup.SHOULDERS]) },
+  { name: "Barbell Bench Press", muscleGroups: new Set([MuscleGroup.CHEST]) },
+  { name: "Overhead Press", muscleGroups: new Set([MuscleGroup.SHOULDERS]) },
+  { name: "Deadlift", muscleGroups: new Set([MuscleGroup.BACK]) },
+  { name: "Barbell Squat", muscleGroups: new Set([MuscleGroup.LEGS]) },
+  { name: "Dumbbell Curls", muscleGroups: new Set([MuscleGroup.BICEPS]) },
+];
+
+// TODO: remove when done testing
+for (const exercise of baseExercises) {
+  const builder: ExerciseBuilder = new ExerciseBuilder();
+  builder.name = exercise.name;
+  builder.muscleGroups = exercise.muscleGroups;
+  builder.saveExercise();
+}
