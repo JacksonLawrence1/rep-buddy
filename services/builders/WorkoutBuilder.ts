@@ -160,12 +160,16 @@ class WorkoutBuilder extends Service {
   }
 
   static compressWorkout(workout: Workout): WorkoutCompressed {
-    return {
+    const compressed = {
       id: workout.id,
       name: workout.name,
       sets: WorkoutBuilder.compressSets(workout.sets),
     } as WorkoutCompressed;
+
+    return compressed;
   }
 }
 
 export default WorkoutBuilder;
+
+

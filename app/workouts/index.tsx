@@ -1,6 +1,6 @@
 import { router, useNavigation } from "expo-router";
 
-import { Workout } from "@/constants/types";
+import { WorkoutCompressed } from "@/constants/types";
 import { resetState } from "@/hooks/useModal";
 
 import WorkoutPicker from "@/components/workouts/WorkoutPicker";
@@ -13,7 +13,7 @@ export default function Workouts() {
     router.navigate("/workouts/builder/new");
   }
 
-  function onEdit(workout: Workout) {
+  function onEdit(workout: WorkoutCompressed) {
     router.navigate({
       pathname: "/workouts/builder/[id]",
       params: { id: workout.id },

@@ -70,8 +70,6 @@ export default class ExerciseBuilder {
       throw new Error("No name for the workout.");
     } 
 
-    // if we change the name, id changes so delete the old one
-    exerciseService.deleteData(this.id);
   
     const id: string = exerciseService.generateId(this.name);
 
@@ -88,19 +86,3 @@ export default class ExerciseBuilder {
   }
 }
 
-const baseExercises = [
-  { name: "Military Press", muscleGroups: new Set([MuscleGroup.SHOULDERS]) },
-  { name: "Barbell Bench Press", muscleGroups: new Set([MuscleGroup.CHEST]) },
-  { name: "Overhead Press", muscleGroups: new Set([MuscleGroup.SHOULDERS]) },
-  { name: "Deadlift", muscleGroups: new Set([MuscleGroup.BACK]) },
-  { name: "Barbell Squat", muscleGroups: new Set([MuscleGroup.LEGS]) },
-  { name: "Dumbbell Curls", muscleGroups: new Set([MuscleGroup.BICEPS]) },
-];
-
-// TODO: remove when done testing
-for (const exercise of baseExercises) {
-  const builder: ExerciseBuilder = new ExerciseBuilder();
-  builder.name = exercise.name;
-  builder.muscleGroups = exercise.muscleGroups;
-  builder.saveExercise();
-}

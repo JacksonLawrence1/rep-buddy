@@ -7,6 +7,7 @@ import { Exercise } from "@/constants/types";
 
 import exerciseProvider from "@/services/providers/ExerciseProvider";
 import { useExerciseService } from "@/hooks/services/useExerciseService";
+
 import { useState } from "react";
 
 interface ChooseExerciseProps {

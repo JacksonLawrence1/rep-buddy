@@ -3,20 +3,20 @@ import { useMemo } from "react";
 
 import WorkoutItem from "@/components/workouts/WorkoutItem";
 
-import { Workout } from "@/constants/types";
+import { WorkoutCompressed } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
 
 import workoutService from "@/services/storage/WorkoutService";
 
 interface WorkoutListProps {
-  workouts: Workout[];
+  workouts: WorkoutCompressed[];
   filter?: string;
-  onPress?: (workout: Workout) => void; // when item is pressed
-  onEdit?: (workout: Workout) => void; // if we should have an edit button on the popout menu
+  onPress?: (workout: WorkoutCompressed) => void; // when item is pressed
+  onEdit?: (workout: WorkoutCompressed) => void; // if we should have an edit button on the popout menu
 }
 
 export default function WorkoutList({ workouts, filter, onPress, onEdit }: WorkoutListProps) {
-  function onDelete(workout: Workout) {
+  function onDelete(workout: WorkoutCompressed) {
     workoutService.deleteData(workout.id);
   }
 

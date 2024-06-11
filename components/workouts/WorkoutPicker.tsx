@@ -3,16 +3,16 @@ import Searchbar from "@/components/inputs/Searchbar";
 import DefaultPage from "@/components/pages/DefaultPage";
 import Button from "@/components/buttons/Button";
 
-import { Workout } from "@/constants/types";
+import {  WorkoutCompressed } from "@/constants/types";
 
 import { useState } from "react";
 import { useWorkoutService } from "@/hooks/services/useWorkoutService";
 
 interface WorkoutPickerProps {
   title?: string;
-  onPress?: (workout: Workout) => void; // when a workout is selected
+  onPress?: (workout: WorkoutCompressed) => void; // when a workout is selected
   onAdd?: () => void; // when user clicks new workout button
-  onEdit?: (workout: Workout) => void; // when workout is edited
+  onEdit?: (workout: WorkoutCompressed) => void; // when workout is edited
   onExit?: () => void; // called when user exits the workout picker
 }
 
@@ -23,7 +23,7 @@ export default function WorkoutPicker({
   onEdit,
   onExit,
 }: WorkoutPickerProps) {
-  const workouts: Workout[] = useWorkoutService();
+  const workouts: WorkoutCompressed[] = useWorkoutService();
   const [filter, setFilter] = useState("");
 
   return (

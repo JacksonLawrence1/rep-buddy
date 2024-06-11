@@ -5,10 +5,10 @@ import ListItem from "@/components/primitives/ListItem";
 import { Delete, GenericMenuOption } from "@/components/primitives/PopoutMenus";
 
 import { colors } from "@/constants/colors";
-import { WorkoutSetUncompressed } from "@/constants/types";
+import { WorkoutSet } from "@/constants/types";
 
 interface WorkoutBaseProps {
-  item: WorkoutSetUncompressed;
+  item: WorkoutSet;
   onSetChange?: (sets: number) => void;
   onDelete?: () => void;
   onSwap?: () => void;

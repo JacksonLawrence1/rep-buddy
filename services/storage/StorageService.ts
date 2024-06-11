@@ -71,7 +71,7 @@ export abstract class StorageService<T extends StorageItem> extends Service {
     } else {
       this.cache.set(data.id, data);
     }
-
+    
     // ensure that device storage is updated
     this.syncStorage();
   }

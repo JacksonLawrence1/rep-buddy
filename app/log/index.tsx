@@ -3,13 +3,13 @@ import { router, useNavigation } from "expo-router";
 import WorkoutPicker from "@/components/workouts/WorkoutPicker";
 
 import { resetState } from "@/hooks/useModal";
-import { Workout } from "@/constants/types";
+import { WorkoutCompressed } from "@/constants/types";
 
 export default function Workouts() {
   // navigation state on reload: index -> here
   resetState(useNavigation(), ["index"]);
 
-  function onStartWorkout(workout: Workout) {
+  function onStartWorkout(workout: WorkoutCompressed) {
     // TODO: navigate to workout screen
     // add alert to confirm starting workout
     

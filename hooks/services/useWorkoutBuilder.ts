@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
-import { WorkoutSetUncompressed } from "@/constants/types";
+import { WorkoutSet } from "@/constants/types";
 
 
 export const useWorkoutBuilder = (workoutBuilder: WorkoutBuilder) => {
-  const [workoutSets, setWorkoutSets] = useState<WorkoutSetUncompressed[]>(
+  const [workoutSets, setWorkoutSets] = useState<WorkoutSet[]>(
     workoutBuilder.workout.sets,
   );
 

@@ -2,10 +2,10 @@ import ListItem from "@/components/primitives/ListItem";
 import { Edit, Delete } from "@/components/primitives/PopoutMenus";
 
 import { colors } from "@/constants/colors";
-import { Workout } from "@/constants/types";
+import { WorkoutCompressed } from "@/constants/types";
 
 interface WorkoutItemProps {
-  workout: Workout;
+  workout: WorkoutCompressed;
   onPress?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
