@@ -6,7 +6,6 @@ import {
 } from "@/constants/types";
 
 import workoutService from "@/services/storage/WorkoutService";
-import exerciseService from "@/services/storage/ExerciseService";
 import { Service } from "../Service";
 
 type WorkoutSetIndexObject = number | [number, number] | undefined;

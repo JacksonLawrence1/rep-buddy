@@ -7,14 +7,14 @@ class WorkoutService extends StorageService<WorkoutCompressed> {
   }
   
   getWorkout(id: string): WorkoutCompressed | undefined  {
-    return this.getItem(id);
+    return this.getData(id);
   }
 
   getWorkouts(): WorkoutCompressed[] {
     return this.dataAsArray;
   }
 
-  async addWorkout(workout: WorkoutCompressed | WorkoutCompressed[]): Promise<void> {
+  async addWorkout(workout: WorkoutCompressed): Promise<void> {
     this.addData(workout);
   }
 }

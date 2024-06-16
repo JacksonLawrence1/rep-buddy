@@ -6,9 +6,9 @@ import Button from "@/components/buttons/Button";
 import { Exercise } from "@/constants/types";
 
 import exerciseProvider from "@/services/providers/ExerciseProvider";
-import { useExerciseService } from "@/hooks/services/useExerciseService";
 
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 interface ChooseExerciseProps {
   title?: string;
@@ -16,6 +16,10 @@ interface ChooseExerciseProps {
   onAdd?: () => void; // called when user clicks new exercise button
   onEdit?: (exercise: Exercise) => void; // called when an exercise is edited
   onExit?: () => void; // called when user exits the exercise picker
+}
+
+interface RootState {
+  exercises: Exercise[];
 }
 
 export default function ExercisePicker({
@@ -33,7 +37,7 @@ export default function ExercisePicker({
       }
     : undefined;
 
-  const exercises: Exercise[] = useExerciseService();
+  const exercises = useSelector((state: RootState) => state.exercises);
   const [filter, setFilter] = useState("");
 
   return (

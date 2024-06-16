@@ -7,7 +7,6 @@ import {
   WorkoutCompressed,
 } from "@/constants/types";
 import { Service } from "@/services/Service";
-import exerciseService from "../storage/ExerciseService";
 import workoutService from "../storage/WorkoutService";
 import WorkoutBuilder from "./WorkoutBuilder";
 import { createContext } from "react";

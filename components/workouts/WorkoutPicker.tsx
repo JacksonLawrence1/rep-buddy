@@ -6,7 +6,6 @@ import Button from "@/components/buttons/Button";
 import {  WorkoutCompressed } from "@/constants/types";
 
 import { useState } from "react";
-import { useWorkoutService } from "@/hooks/services/useWorkoutService";
 
 interface WorkoutPickerProps {
   title?: string;
@@ -23,7 +22,6 @@ export default function WorkoutPicker({
   onEdit,
   onExit,
 }: WorkoutPickerProps) {
-  const workouts: WorkoutCompressed[] = useWorkoutService();
   const [filter, setFilter] = useState("");
 
   return (

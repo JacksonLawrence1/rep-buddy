@@ -9,7 +9,6 @@ import { globalStyles } from "@/constants/styles";
 
 import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
 
-import { useWorkoutBuilder } from "@/hooks/services/useWorkoutBuilder";
 import exerciseProvider from "@/services/providers/ExerciseProvider";
 import { router } from "expo-router";
 

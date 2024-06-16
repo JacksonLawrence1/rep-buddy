@@ -5,7 +5,9 @@ import ExerciseItem from "@/components/exercises/ExerciseItem";
 
 import { Exercise } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
-import exerciseService from "@/services/storage/ExerciseService";
+
+import { deleteExercise } from "@/features/exercises/Exercises";
+import { useDispatch } from "react-redux";
 
 interface ExerciseListProps {
   exercises: Exercise[];
@@ -21,12 +23,19 @@ export default function ExerciseList({
   onEdit,
 }: ExerciseListProps) {
 
+  const dispatch = useDispatch();
+
   function onDelete(exercise: Exercise) {
-    exerciseService.deleteData(exercise.id);
+    dispatch(deleteExercise(exercise.id));
   }
 
+  // TODO: maintain and sort the exercises based on the filter
   const filteredExercises: Exercise[] = useMemo(() => {
-    return exercises.filter((exercise) => exercise.name.toLowerCase().includes(filter?.toLowerCase() || ""));
+    return exercises
+      .filter((exercise) => exercise.name
+        .toLowerCase()
+        .includes(filter?.toLowerCase() || ""))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [exercises, filter]);
 
   return (

@@ -5,7 +5,7 @@ export type weightUnit = "kg" | "lbs";
 export type Exercise = {
   id: string;
   name: string;
-  muscleGroups: Set<MuscleGroup>;
+  muscleGroups: MuscleGroup[];
 };
 
 // store full exercise data in this workout set

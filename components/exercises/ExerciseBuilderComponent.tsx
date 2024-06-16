@@ -8,38 +8,30 @@ import TagEnum from "@/components/primitives/TagEnum";
 
 import { globalStyles } from "@/constants/styles";
 import { MuscleGroupValues } from "@/constants/enums/muscleGroups";
-import { Exercise } from "@/constants/types";
 
 import ExerciseBuilder from "@/services/builders/ExerciseBuilder";
+import { useDispatch } from "react-redux";
 
 interface ExerciseBuilderComponentProps {
   id?: string; // optionally pass in an id to edit an exercise
-  onSave: (exercise: Exercise) => void; // callback to save exercise
+  onSave: () => void; // callback to save exercise
 }
 
 export default function ExerciseBuilderComponent({ id, onSave }: ExerciseBuilderComponentProps) {
   const exercise = new ExerciseBuilder(id);
+  const dispatcher = useDispatch();
 
   async function saveExercise() {
-    if (exercise.nameExists(exercise.name)) {
-      Alert.alert(
-        "Duplicate Exercise Name",
-        "An exercise with this name already exists.",
-      );
+    // TODO: validation from the exercise builder
+
+    const error = exercise.saveExercise(dispatcher);
+
+    if (error) {
+      Alert.alert(error.title, error.message);
       return;
     }
 
-    // prevent saving if no exercise name (but allow no muscle groups)
-    if (!exercise.name || exercise.name === "") {
-      Alert.alert(
-        "Invalid Exercise Name",
-        "Please enter a name for the exercise.",
-      );
-      return;
-    }
-
-    const savedExercise: Exercise = exercise.saveExercise();
-    onSave(savedExercise);
+    onSave();
   }
 
   return (

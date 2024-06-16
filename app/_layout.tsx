@@ -10,9 +10,12 @@ import {
   Platform,
 } from "react-native";
 
-import { colors } from "@/constants/colors";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MenuProvider } from "react-native-popup-menu";
+import { Provider } from "react-redux";
+import store from "./store";
+
+import { colors } from "@/constants/colors";
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
@@ -38,36 +41,38 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView>
-      <TouchableWithoutFeedback
-        accessible={false}
-        onPress={backgroundPressHandler}
-      >
-        <MenuProvider style={styles.pageContainer}>
-          <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
+      <Provider store={store}>
+        <TouchableWithoutFeedback
+          accessible={false}
+          onPress={backgroundPressHandler}
+        >
+          <MenuProvider style={styles.pageContainer}>
+            <StatusBar style="light" />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
 
-            <Stack.Screen name="workouts/index" />
-            <Stack.Screen name="workouts/builder/new" />
-            <Stack.Screen name="workouts/builder/[id]" />
-            <Stack.Screen
-              name="workouts/builder/exercises"
-              options={{ presentation: "modal" }}
-            />
+              <Stack.Screen name="workouts/index" />
+              <Stack.Screen name="workouts/builder/new" />
+              <Stack.Screen name="workouts/builder/[id]" />
+              <Stack.Screen
+                name="workouts/builder/exercises"
+                options={{ presentation: "modal" }}
+              />
 
-            <Stack.Screen name="exercises/index" />
+              <Stack.Screen name="exercises/index" />
 
-            <Stack.Screen
-              name="exercises/builder/new"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="exercises/builder/[id]"
-              options={{ presentation: "modal" }}
-            />
-          </Stack>
-        </MenuProvider>
-      </TouchableWithoutFeedback>
+              <Stack.Screen
+                name="exercises/builder/new"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="exercises/builder/[id]"
+                options={{ presentation: "modal" }}
+              />
+            </Stack>
+          </MenuProvider>
+        </TouchableWithoutFeedback>
+      </Provider>
     </GestureHandlerRootView>
   );
 }

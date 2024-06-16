@@ -5,7 +5,7 @@ export interface StorageItem {
   id: string;
 };
 
-export abstract class StorageService<T extends StorageItem> extends Service {
+export class StorageService<T extends StorageItem> extends Service {
   private key: string;
   private cache: Map<string, T>;
 
@@ -27,7 +27,7 @@ export abstract class StorageService<T extends StorageItem> extends Service {
     return Array.from(this.cache.values());
   }
 
-  protected getItem(id: string): T | undefined {
+  getData(id: string): T | undefined {
     return this.cache.get(id);
   }
 
@@ -63,15 +63,10 @@ export abstract class StorageService<T extends StorageItem> extends Service {
     this.notify();
   }
 
-  protected async addData(data: T | T[]): Promise<void> {
-    if (Array.isArray(data)) {
-      data.forEach((item) => {
-        this.cache.set(item.id, item);
-      });
-    } else {
-      this.cache.set(data.id, data);
-    }
-    
+  async addData(data: T): Promise<void> {
+    // TODO: what to do if data already exists?
+    this.cache.set(data.id, data);
+
     // ensure that device storage is updated
     this.syncStorage();
   }

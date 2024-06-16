@@ -6,7 +6,6 @@ import Timer from "./Timer";
 
 import { globalStyles } from "@/constants/styles";
 
-import { useLogService } from "@/hooks/services/useLogService";
 import LogBuilder from "@/services/builders/LogBuilder";
 import Button from "../buttons/Button";
 import exerciseProvider from "@/services/providers/ExerciseProvider";

@@ -1,28 +1,29 @@
-import { colors } from "@/constants/colors";
+import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
-import LinkButton from "@/components/buttons/LinkButton";
 import Button from "@/components/buttons/Button";
+import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/pages/PageContainer";
-import { router } from "expo-router";
+
+import { colors } from "@/constants/colors";
 
 export default function Index() {
   return (
-    <PageContainer>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleTop}>EZ</Text>
-        <Text style={styles.titleBottom}>Workout Planner</Text>
-      </View>
-      <View style={styles.buttonsContainer}>
-        <Button height={64} onPress={() => router.navigate("/log")} label="Start Workout" theme="primary" />
-        <LinkButton height={64} href='/workouts' label="Workouts" icon={"plus"} />
-        <LinkButton height={64} href='/exercises' label="Exercises" icon={"dumbbell"} />
-        <LinkButton height={64} href='/history' label="History" icon={"history"} />
-      </View>
-      <View style={styles.footerContainer}>
-        <Text style={styles.footerText}>Version: 1.0.0</Text>
-      </View>
-    </PageContainer>
+      <PageContainer>
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleTop}>EZ</Text>
+          <Text style={styles.titleBottom}>Workout Planner</Text>
+        </View>
+        <View style={styles.buttonsContainer}>
+          <Button height={64} onPress={() => router.navigate("/log")} label="Start Workout" theme="primary" />
+          <LinkButton height={64} href='/workouts' label="Workouts" icon={"plus"} />
+          <LinkButton height={64} href='/exercises' label="Exercises" icon={"dumbbell"} />
+          <LinkButton height={64} href='/history' label="History" icon={"history"} />
+        </View>
+        <View style={styles.footerContainer}>
+          <Text style={styles.footerText}>Version: 1.0.0</Text>
+        </View>
+      </PageContainer>
   );
 }
 

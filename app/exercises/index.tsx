@@ -7,7 +7,7 @@ import { router, useNavigation } from "expo-router";
 
 // what we do once we click save on the exercise
 // you can use the exercise parameter if needed
-export function onSave(_: Exercise) {
+export function onSave() {
   router.back();
 }
 

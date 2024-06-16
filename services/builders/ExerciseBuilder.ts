@@ -1,56 +1,35 @@
-import { Exercise } from "@/constants/types";
 import { MuscleGroup } from "@/constants/enums/muscleGroups";
+import { Exercise } from "@/constants/types";
 
-import exerciseService from "@/services/storage/ExerciseService";
+import {
+  exerciseService,
+  deleteExercise,
+  addExercise,
+} from "@/features/exercises/Exercises";
+import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 
 export default class ExerciseBuilder {
-  exercise: Exercise;
+  id: string = "";
+  name: string = "";
+  muscleGroups: Set<MuscleGroup> = new Set(); // store as set for easy toggling
+  private replacing: boolean = false;
 
   constructor(id?: string) {
     if (id) {
-      const exercise: Exercise | undefined = exerciseService.getExercise(id);
+      const exercise: Exercise | undefined = exerciseService.getData(id);
 
       if (exercise) {
-        this.exercise = exercise;
+        this.id = exercise.id;
+        this.name = exercise.name;
+        this.muscleGroups = new Set(exercise.muscleGroups);
+        this.replacing = true;
         return;
-      } 
+      }
     }
-
-    // if no id or exercise found, create a new one
-    this.exercise = {
-      id: "",
-      name: "",
-      muscleGroups: new Set(),
-    };
-  }
-
-  get name(): string {
-    return this.exercise.name;
-  }
-  
-  set name(name: string) {
-    this.updateName(name);
-  }
-
-  get id(): string {
-    return this.exercise.id;
-  }
-
-  get muscleGroups(): Set<MuscleGroup> {
-    return this.exercise.muscleGroups;
-  }
-
-  // delete this after testing
-  set muscleGroups(muscleGroups: Set<MuscleGroup>) {
-    this.exercise.muscleGroups = muscleGroups;
-  }
-
-  nameExists(name: string): boolean {
-    return exerciseService.nameExists(name);
   }
 
   updateName(name: string): void {
-    this.exercise.name = name;
+    this.name = name;
   }
 
   hasMuscleGroup(muscleGroup: MuscleGroup): boolean {
@@ -64,25 +43,30 @@ export default class ExerciseBuilder {
       this.muscleGroups.add(muscleGroup);
     }
   }
-  
-  saveExercise(): Exercise { // returns the saved exercise
-    if (!this.name || this.name === "") {
-      throw new Error("No name for the workout.");
+
+  saveExercise(dispatcher: Dispatch<UnknownAction>): { title: string; message: string } | undefined {
+    if (!this.name) {
+      return { title: "Invalid Name", message: "Please enter an exercise name" };
     } 
 
-  
     const id: string = exerciseService.generateId(this.name);
+    const exists = exerciseService.getData(id);
+
+    if (exists !== undefined) {
+      if (!this.replacing) {
+        return { title: "Duplicate Name", message: "An exercise with that name already exists" };
+      }
+      dispatcher(deleteExercise(this.id));
+    }
 
     // create the exercise
     const exercise: Exercise = {
-      id: id, 
+      id: id,
       name: this.name,
-      muscleGroups: this.muscleGroups,
+      // convert set to array, as it is not serializable
+      muscleGroups: Array.from(this.muscleGroups).sort(),
     };
 
-    // will overwrite if already exists
-    exerciseService.addExercise(exercise);
-    return exercise;
+    dispatcher(addExercise(exercise));
   }
 }
-
