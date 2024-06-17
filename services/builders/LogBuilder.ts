@@ -10,14 +10,18 @@ import { exerciseService } from "@/features/exercises";
 import { workoutService } from "@/features/workouts";
 import { createContext } from "react";
 import WorkoutBuilder from "./WorkoutBuilder";
+import { Builder } from "./Builder";
+import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 
-export default class LogBuilder {
+export default class LogBuilder extends Builder {
   id: string;
   name: string;
   date: Date;
   sets: LogExerciseSet[];
 
   constructor(id: string) {
+    super();
+
     const workout: WorkoutCompressed | undefined =
       workoutService.getData(id);
 
@@ -68,18 +72,37 @@ export default class LogBuilder {
     return time.map((t) => (t < 10 ? `0${t}` : t)).join(":");
   }
 
+  updateState(): void {
+    if (this.setState) {
+      this.setState([...this.sets]);
+    }
+    this.updateStore();
+  }
+
+  updateStore(): void {
+    // TODO: update store in storage
+  }
+
   addSet(i: number): void {
     if (i < 0 || i >= this.sets.length) {
       throw new Error(`Index ${i} out of bounds`);
     }
 
     this.sets[i].sets.push({ reps: null, weight: null });
-    // update store in storage
+    this.updateState();
   }
 
-  removeExercise(i: number): void {
-    this.sets.splice(i, 1);
-    // update store in storage
+  removeSet(i: number, set: number) {
+    if (i < 0 || i >= this.sets.length) {
+      throw new Error(`Index ${i} out of bounds`);
+    }
+
+    if (set < 0 || set >= this.sets[i].sets.length) {
+      throw new Error(`Index ${set} out of bounds`);
+    }
+
+    this.sets[i].sets.splice(set, 1);
+    this.updateState();
   }
 
   addExercise(exercise: Exercise): void {
@@ -93,29 +116,30 @@ export default class LogBuilder {
       isComplete: false,
     });
 
-    // update store in storage
+    this.updateState();
   }
 
-  removeSet(i: number, set: number) {
-    if (i < 0 || i >= this.sets.length) {
-      throw new Error(`Index ${i} out of bounds`);
+  removeExercise(i: number): void {
+    this.sets.splice(i, 1);
+    this.updateState();
+  }
+
+  swapExercise(i: number, exercise: Exercise): void {
+    if (!exerciseService.exists(exercise.id)) {
+      throw new Error(`Exercise with id ${exercise.id} not found`);
     }
 
-    if (set < 0 || set >= this.sets[i].sets.length) {
-      throw new Error(`Index ${set} out of bounds`);
-    }
-
-    this.sets[i].sets.splice(set, 1);
-    // update store in storage
+    this.sets[i].exercise = exercise;
+    this.updateState();
   }
 
   updateSetReps(i: number, set: number, reps: string): void {
     if (isNaN(+reps)) {
       return;
-    }
+    } 
 
-    this.sets[i].sets[set].reps = +reps;
-    // update store in storage
+    this.sets[i].sets[set].reps = reps === "" ? null : +reps;
+    this.updateStore();
   }
 
   getSetReps(i: number, set: number): number | null {
@@ -127,8 +151,8 @@ export default class LogBuilder {
       return;
     }
 
-    this.sets[i].sets[set].weight = +weight;
-    // update store in storage
+    this.sets[i].sets[set].weight = weight === "" ? null : +weight;
+    this.updateStore();
   }
 
   getSetWeight(i: number, set: number): number | null {
@@ -139,17 +163,11 @@ export default class LogBuilder {
     this.sets[i].isComplete = true;
   }
 
-  swapExercises(i: number, exercise: Exercise): void {
-    if (!exerciseService.exists(exercise.id)) {
-      throw new Error(`Exercise with id ${exercise.id} not found`);
-    }
+  save(dispatcher: Dispatch<UnknownAction>): { title: string; message: string } | undefined {
 
-    this.sets[i].exercise = exercise;
-  }
-
-  save(): Log {
+    // TODO: allow saving incomplete workouts
     if (!this.isComplete) {
-      throw new Error("Workout log is not complete");
+      return { title: "Incomplete Workout", message: "Please complete all sets" };
     }
 
     const log: Log = {
@@ -160,9 +178,7 @@ export default class LogBuilder {
     };
 
     // TODO: save to storage
-    // workoutLogService.addWorkoutLog(log);
-
-    return log;
+    // dispatcher(workoutLogService.addWorkoutLog(log));
   }
 
   static compressSets(exercises: LogExerciseSet[]): LogExerciseSetCompressed[] {

@@ -14,7 +14,7 @@ export default function Workouts() {
     // add alert to confirm starting workout
     
     router.navigate({ 
-      pathname: "/log/start/[id]", 
+      pathname: "/log/[id]", 
       params: { id: workout.id } 
     });
   }

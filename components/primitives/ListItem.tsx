@@ -5,14 +5,14 @@ import { PopoutMenu, PopoutMenuOptions } from "@/components/primitives/PopoutMen
 interface ExerciseBaseProps {
   label: string;
   backgroundColor: (typeof colors)[keyof typeof colors]; // only allow colors from colors
-  size?: number;
+  height?: number;
   onPress?: () => void;
   popoutMenuOptions?: PopoutMenuOptions;
 }
 
-export default function ListItem({ label, backgroundColor, onPress, popoutMenuOptions }: ExerciseBaseProps) {
+export default function ListItem({ label, backgroundColor, height = 52, onPress, popoutMenuOptions }: ExerciseBaseProps) {
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor, height: height }]}>
       <Pressable style={styles.buttonContainer} disabled={onPress === undefined} onPress={onPress}>
         <View style={styles.textContainer}>
           <Text style={styles.text}>{label}</Text>
@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     borderRadius: 8,
-    height: 52, 
     width: "100%",
   },
   iconsContainer: {

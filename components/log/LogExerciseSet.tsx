@@ -2,14 +2,14 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useContext } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
+
 import LogExerciseSetItem from "@/components/log/LogExerciseSetItem";
 import ListItem from "@/components/primitives/ListItem";
 import { Delete, GenericMenuOption } from "@/components/primitives/PopoutMenus";
 
 import { colors } from "@/constants/colors";
 import { LogExerciseSet as LogExerciseSetType } from "@/constants/types";
-
-import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
 
 interface WorkoutExerciseProps {
   index: number,
@@ -36,6 +36,7 @@ export default function LogExerciseSet({ index, exerciseSet, onSwap }: WorkoutEx
       <ListItem
         label={exerciseSet.exercise.name}
         backgroundColor={colors.tertiary}
+        height={48}
         popoutMenuOptions={{
           icon: "ellipsis-h",
           options: popoutMenuOptions,
@@ -78,7 +79,6 @@ const styles = StyleSheet.create({
   },
   workoutContainer: {
     justifyContent: "space-between",
-    alignItems: "center",
     backgroundColor: colors.inputBackground,
     borderRadius: 8,
     marginBottom: 8,
