@@ -6,7 +6,7 @@ import ExerciseItem from "@/components/exercises/ExerciseItem";
 import { Exercise } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
 
-import { deleteExercise } from "@/features/exercises/Exercises";
+import { deleteExercise } from "@/features/exercises";
 import { useDispatch } from "react-redux";
 
 interface ExerciseListProps {

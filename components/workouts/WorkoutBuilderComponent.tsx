@@ -1,4 +1,9 @@
+import { router } from "expo-router";
 import { Alert, FlatList, View } from "react-native";
+import { useDispatch } from "react-redux";
+
+import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
+import exerciseProvider from "@/services/ExerciseProvider";
 
 import Button from "@/components/buttons/Button";
 import { TextInput } from "@/components/inputs/FormFields";
@@ -6,11 +11,8 @@ import DefaultPage from "@/components/pages/DefaultPage";
 import WorkoutSetItem from "./WorkoutSetItem";
 
 import { globalStyles } from "@/constants/styles";
-
-import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
-
-import exerciseProvider from "@/services/providers/ExerciseProvider";
-import { router } from "expo-router";
+import { WorkoutSet } from "@/constants/types";
+import { useState } from "react";
 
 type WorkoutBuilderComponentProps = {
   workoutBuilder: WorkoutBuilder;
@@ -19,8 +21,10 @@ type WorkoutBuilderComponentProps = {
 export default function WorkoutBuilderComponent({
   workoutBuilder,
 }: WorkoutBuilderComponentProps) {
-  // this reactively updates our workout sets
-  const workoutSets = useWorkoutBuilder(workoutBuilder);
+  const [workoutSets, setWorkoutSets] = useState<WorkoutSet[]>(workoutBuilder.workout.sets);
+  workoutBuilder.setWorkoutSets = setWorkoutSets;
+
+  const dispatch = useDispatch();
 
   // TODO: handle more complex set nodes
   function handleAddExercise(i?: number) {
@@ -35,23 +39,13 @@ export default function WorkoutBuilderComponent({
 
   // save to storage
   function saveWorkout() {
-    if (workoutBuilder.nameExists(workoutBuilder.name)) {
-      Alert.alert(
-        "Duplicate Workout Name",
-        "A workout with this name already exists.",
-      );
+    const error = workoutBuilder.save(dispatch);
+
+    if (error) {
+      Alert.alert(error.title, error.message);
       return;
     }
 
-    if (!workoutBuilder.name || workoutBuilder.name === "") {
-      Alert.alert(
-        "Invalid Workout Name",
-        "Please enter a name for the workout.",
-      );
-      return;
-    }
-    
-    workoutBuilder.saveWorkout();
     router.back();
   }
 

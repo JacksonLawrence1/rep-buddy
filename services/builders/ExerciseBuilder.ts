@@ -2,19 +2,22 @@ import { MuscleGroup } from "@/constants/enums/muscleGroups";
 import { Exercise } from "@/constants/types";
 
 import {
-  exerciseService,
-  deleteExercise,
-  addExercise,
-} from "@/features/exercises/Exercises";
+    addExercise,
+    exerciseService,
+    replaceExercise,
+} from "@/features/exercises";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
+import { Builder } from "./Builder";
 
-export default class ExerciseBuilder {
+export default class ExerciseBuilder extends Builder {
   id: string = "";
   name: string = "";
   muscleGroups: Set<MuscleGroup> = new Set(); // store as set for easy toggling
   private replacing: boolean = false;
 
   constructor(id?: string) {
+    super();
+
     if (id) {
       const exercise: Exercise | undefined = exerciseService.getData(id);
 
@@ -44,7 +47,7 @@ export default class ExerciseBuilder {
     }
   }
 
-  saveExercise(dispatcher: Dispatch<UnknownAction>): { title: string; message: string } | undefined {
+  save(dispatcher: Dispatch<UnknownAction>): { title: string; message: string } | undefined {
     if (!this.name) {
       return { title: "Invalid Name", message: "Please enter an exercise name" };
     } 
@@ -52,11 +55,8 @@ export default class ExerciseBuilder {
     const id: string = exerciseService.generateId(this.name);
     const exists = exerciseService.getData(id);
 
-    if (exists !== undefined) {
-      if (!this.replacing) {
-        return { title: "Duplicate Name", message: "An exercise with that name already exists" };
-      }
-      dispatcher(deleteExercise(this.id));
+    if (exists && !this.replacing) {
+      return { title: "Duplicate Name", message: "An exercise with that name already exists" };
     }
 
     // create the exercise
@@ -66,6 +66,11 @@ export default class ExerciseBuilder {
       // convert set to array, as it is not serializable
       muscleGroups: Array.from(this.muscleGroups).sort(),
     };
+
+    if (this.replacing) {
+      dispatcher(replaceExercise({id: this.id, exercise: exercise}));
+      return;
+    }
 
     dispatcher(addExercise(exercise));
   }

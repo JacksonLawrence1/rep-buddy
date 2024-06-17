@@ -5,12 +5,6 @@ import { router, useNavigation } from "expo-router";
 
 // In this route, functions we perform on the exercises are defined here
 
-// what we do once we click save on the exercise
-// you can use the exercise parameter if needed
-export function onSave() {
-  router.back();
-}
-
 // what we do when we want to create a new exercise
 export function onNewExercise() {
   router.navigate("/exercises/builder/new");

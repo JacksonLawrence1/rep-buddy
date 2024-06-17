@@ -1,6 +1,6 @@
 import { MuscleGroup } from "@/constants/enums/muscleGroups";
 import { Exercise } from "@/constants/types";
-import { StorageService } from "@/services/storage/StorageService";
+import { StorageService } from "@/services/classes/StorageService";
 import { createSlice } from "@reduxjs/toolkit";
 
 // allows us to find exercises by id
@@ -58,16 +58,21 @@ const exercises = createSlice({
     deleteExercise(state, action) {
       const id = action.payload;
 
-      console.log(id);
-
       exerciseService.deleteData(id);
 
       return state.filter((exercise) => exercise.id !== id);
-    }
+    },
+    replaceExercise(state, action) {
+      const { id, exercise } = action.payload;
+
+      exerciseService.deleteData(id);
+      exerciseService.addData(exercise);
+
+      return state.map((e) => (e.id === id ? exercise : e));
+    },
   },
 });
 
-export const { addExercise } = exercises.actions;
-export const { deleteExercise } = exercises.actions;
+export const { addExercise, deleteExercise, replaceExercise } = exercises.actions;
 
 export default exercises.reducer;

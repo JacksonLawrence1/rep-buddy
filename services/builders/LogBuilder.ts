@@ -1,27 +1,25 @@
 import {
-  Exercise,
-  Log,
-  LogExerciseSet,
-  LogExerciseSetCompressed,
-  LogSet,
-  WorkoutCompressed,
+    Exercise,
+    Log,
+    LogExerciseSet,
+    LogExerciseSetCompressed,
+    LogSet,
+    WorkoutCompressed,
 } from "@/constants/types";
-import { Service } from "@/services/Service";
-import workoutService from "../storage/WorkoutService";
-import WorkoutBuilder from "./WorkoutBuilder";
+import { exerciseService } from "@/features/exercises";
+import { workoutService } from "@/features/workouts";
 import { createContext } from "react";
+import WorkoutBuilder from "./WorkoutBuilder";
 
-export default class LogBuilder extends Service {
+export default class LogBuilder {
   id: string;
   name: string;
   date: Date;
   sets: LogExerciseSet[];
 
   constructor(id: string) {
-    super();
-
     const workout: WorkoutCompressed | undefined =
-      workoutService.getWorkout(id);
+      workoutService.getData(id);
 
     if (!workout) {
       throw new Error(`No workout found with id: ${id}`);
@@ -76,15 +74,11 @@ export default class LogBuilder extends Service {
     }
 
     this.sets[i].sets.push({ reps: null, weight: null });
-    this.notify();
-
     // update store in storage
   }
 
   removeExercise(i: number): void {
     this.sets.splice(i, 1);
-    this.notify();
-
     // update store in storage
   }
 
@@ -99,8 +93,6 @@ export default class LogBuilder extends Service {
       isComplete: false,
     });
 
-    this.notify();
-
     // update store in storage
   }
 
@@ -114,8 +106,6 @@ export default class LogBuilder extends Service {
     }
 
     this.sets[i].sets.splice(set, 1);
-    this.notify();
-
     // update store in storage
   }
 
@@ -155,7 +145,6 @@ export default class LogBuilder extends Service {
     }
 
     this.sets[i].exercise = exercise;
-    this.notify();
   }
 
   save(): Log {

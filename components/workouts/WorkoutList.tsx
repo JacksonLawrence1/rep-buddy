@@ -6,7 +6,8 @@ import WorkoutItem from "@/components/workouts/WorkoutItem";
 import { WorkoutCompressed } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
 
-import workoutService from "@/services/storage/WorkoutService";
+import { deleteWorkout } from "@/features/workouts";
+import { useDispatch } from "react-redux";
 
 interface WorkoutListProps {
   workouts: WorkoutCompressed[];
@@ -15,13 +16,25 @@ interface WorkoutListProps {
   onEdit?: (workout: WorkoutCompressed) => void; // if we should have an edit button on the popout menu
 }
 
-export default function WorkoutList({ workouts, filter, onPress, onEdit }: WorkoutListProps) {
+export default function WorkoutList({
+  workouts,
+  filter,
+  onPress,
+  onEdit,
+}: WorkoutListProps) {
+  const dispatch = useDispatch();
+
   function onDelete(workout: WorkoutCompressed) {
-    workoutService.deleteData(workout.id);
+    dispatch(deleteWorkout(workout.id));
   }
 
   const filtered = useMemo(() => {
-    return workouts.filter((workout) => workout.name.toLowerCase().includes(filter?.toLowerCase() || ""));
+    return workouts
+      .filter((workout) => workout.name
+        .toLowerCase()
+        .includes(filter?.toLowerCase() || ""))
+      .sort((a, b) => a.name.localeCompare(b.name)
+    );
   }, [workouts, filter]);
 
   return (

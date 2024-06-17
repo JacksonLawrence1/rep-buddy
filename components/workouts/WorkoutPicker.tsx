@@ -3,9 +3,10 @@ import Searchbar from "@/components/inputs/Searchbar";
 import DefaultPage from "@/components/pages/DefaultPage";
 import Button from "@/components/buttons/Button";
 
-import {  WorkoutCompressed } from "@/constants/types";
+import { WorkoutCompressed } from "@/constants/types";
 
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 interface WorkoutPickerProps {
   title?: string;
@@ -15,6 +16,10 @@ interface WorkoutPickerProps {
   onExit?: () => void; // called when user exits the workout picker
 }
 
+interface WorkoutState {
+  workouts: WorkoutCompressed[];
+}
+
 export default function WorkoutPicker({
   title,
   onPress,
@@ -22,6 +27,8 @@ export default function WorkoutPicker({
   onEdit,
   onExit,
 }: WorkoutPickerProps) {
+
+  const workouts = useSelector((state: WorkoutState) => state.workouts);
   const [filter, setFilter] = useState("");
 
   return (

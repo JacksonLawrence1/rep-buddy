@@ -5,7 +5,7 @@ import ExercisePicker from "@/components/exercises/ExercisePicker";
 import { onEdit, onNewExercise } from "@/app/exercises";
 import { useModal } from "@/hooks/useModal";
 import { MenuProvider } from "react-native-popup-menu";
-import exerciseProvider from "@/services/providers/ExerciseProvider";
+import exerciseProvider from "@/services/ExerciseProvider";
 
 // when we click an item, or back button
 function onPress() {

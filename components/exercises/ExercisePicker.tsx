@@ -5,7 +5,7 @@ import Button from "@/components/buttons/Button";
 
 import { Exercise } from "@/constants/types";
 
-import exerciseProvider from "@/services/providers/ExerciseProvider";
+import exerciseProvider from "@/services/ExerciseProvider";
 
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -18,7 +18,7 @@ interface ChooseExerciseProps {
   onExit?: () => void; // called when user exits the exercise picker
 }
 
-interface RootState {
+interface ExerciseState {
   exercises: Exercise[];
 }
 
@@ -37,7 +37,7 @@ export default function ExercisePicker({
       }
     : undefined;
 
-  const exercises = useSelector((state: RootState) => state.exercises);
+  const exercises = useSelector((state: ExerciseState) => state.exercises);
   const [filter, setFilter] = useState("");
 
   return (

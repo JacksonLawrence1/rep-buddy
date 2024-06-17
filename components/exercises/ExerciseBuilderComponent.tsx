@@ -11,27 +11,26 @@ import { MuscleGroupValues } from "@/constants/enums/muscleGroups";
 
 import ExerciseBuilder from "@/services/builders/ExerciseBuilder";
 import { useDispatch } from "react-redux";
+import { router } from "expo-router";
 
 interface ExerciseBuilderComponentProps {
   id?: string; // optionally pass in an id to edit an exercise
-  onSave: () => void; // callback to save exercise
 }
 
-export default function ExerciseBuilderComponent({ id, onSave }: ExerciseBuilderComponentProps) {
+export default function ExerciseBuilderComponent({ id }: ExerciseBuilderComponentProps) {
   const exercise = new ExerciseBuilder(id);
   const dispatcher = useDispatch();
 
   async function saveExercise() {
     // TODO: validation from the exercise builder
-
-    const error = exercise.saveExercise(dispatcher);
+    const error = exercise.save(dispatcher);
 
     if (error) {
       Alert.alert(error.title, error.message);
       return;
     }
 
-    onSave();
+    router.back();
   }
 
   return (

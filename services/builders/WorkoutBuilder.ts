@@ -1,26 +1,34 @@
 import {
-  Workout,
-  WorkoutCompressed,
-  WorkoutSet,
-  WorkoutSetCompressed,
+    Workout,
+    WorkoutCompressed,
+    WorkoutSet,
+    WorkoutSetCompressed,
 } from "@/constants/types";
+import { exerciseService } from "@/features/exercises";
 
-import workoutService from "@/services/storage/WorkoutService";
-import { Service } from "../Service";
+import { addWorkout, replaceWorkout, workoutService } from "@/features/workouts";
+import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
+import { Builder } from "./Builder";
+import { SetStateAction } from "react";
 
 type WorkoutSetIndexObject = number | [number, number] | undefined;
 
-class WorkoutBuilder extends Service {
+class WorkoutBuilder extends Builder {
   workout: Workout;
+  setWorkoutSets: React.Dispatch<SetStateAction<WorkoutSet[]>>;
+  replacing: boolean = false;
 
   constructor(id?: string) {
     super();
 
+    this.setWorkoutSets = () => undefined;
+    
     if (id) {
-      const workout = workoutService.getWorkout(id);
+      const workout = workoutService.getData(id);
 
       if (workout) {
         this.workout = WorkoutBuilder.uncompressWorkout(workout);
+        this.replacing = true;
         return;
       } 
     }
@@ -57,13 +65,13 @@ class WorkoutBuilder extends Service {
     // places the set at the index, or at the end if i is the length
     // NOTE: must be done like this to trigger reactivity
     this.workout.sets = this.workout.sets.toSpliced(i, 0, set);
-    this.notify();
+    this.setWorkoutSets(this.workout.sets);
   }
 
   // if i exists, then we are replacing it, but not replacing its sets
   // might be good to implement some unit tests for this
   addExercise(exerciseId: string, i: WorkoutSetIndexObject): void {
-    const exercise = exerciseService.getExercise(exerciseId);
+    const exercise = exerciseService.getData(exerciseId);
 
     if (!exercise) {
       throw new Error(`Exercise with id ${exerciseId} not found`);
@@ -79,6 +87,7 @@ class WorkoutBuilder extends Service {
       // if the exercise already exists, make sure we use its sets
       const sets: number = this.workout.sets[i]?.sets || 1;
       this.addWorkoutSet({exercise: exercise, sets: sets}, i);
+      this.setWorkoutSets(this.workout.sets);
       return;
     }
     
@@ -88,7 +97,7 @@ class WorkoutBuilder extends Service {
 
   removeWorkoutSet(i: number): void {
     this.workout.sets = this.workout.sets.toSpliced(i, 1);
-    this.notify();
+    this.setWorkoutSets(this.workout.sets);
   }
 
   // for a given index, update the sets
@@ -106,25 +115,30 @@ class WorkoutBuilder extends Service {
   }
   
   // returns the saved workout if needed
-  saveWorkout(): WorkoutCompressed {
-    if (this.name === "") {
-      // this should never happen, as we're already doing a check in the ui
-      throw new Error("Name given to workout was empty.");
+  save(dispatcher: Dispatch<UnknownAction>) {
+    if (!this.name) {
+      return { title: "Invalid Name", message: "Please enter a valid workout name" };
     } 
 
-    if (this.workout.id) {
-      workoutService.deleteData(this.workout.id);
+    const newId: string = workoutService.generateId(this.name);
+    const exists = workoutService.getData(newId);
+
+    if (exists && !this.replacing) {
+      return { title: "Duplicate Name", message: "A workout with that name already exists" };
     }
+    
+    const oldId = this.workout.id;
 
-    const id: string = workoutService.generateId(this.name);
-    this.workout.id = id;
-
-    // compress so it takes less space in storage
+    this.workout.id = newId;
     const workout: WorkoutCompressed = WorkoutBuilder.compressWorkout(this.workout);
 
+    if (this.replacing) {
+      dispatcher(replaceWorkout({id: oldId, workout: workout}));
+      return;
+    }
+
     // adds/overwrites this workout to storage 
-    workoutService.addWorkout(workout);
-    return workout;
+    dispatcher(addWorkout(workout));
   }
 
   static uncompressWorkout(workout: WorkoutCompressed): Workout {
@@ -139,7 +153,7 @@ class WorkoutBuilder extends Service {
 
   static uncompressSets(sets: WorkoutSetCompressed[]): WorkoutSet[] {
     return sets.map((set) => {
-      const exercise = exerciseService.getExercise(set.id);
+      const exercise = exerciseService.getData(set.id);
 
       if (!exercise) {
         throw new Error(`Exercise with id ${set.id} not found`);

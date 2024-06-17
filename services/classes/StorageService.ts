@@ -1,16 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Service } from "../Service";
 
 export interface StorageItem {
   id: string;
 };
 
-export class StorageService<T extends StorageItem> extends Service {
+export class StorageService<T extends StorageItem>{
   private key: string;
   private cache: Map<string, T>;
 
   constructor(key: string) {
-    super();
     this.key = key;
     this.cache = new Map();
   }
@@ -40,10 +38,6 @@ export class StorageService<T extends StorageItem> extends Service {
     return this.exists(id);
   }
 
-  generateId(name: string): string {
-    return name.toLowerCase().replace(/\s/g, "_");
-  }
-
   // get updated data from device storage
   // make sure you call this on startup
   async syncCache(): Promise<void> {
@@ -60,7 +54,6 @@ export class StorageService<T extends StorageItem> extends Service {
   // update device storage with new data
   private async syncStorage(): Promise<void> {
     await AsyncStorage.setItem(this.key, JSON.stringify(this.cache));
-    this.notify();
   }
 
   async addData(data: T): Promise<void> {
@@ -80,5 +73,9 @@ export class StorageService<T extends StorageItem> extends Service {
   async clearData(): Promise<void> {
     this.cache.clear();
     await AsyncStorage.removeItem(this.key);
+  }
+
+  generateId(name: string): string {
+    return name.toLowerCase().replace(/\s/g, "_");
   }
 }

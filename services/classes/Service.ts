@@ -1,5 +1,5 @@
 // T is the type of data the service will give to subscribers
-export abstract class Service {
+export default abstract class Service {
   protected callbacks: Set<Function>;
 
   constructor() {

@@ -8,7 +8,7 @@ import { globalStyles } from "@/constants/styles";
 
 import LogBuilder from "@/services/builders/LogBuilder";
 import Button from "../buttons/Button";
-import exerciseProvider from "@/services/providers/ExerciseProvider";
+import exerciseProvider from "@/services/ExerciseProvider";
 import { router } from "expo-router";
 
 type WorkoutLogProps = {
@@ -16,9 +16,6 @@ type WorkoutLogProps = {
 };
 
 export default function Log({ log }: WorkoutLogProps) {
-  // this reactively updates our workout sets
-  const exerciseSets = useLogService(log);
-  
   function onSwapExercise(index: number) {
     router.navigate({ pathname: "workouts/builder/exercises" });
     const unsubscribe = exerciseProvider.subscribe((exercise) => {
