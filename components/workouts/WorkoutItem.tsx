@@ -2,16 +2,15 @@ import ListItem from "@/components/primitives/ListItem";
 import { Edit, Delete } from "@/components/primitives/PopoutMenus";
 
 import { colors } from "@/constants/colors";
-import { WorkoutCompressed } from "@/constants/types";
 
 interface WorkoutItemProps {
-  workout: WorkoutCompressed;
+  name: string;
   onPress?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-export default function WorkoutItem({ workout, onPress, onEdit, onDelete }: WorkoutItemProps) {
+export default function WorkoutItem({ name, onPress, onEdit, onDelete }: WorkoutItemProps) {
   // options on the popout menu 
   const popoutMenuOptions: React.ReactNode[] = [];
 
@@ -26,7 +25,7 @@ export default function WorkoutItem({ workout, onPress, onEdit, onDelete }: Work
 
   return (
     <ListItem
-      label={workout.name}
+      label={name}
       onPress={onPress}
       backgroundColor={colors.primary}
       popoutMenuOptions={{ icon: "ellipsis-h", options: popoutMenuOptions }}

@@ -17,7 +17,7 @@ export type WorkoutSet = { // eventually change to take different types of exerc
 
 // make sure not to store this type in storage, use the compressed version above
 export type Workout = {
-  id: string;
+  id: number;
   name: string;
   sets: WorkoutSet[];
 }

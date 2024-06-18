@@ -15,18 +15,19 @@ import { WorkoutSet } from "@/constants/types";
 import { useState } from "react";
 
 type WorkoutBuilderComponentProps = {
-  workoutBuilder: WorkoutBuilder;
+  id?: number;
 };
 
 export default function WorkoutBuilderComponent({
-  workoutBuilder,
+  id,
 }: WorkoutBuilderComponentProps) {
+  // TODO: big refactor
+  
   const [workoutSets, setWorkoutSets] = useState<WorkoutSet[]>(workoutBuilder.workout.sets);
   workoutBuilder.setWorkoutSets = setWorkoutSets;
 
   const dispatch = useDispatch();
 
-  // TODO: handle more complex set nodes
   function handleAddExercise(i?: number) {
     router.navigate("/workouts/builder/exercises");
 

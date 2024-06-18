@@ -2,6 +2,7 @@ import { MuscleGroup } from "@/constants/enums/muscleGroups";
 import { Exercise } from "@/constants/types";
 
 import * as SQLite from "expo-sqlite";
+import database from "./Database";
 
 type ExerciseRow = {
   id: number;
@@ -12,33 +13,10 @@ type ExerciseRow = {
 class ExercisesDatabase {
   db: SQLite.SQLiteDatabase;
 
-  // TODO: remove cache, we don't actually need it
-  cache: Map<number, Exercise> = new Map();
-
-  constructor() {
-    this.db = SQLite.openDatabaseSync("exercises.db");
-
-    this.db.execSync(
-      `PRAGMA journal_mode = WAL;
-       CREATE TABLE IF NOT EXISTS exercises (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        muscleGroups TEXT
-      );`,
-    );
+  constructor(db: SQLite.SQLiteDatabase) {
+    this.db = db;
 
     this.addTestData();
-
-    // since constructor can't do async operations, do a synchronous one (instead of this.getExercises())
-    const rows: ExerciseRow[] = this.db.getAllSync(`SELECT * FROM exercises`);
-
-    for (const row of rows) {
-      this.cache.set(row.id, this.convertToExercise(row));
-    }
-  }
-
-  getExerciseFromCache(id: number): Exercise | undefined {
-    return this.cache.get(id) || undefined;
   }
 
   async getExercise(id: number): Promise<Exercise | undefined> {
@@ -93,7 +71,8 @@ class ExercisesDatabase {
   async deleteExercise(id: number): Promise<number | undefined> {
     try {
       await this.db.runAsync(`DELETE FROM exercises WHERE id = ?;`, id);
-      this.cache.delete(id);
+
+      // return the deleted id (if successful)
       return id;
     } catch (error) {
       throw new Error(`Error deleting exercise: ${error}`);
@@ -104,7 +83,7 @@ class ExercisesDatabase {
     id: number,
     newName: string,
     muscleGroups: string[],
-  ): Promise<Exercise | undefined> {
+  ): Promise<Exercise> {
     try {
       await this.db.runAsync(
         `UPDATE exercises SET name = ?, muscleGroups = ? WHERE id = ?;`,
@@ -121,7 +100,6 @@ class ExercisesDatabase {
         muscleGroups: muscleGroups as MuscleGroup[],
       };
 
-      this.cache.set(id, exercise);
       return exercise;
     } catch (error) {
       throw new Error(`Error replacing exercise: ${error}`);
@@ -130,8 +108,6 @@ class ExercisesDatabase {
 
   // TODO: Delete this when done testing
   private addTestData(): void {
-    this.db.runSync(`DELETE FROM exercises;`);
-
     const baseExercises = [
       {
         name: "Military Press",
@@ -177,5 +153,5 @@ class ExercisesDatabase {
   }
 }
 
-const exerciseDatabase = new ExercisesDatabase();
+const exerciseDatabase = new ExercisesDatabase(database);
 export default exerciseDatabase;

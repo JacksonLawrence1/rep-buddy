@@ -1,54 +1,56 @@
-import { FlatList, View } from "react-native";
-import { useMemo } from "react";
+import { Alert, FlatList, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
+import { AppDispatch, RootState } from "@/app/store";
+import { deleteWorkout, fetchWorkouts, selectWorkoutsByFilter } from "@/features/workouts";
 
 import WorkoutItem from "@/components/workouts/WorkoutItem";
 
-import { WorkoutCompressed } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
-
-import { deleteWorkout } from "@/features/workouts";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import workoutDatabase from "@/services/storage/WorkoutDatabase";
 
 interface WorkoutListProps {
-  workouts: WorkoutCompressed[];
   filter?: string;
-  onPress?: (workout: WorkoutCompressed) => void; // when item is pressed
-  onEdit?: (workout: WorkoutCompressed) => void; // if we should have an edit button on the popout menu
+  onPress?: (workoutId: number) => void; // when item is pressed
+  onEdit?: (workoutId: number) => void; // if we should have an edit button on the popout menu
 }
 
 export default function WorkoutList({
-  workouts,
   filter,
   onPress,
   onEdit,
 }: WorkoutListProps) {
-  const dispatch = useDispatch();
 
-  function onDelete(workout: WorkoutCompressed) {
-    dispatch(deleteWorkout(workout.id));
+  const dispatch = useDispatch<AppDispatch>();
+  const workouts = useSelector((state: RootState) => selectWorkoutsByFilter(state.workouts, filter));
+
+  // get exercises from the database on mount
+  useEffect(() => {
+    dispatch(fetchWorkouts());
+  }, [dispatch])
+
+  async function onDelete(id: number) {
+    try {
+      await workoutDatabase.deleteWorkout(id);
+      dispatch(deleteWorkout(id));
+    } catch (error) {
+      Alert.alert("Exercise Error", `Could not delete exercise: ${error}`);
+    }
   }
-
-  const filtered = useMemo(() => {
-    return workouts
-      .filter((workout) => workout.name
-        .toLowerCase()
-        .includes(filter?.toLowerCase() || ""))
-      .sort((a, b) => a.name.localeCompare(b.name)
-    );
-  }, [workouts, filter]);
 
   return (
     <View style={globalStyles.scrollContainer}>
       <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => (
+        data={workouts}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
           <WorkoutItem
-            key={index}
-            workout={item}
-            onPress={onPress && (() => onPress(item))}
-            onDelete={() => onDelete(item)}
-            onEdit={onEdit && (() => onEdit(item))}
+            key={item.id}
+            name={item.name}
+            onPress={onPress && (() => onPress(item.id))}
+            onDelete={() => onDelete(item.id)}
+            onEdit={onEdit && (() => onEdit(item.id))}
           />
         )}
         ItemSeparatorComponent={() => <View style={{ height: 4 }} />}

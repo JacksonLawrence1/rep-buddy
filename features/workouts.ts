@@ -1,66 +1,61 @@
-import { WorkoutCompressed } from "@/constants/types";
-import { StorageService } from "@/services/classes/StorageService";
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 
-// allows us to find exercises by id
-export const workoutService = new StorageService<WorkoutCompressed>("workouts");
+import workoutDatabase, { WorkoutRow } from "@/services/storage/WorkoutDatabase";
 
-// WARNING: remove when done testing
-
-workoutService.clearData();
-workoutService.syncCache();
-
-const baseWorkouts: WorkoutCompressed[] = [
-  { 
-    id: "leg_day", 
-    name: "Leg Day", 
-    sets: [{ id: "barbell_squat", sets: 3 }] 
-  },
-  {
-    id: "push_day",
-    name: "Push Day",
-    sets: [{ id: "barbell_bench_press", sets: 3 }],
-  },
-  { 
-    id: "pull_day", 
-    name: "Pull Day", 
-    sets: [{ id: "deadlift", sets: 3 }] 
-  },
-];
-
-for (const workout of baseWorkouts) {
-  workoutService.addData(workout);
-}
+// async action
+export const fetchWorkouts = createAsyncThunk(
+  "workouts/fetchWorkouts",
+  async () => workoutDatabase.getWorkouts(),
+);
 
 const workouts = createSlice({
-  name: "workouts",
-  initialState: workoutService.dataAsArray,
+  name: "exercises",
+  initialState: [] as WorkoutRow[], // workout rows only contain name and id for efficiency
   reducers: {
-    // use these only to update state
-    addWorkout(state, action) {
-      const workout = action.payload;
-
-      workoutService.addData(workout);
-      state.push(workout);
+    addWorkout: (state, action) => {
+      const workoutRow: WorkoutRow = action.payload;
+      state.push(workoutRow);
     },
-    deleteWorkout(state, action) {
+    deleteWorkout: (state, action) => {
       const id = action.payload;
-
-      workoutService.deleteData(id);
-
-      return state.filter((exercise) => exercise.id !== id);
+      return state.filter((workout) => workout.id !== id);
     },
-    replaceWorkout(state, action) {
-      const { id, workout } = action.payload;
+    replaceWorkout: (state, action) => {
+      const workout: WorkoutRow = action.payload;
 
-      workoutService.deleteData(id);
-      workoutService.addData(workout);
+      const index = state.findIndex((w) => w.id === workout.id);
 
-      return state.map((w) => (w.id === id ? workout : w));
+      // update to new workout
+      if (index !== -1) {
+        state[index] = workout;
+      }
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(fetchWorkouts.fulfilled, (_, action) => {
+      // on fetch workouts return the list of workout rows
+      return action.payload;
+    });
   },
 });
 
+// non-async actions
 export const { addWorkout, deleteWorkout, replaceWorkout } = workouts.actions;
-
 export default workouts.reducer;
+
+// Selectors:
+// input 
+export const selectWorkouts = (state: WorkoutRow[]) => state;
+const filter = (_: WorkoutRow[], filter: string | undefined) => filter || "";
+
+// memoized 
+export const selectWorkoutsByFilter = createSelector([selectWorkouts, filter],
+  (state: WorkoutRow[], filter: string) => {
+  return state
+    .filter((exercise) =>
+      exercise.name.toLowerCase().includes(filter?.toLowerCase() || ""),
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
+});
+
+

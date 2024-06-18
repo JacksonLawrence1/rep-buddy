@@ -1,23 +1,16 @@
+import { useState } from "react";
+
 import WorkoutList from "@/components/workouts/WorkoutList";
 import Searchbar from "@/components/inputs/Searchbar";
 import DefaultPage from "@/components/pages/DefaultPage";
 import Button from "@/components/buttons/Button";
 
-import { WorkoutCompressed } from "@/constants/types";
-
-import { useState } from "react";
-import { useSelector } from "react-redux";
-
 interface WorkoutPickerProps {
   title?: string;
-  onPress?: (workout: WorkoutCompressed) => void; // when a workout is selected
+  onPress?: (id: number) => void; // when a workout is selected
   onAdd?: () => void; // when user clicks new workout button
-  onEdit?: (workout: WorkoutCompressed) => void; // when workout is edited
+  onEdit?: (id: number) => void; // when workout is edited
   onExit?: () => void; // called when user exits the workout picker
-}
-
-interface WorkoutState {
-  workouts: WorkoutCompressed[];
 }
 
 export default function WorkoutPicker({
@@ -27,15 +20,12 @@ export default function WorkoutPicker({
   onEdit,
   onExit,
 }: WorkoutPickerProps) {
-
-  const workouts = useSelector((state: WorkoutState) => state.workouts);
   const [filter, setFilter] = useState("");
 
   return (
     <DefaultPage title={title || "Your Workouts"} callback={onExit}>
       <Searchbar placeholder="Search for a workout" onChangeText={setFilter} />
       <WorkoutList
-        workouts={workouts}
         filter={filter}
         onPress={onPress}
         onEdit={onEdit}
