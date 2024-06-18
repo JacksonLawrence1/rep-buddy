@@ -8,7 +8,6 @@ import { Exercise } from "@/constants/types";
 import exerciseProvider from "@/services/ExerciseProvider";
 
 import { useState } from "react";
-import { useSelector } from "react-redux";
 
 interface ChooseExerciseProps {
   title?: string;
@@ -16,10 +15,6 @@ interface ChooseExerciseProps {
   onAdd?: () => void; // called when user clicks new exercise button
   onEdit?: (exercise: Exercise) => void; // called when an exercise is edited
   onExit?: () => void; // called when user exits the exercise picker
-}
-
-interface ExerciseState {
-  exercises: Exercise[];
 }
 
 export default function ExercisePicker({
@@ -37,14 +32,12 @@ export default function ExercisePicker({
       }
     : undefined;
 
-  const exercises = useSelector((state: ExerciseState) => state.exercises);
   const [filter, setFilter] = useState("");
 
   return (
     <DefaultPage title={title || "Your Exercises"} callback={onExit}>
       <Searchbar placeholder="Search for an exercise" onChangeText={setFilter} />
       <ExerciseList
-        exercises={exercises}
         filter={filter}
         onItemPress={handleExerciseSelection}
         onEdit={onEdit}

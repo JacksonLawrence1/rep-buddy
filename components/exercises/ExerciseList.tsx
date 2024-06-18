@@ -1,48 +1,50 @@
-import { FlatList, View } from "react-native";
-import { useMemo } from "react";
+import { useEffect } from "react";
+import { Alert, FlatList, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
+import { deleteExercise, fetchExercises, selectExercisesByFilter } from "@/features/exercises";
+import exerciseDatabase from "@/services/storage/ExerciseDatabase";
+
+import { AppDispatch, RootState } from "@/app/store";
 import ExerciseItem from "@/components/exercises/ExerciseItem";
 
-import { Exercise } from "@/constants/types";
 import { globalStyles } from "@/constants/styles";
-
-import { deleteExercise } from "@/features/exercises";
-import { useDispatch } from "react-redux";
+import { Exercise } from "@/constants/types";
 
 interface ExerciseListProps {
-  exercises: Exercise[];
   filter?: string;
   onItemPress?: (exercise: Exercise) => void; // when item is pressed
   onEdit?: (exercise: Exercise) => void; // if we should have an edit button on the popout menu
 }
 
 export default function ExerciseList({
-  exercises,
   filter,
   onItemPress,
   onEdit,
 }: ExerciseListProps) {
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const exercises = useSelector((state: RootState) => selectExercisesByFilter(state.exercises, filter));
+  
+  // get exercises from the database on mount
+  useEffect(() => {
+    dispatch(fetchExercises());
+  }, [dispatch])
 
-  function onDelete(exercise: Exercise) {
-    dispatch(deleteExercise(exercise.id));
+  async function onDelete(exercise: Exercise) {
+    try {
+      await exerciseDatabase.deleteExercise(exercise.id);
+      dispatch(deleteExercise(exercise.id));
+    } catch (error) {
+      Alert.alert("Exercise Error", `Could not delete exercise: ${error}`);
+    }
   }
-
-  // TODO: maintain and sort the exercises based on the filter
-  const filteredExercises: Exercise[] = useMemo(() => {
-    return exercises
-      .filter((exercise) => exercise.name
-        .toLowerCase()
-        .includes(filter?.toLowerCase() || ""))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [exercises, filter]);
 
   return (
     <View style={globalStyles.scrollContainer}>
       <FlatList
-        data={filteredExercises}
-        keyExtractor={(item) => item.id}
+        data={exercises}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item, index }) => (
           <ExerciseItem
             key={index}

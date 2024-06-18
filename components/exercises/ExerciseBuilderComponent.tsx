@@ -1,70 +1,67 @@
-import { Alert, StyleSheet, View } from "react-native";
-
-import Button from "@/components/buttons/Button";
-import { TextInput } from "@/components/inputs/FormFields";
-import InputField from "@/components/inputs/InputField";
-import DefaultPage from "@/components/pages/DefaultPage";
-import TagEnum from "@/components/primitives/TagEnum";
-
-import { globalStyles } from "@/constants/styles";
-import { MuscleGroupValues } from "@/constants/enums/muscleGroups";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 import ExerciseBuilder from "@/services/builders/ExerciseBuilder";
-import { useDispatch } from "react-redux";
-import { router } from "expo-router";
+import exerciseDatabase from "@/services/storage/ExerciseDatabase";
+
+import DefaultPage from "@/components/pages/DefaultPage";
+import Loading from "@/components/primitives/Loading";
+import ExerciseBuilderForm from "@/components/exercises/ExerciseBuilderForm";
 
 interface ExerciseBuilderComponentProps {
-  id?: string; // optionally pass in an id to edit an exercise
+  id?: number; // optionally pass in an id to edit an exercise
 }
 
-export default function ExerciseBuilderComponent({ id }: ExerciseBuilderComponentProps) {
-  const exercise = new ExerciseBuilder(id);
-  const dispatcher = useDispatch();
+export default function ExerciseBuilderComponent({
+  id,
+}: ExerciseBuilderComponentProps) {
+  const [loading, setLoading] = useState(true);
 
-  async function saveExercise() {
-    // TODO: validation from the exercise builder
-    const error = exercise.save(dispatcher);
+  // render loading or the exercise builder form
+  const [content, setContent] = useState<React.ReactNode>(<Loading />);
 
-    if (error) {
-      Alert.alert(error.title, error.message);
-      return;
+  // load exercise (if id passed) asynchronously
+  useEffect(() => {
+    if (loading) {
+      setLoading(false);
+
+      const builder = new ExerciseBuilder();
+
+      // if no id is passed in, then create a new exercise
+      if (!id) {
+        setContent(<ExerciseBuilderForm exercise={builder} />);
+        return;
+      }
+
+      // try to get the exercise from the database
+      exerciseDatabase
+        .getExercise(id)
+        .then((exercise) => {
+          // if found in database, set the exercise in the builder, otherwise edit a new exercise
+          if (exercise) {
+            builder.setExercise(exercise);
+          }
+
+          setContent(<ExerciseBuilderForm exercise={builder} />);
+        })
+        .catch(() => {
+          Alert.alert(
+            "Not Found",
+            "The exercise chosen could not be found, please try restarting the app.",
+          );
+
+          router.back();
+        });
     }
-
-    router.back();
-  }
+  }, [id, loading]);
 
   return (
-    <DefaultPage title="New Exercise" theme={"modal"}>
-      <View style={globalStyles.formContainer}>
-        <TextInput
-          title={"Exercise Name"}
-          placeholder="Enter exercise name"
-          onChangeText={(text) => exercise.name = text}
-          defaultValue={exercise.name}
-        />
-        <View style={globalStyles.scrollContainer}>
-          <InputField title={"Muscle Groups"}>
-            <View style={styles.muscleGroupsContainer}>
-              {MuscleGroupValues.map((muscleGroup, i) => (
-                <TagEnum
-                  key={i}
-                  value={muscleGroup}
-                  enabledOnStart={exercise.hasMuscleGroup(muscleGroup)}
-                  onPress={exercise.toggleMuscleGroup.bind(exercise, muscleGroup)}
-                />
-              ))}
-            </View>
-          </InputField>
-        </View>
-        <Button theme="primary" label="Save" onPress={saveExercise} />
-      </View>
+    <DefaultPage
+      title={id ? "Editing Exercise" : "New Exercise"}
+      theme={"modal"}
+    >
+      {content}
     </DefaultPage>
   );
 }
-
-const styles = StyleSheet.create({
-  muscleGroupsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-});

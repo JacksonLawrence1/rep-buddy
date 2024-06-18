@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 import ExerciseBuilderComponent from "@/components/exercises/ExerciseBuilderComponent";
 
@@ -9,6 +9,14 @@ export default function EditExerciseWithId() {
 
   const { id } = useLocalSearchParams<{id: string}>();
 
-  return <ExerciseBuilderComponent id={id} />;
+  if (id === undefined || id === "" || isNaN(parseInt(id))) {
+    // if somehow the id is not a number, then route it as a new exercise
+    router.replace("/exercises/builder/new");
+    return;
+  }
+
+  return (
+    <ExerciseBuilderComponent id={+id} />
+  )
 }
 

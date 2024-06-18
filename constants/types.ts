@@ -3,7 +3,7 @@ import { MuscleGroup } from "./enums/muscleGroups";
 export type weightUnit = "kg" | "lbs";
 
 export type Exercise = {
-  id: string;
+  id: number;
   name: string;
   muscleGroups: MuscleGroup[];
 };

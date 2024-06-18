@@ -1,34 +1,30 @@
 import { MuscleGroup } from "@/constants/enums/muscleGroups";
 import { Exercise } from "@/constants/types";
 
-import {
-    addExercise,
-    exerciseService,
-    replaceExercise,
-} from "@/features/exercises";
+import { addExercise, replaceExercise } from "@/features/exercises";
+import exerciseDatabase from "@/services/storage/ExerciseDatabase";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { Builder } from "./Builder";
 
 export default class ExerciseBuilder extends Builder {
-  id: string = "";
+  id?: number;
   name: string = "";
   muscleGroups: Set<MuscleGroup> = new Set(); // store as set for easy toggling
   private replacing: boolean = false;
 
-  constructor(id?: string) {
+  constructor(exercise?: Exercise) {
     super();
 
-    if (id) {
-      const exercise: Exercise | undefined = exerciseService.getData(id);
-
-      if (exercise) {
-        this.id = exercise.id;
-        this.name = exercise.name;
-        this.muscleGroups = new Set(exercise.muscleGroups);
-        this.replacing = true;
-        return;
-      }
+    if (exercise) {
+      this.setExercise(exercise);
     }
+  }
+
+  setExercise(exercise: Exercise): void {
+    this.id = exercise.id;
+    this.name = exercise.name;
+    this.muscleGroups = new Set(exercise.muscleGroups);
+    this.replacing = true;
   }
 
   updateName(name: string): void {
@@ -47,31 +43,51 @@ export default class ExerciseBuilder extends Builder {
     }
   }
 
-  save(dispatcher: Dispatch<UnknownAction>): { title: string; message: string } | undefined {
+  private async add(dispatcher: Dispatch<UnknownAction>): Promise<void> {
+      const exercise: Exercise = await exerciseDatabase.addExercise(
+        this.name,
+        this.muscleGroupsToArray(),
+      );
+
+      dispatcher(addExercise(exercise));
+  }
+
+  private async replace(dispatcher: Dispatch<UnknownAction>): Promise<void> {
+    if (!this.id) {
+      throw new Error("No exercise ID found while replacing exercise");
+    }
+
+    const exercise: Exercise | undefined = await exerciseDatabase.replaceExercise(
+      this.id,
+      this.name,
+      this.muscleGroupsToArray(),
+    );
+
+    if (exercise) {
+      dispatcher(replaceExercise(exercise));
+    }
+  }
+
+  // cast set to array, to make it serializable
+  private muscleGroupsToArray(): MuscleGroup[] {
+    return Array.from(this.muscleGroups);
+  }
+
+  async save(dispatcher: Dispatch<UnknownAction>): Promise<void> {
     if (!this.name) {
-      return { title: "Invalid Name", message: "Please enter an exercise name" };
-    } 
-
-    const id: string = exerciseService.generateId(this.name);
-    const exists = exerciseService.getData(id);
-
-    if (exists && !this.replacing) {
-      return { title: "Duplicate Name", message: "An exercise with that name already exists" };
+      throw new Error("Exercise name is required");
     }
 
-    // create the exercise
-    const exercise: Exercise = {
-      id: id,
-      name: this.name,
-      // convert set to array, as it is not serializable
-      muscleGroups: Array.from(this.muscleGroups).sort(),
-    };
+    try {
+      const exists: boolean = await exerciseDatabase.nameExists(this.name);
 
-    if (this.replacing) {
-      dispatcher(replaceExercise({id: this.id, exercise: exercise}));
-      return;
+      if (exists && !this.replacing) {
+        throw new Error("Exercise name already exists");
+      }
+
+      return this.replacing ? this.replace(dispatcher) : this.add(dispatcher);
+    } catch (error) {
+      throw new Error(`Error saving exercise: ${error}`);
     }
-
-    dispatcher(addExercise(exercise));
   }
 }

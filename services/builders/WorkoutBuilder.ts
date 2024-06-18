@@ -4,7 +4,6 @@ import {
     WorkoutSet,
     WorkoutSetCompressed,
 } from "@/constants/types";
-import { exerciseService } from "@/features/exercises";
 
 import { addWorkout, replaceWorkout, workoutService } from "@/features/workouts";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
