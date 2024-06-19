@@ -10,7 +10,7 @@ export type ExerciseRow = {
   muscleGroups: string;
 };
 
-class ExercisesDatabase {
+class Exercises {
   db: SQLite.SQLiteDatabase;
 
   constructor(db: SQLite.SQLiteDatabase) {
@@ -134,5 +134,5 @@ class ExercisesDatabase {
   }
 }
 
-const exerciseDatabase = new ExercisesDatabase(database);
+const exerciseDatabase = new Exercises(database);
 export default exerciseDatabase;

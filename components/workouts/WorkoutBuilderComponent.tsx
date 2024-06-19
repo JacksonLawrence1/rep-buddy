@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
 
 import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
-import workoutDatabase from "@/services/storage/WorkoutDatabase";
+import workoutDatabase from "@/services/database/Workouts";
 
 import DefaultPage from "@/components/pages/DefaultPage";
 import WorkoutBuilderForm from "@/components/workouts/WorkoutBuilderForm";

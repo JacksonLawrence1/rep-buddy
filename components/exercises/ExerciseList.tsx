@@ -3,7 +3,7 @@ import { Alert, FlatList, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import { deleteExercise, fetchExercises, selectExercisesByFilter } from "@/features/exercises";
-import exerciseDatabase from "@/services/storage/ExerciseDatabase";
+import exerciseDatabase from "@/services/database/Exercises";
 
 import { AppDispatch, RootState } from "@/app/store";
 import ExerciseItem from "@/components/exercises/ExerciseItem";

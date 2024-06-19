@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
 export namespace ExpoRouter {
-  type StaticRoutes = `/` | `/..\components\exercises\ExerciseBuilderComponent` | `/..\components\inputs\NumberPicker` | `/..\components\workouts\WorkoutBuilderComponent` | `/..\components\workouts\WorkoutBuilderForm` | `/_sitemap` | `/exercises` | `/exercises/builder/new` | `/log` | `/store` | `/workouts` | `/workouts/builder/exercises` | `/workouts/builder/new`;
+  type StaticRoutes = `/` | `/..\components\log\exercise\LogExercise` | `/..\components\log\exercise\LogExerciseSetRow` | `/..\components\log\exercise\LogExerciseSets` | `/..\services\builders\LogBuilder` | `/_sitemap` | `/exercises` | `/exercises/builder/new` | `/log` | `/store` | `/workouts` | `/workouts/builder/exercises` | `/workouts/builder/new`;
   type DynamicRoutes<T extends string> = `/exercises/builder/${SingleRoutePart<T>}` | `/log/${SingleRoutePart<T>}` | `/workouts/builder/${SingleRoutePart<T>}`;
   type DynamicRouteTemplate = `/exercises/builder/[id]` | `/log/[id]` | `/workouts/builder/[id]`;
 

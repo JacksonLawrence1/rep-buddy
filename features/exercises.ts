@@ -1,7 +1,7 @@
 import { Exercise } from "@/constants/types";
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 
-import exerciseDatabase from "@/services/storage/ExerciseDatabase";
+import exerciseDatabase from "@/services/database/Exercises";
 
 // async action
 export const fetchExercises = createAsyncThunk(

@@ -30,29 +30,12 @@ export type LogSet = {
 export type LogExerciseSet = {
   exercise: Exercise;
   sets: LogSet[];
-  isComplete: boolean;
 }
 
 export type Log = {
-  id: string;
+  id: number;
+  name: string;
   date: string;
   duration: number;
-  sets: LogExerciseSetCompressed[];
+  sets: LogExerciseSet[];
 }
-
-export type WorkoutSetCompressed = {
-  id: string; // this points to the exercise
-  sets: number;
-}
-
-export type WorkoutCompressed = {
-  id: string;
-  name: string;
-  sets: WorkoutSetCompressed[];
-}
-
-export type LogExerciseSetCompressed = {
-  exerciseId: string; // need to consider what happens if the exercise is deleted
-  sets: LogSet[];
-}
-

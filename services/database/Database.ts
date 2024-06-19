@@ -53,6 +53,36 @@ class Database {
     );
   }
 
+  private initWorkoutHistory() {
+    this.db.execSync(
+      `PRAGMA journal_mode = WAL;
+       CREATE TABLE IF NOT EXISTS workoutHistory (
+        id INTEGER PRIMARY KEY NOT NULL,
+        workout_id INTEGER,
+        date TEXT,
+        duration INTEGER,
+        FOREIGN KEY (workout_id) REFERENCES workouts (id)
+      );`,
+    );
+  }
+
+  private initExerciseHistory() {
+    this.db.execSync(
+      `PRAGMA journal_mode = WAL;
+       CREATE TABLE IF NOT EXISTS exerciseHistory (
+        id INTEGER PRIMARY KEY NOT NULL,
+        exercise_id INTEGER,
+        workout_history_id INTEGER,
+        position INTEGER,
+        sets TEXT,
+        reps TEXT,
+        weight REAL,
+        FOREIGN KEY (exercise_id) REFERENCES exercises (id)
+        FOREIGN KEY (workout_history_id) REFERENCES workoutHistory (id)
+      );`,
+    );
+  }
+
   private clearTables() {
     this.db.execSync("DELETE FROM exercises;");
     this.db.execSync("DELETE FROM workouts;");

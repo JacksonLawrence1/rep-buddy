@@ -2,60 +2,50 @@ import {
     Exercise,
     Log,
     LogExerciseSet,
-    LogExerciseSetCompressed,
-    LogSet,
-    WorkoutCompressed,
+    Workout
 } from "@/constants/types";
-import { exerciseService } from "@/features/exercises";
-import { workoutService } from "@/features/workouts";
-import { createContext } from "react";
-import WorkoutBuilder from "./WorkoutBuilder";
-import { Builder } from "./Builder";
+
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
+import { createContext } from "react";
+import { Builder } from "./Builder";
 
 export default class LogBuilder extends Builder {
-  id: string;
-  name: string;
-  date: Date;
-  sets: LogExerciseSet[];
+  id?: number;
+  name: string = "";
+  date?: Date;
+  sets: LogExerciseSet[] = [];
 
-  constructor(id: string) {
-    super();
-
-    const workout: WorkoutCompressed | undefined =
-      workoutService.getData(id);
-
-    if (!workout) {
-      throw new Error(`No workout found with id: ${id}`);
-    }
-
+  newWorkout(workout: Workout): void {
     this.id = workout.id;
     this.name = workout.name;
-    this.date = new Date(); // new date for new workout
-
-    this.setDates();
-
-    this.sets = WorkoutBuilder.uncompressSets(workout.sets) // convert to full exercise data
-      .map((set) => ({
-        exercise: set.exercise,
-        sets: Array.from({ length: set.sets }, () => ({
-          reps: null,
-          weight: null,
-        })),
-        isComplete: false,
-      }));
-
-    // TODO: store that we've started a workout in storage, with the date
-    // if we lost the state, we can then recover it
+    this.date = new Date();
+    this.sets = workout.sets.map((set) => ({
+      exercise: set.exercise,
+      sets: Array.from({ length: set.sets }, () => ({
+        reps: null,
+        weight: null,
+      })),
+    }));
   }
 
-  private setDates(): void {}
-
-  get isComplete(): boolean {
-    return this.sets.every((set) => set.isComplete);
+  loadExistingWorkout(log: Log): void {
+    this.id = log.id;
+    this.name = log.name;
+    this.date = new Date(log.date);
+    this.sets = log.sets.map((set) => ({
+      exercise: set.exercise,
+      sets: set.sets.map((s) => ({
+        reps: s.reps,
+        weight: s.weight,
+      })),
+    }));
   }
 
   get durationNum(): number {
+    if (!this.date) {
+      throw new Error("No date found in log");
+    }
+
     return Date.now() - this.date.getTime();
   }
 
@@ -72,138 +62,66 @@ export default class LogBuilder extends Builder {
     return time.map((t) => (t < 10 ? `0${t}` : t)).join(":");
   }
 
-  updateState(): void {
-    if (this.setState) {
-      this.setState([...this.sets]);
-    }
-    this.updateStore();
+  getReps(i: number, j: number): number | null {
+    return this.sets[i].sets[j].reps;
+  }
+
+  getWeight(i: number, j: number): number | null {
+    return this.sets[i].sets[j].weight;
   }
 
   updateStore(): void {
-    // TODO: update store in storage
+    // TODO: update in progress log in storage
   }
 
   addSet(i: number): void {
-    if (i < 0 || i >= this.sets.length) {
-      throw new Error(`Index ${i} out of bounds`);
-    }
-
     this.sets[i].sets.push({ reps: null, weight: null });
-    this.updateState();
   }
 
-  removeSet(i: number, set: number) {
-    if (i < 0 || i >= this.sets.length) {
-      throw new Error(`Index ${i} out of bounds`);
-    }
-
-    if (set < 0 || set >= this.sets[i].sets.length) {
-      throw new Error(`Index ${set} out of bounds`);
-    }
-
-    this.sets[i].sets.splice(set, 1);
-    this.updateState();
+  removeSet(i: number, j: number) {
+    this.sets[i].sets.splice(j, 1);
+    this.updateStore();
   }
 
-  addExercise(exercise: Exercise): void {
-    if (!exerciseService.exists(exercise.id)) {
-      throw new Error(`Exercise with id ${exercise.id} not found`);
-    }
-
+  async addExercise(exercise: Exercise): Promise<void> {
     this.sets.push({
       exercise: exercise,
       sets: [{ reps: null, weight: null }],
-      isComplete: false,
     });
-
-    this.updateState();
+    this.updateStore();
   }
 
   removeExercise(i: number): void {
     this.sets.splice(i, 1);
-    this.updateState();
+    this.updateStore();
   }
 
   swapExercise(i: number, exercise: Exercise): void {
-    if (!exerciseService.exists(exercise.id)) {
-      throw new Error(`Exercise with id ${exercise.id} not found`);
-    }
-
     this.sets[i].exercise = exercise;
-    this.updateState();
+    this.updateStore();
   }
 
-  updateSetReps(i: number, set: number, reps: string): void {
+  updateSetReps(i: number, j: number, reps: string): void {
     if (isNaN(+reps)) {
       return;
     } 
 
-    this.sets[i].sets[set].reps = reps === "" ? null : +reps;
+    this.sets[i].sets[j].reps = reps === "" ? null : +reps;
     this.updateStore();
   }
 
-  getSetReps(i: number, set: number): number | null {
-    return this.sets[i].sets[set].reps;
-  }
-
-  updateSetWeight(i: number, set: number, weight: string): void {
+  updateSetWeight(i: number, j: number, weight: string): void {
     if (isNaN(+weight)) {
       return;
     }
 
-    this.sets[i].sets[set].weight = weight === "" ? null : +weight;
+    this.sets[i].sets[j].weight = weight === "" ? null : +weight;
     this.updateStore();
   }
 
-  getSetWeight(i: number, set: number): number | null {
-    return this.sets[i].sets[set].weight;
-  }
-
-  completeSet(i: number): void {
-    this.sets[i].isComplete = true;
-  }
-
-  save(dispatcher: Dispatch<UnknownAction>): { title: string; message: string } | undefined {
-
-    // TODO: allow saving incomplete workouts
-    if (!this.isComplete) {
-      return { title: "Incomplete Workout", message: "Please complete all sets" };
-    }
-
-    const log: Log = {
-      id: this.id,
-      date: this.date.toISOString(),
-      duration: this.durationNum,
-      sets: LogBuilder.compressSets(this.sets),
-    };
-
+  async save(dispatcher: Dispatch<UnknownAction>): Promise<void> {
     // TODO: save to storage
     // dispatcher(workoutLogService.addWorkoutLog(log));
-  }
-
-  static compressSets(exercises: LogExerciseSet[]): LogExerciseSetCompressed[] {
-    const compressed: LogExerciseSetCompressed[] = [];
-
-    for (const exerciseSet of exercises) {
-      const completeSets: LogSet[] = [];
-
-      // include all sets that have both reps and weight
-      for (const set of exerciseSet.sets) {
-        if (set.reps !== null && set.weight !== null) {
-          completeSets.push(set as LogSet);
-        }
-      }
-
-      // only include if there is at least one complete set
-      if (completeSets.length > 0) {
-        compressed.push({
-          exerciseId: exerciseSet.exercise.id,
-          sets: completeSets,
-        });
-      }
-    }
-
-    return compressed;
   }
 }
 

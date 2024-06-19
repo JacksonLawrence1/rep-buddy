@@ -1,22 +1,22 @@
 import * as SQLite from "expo-sqlite";
 
-import database from "@/services/storage/Database";
+import database from "@/services/database/Database";
 
 import { Workout, WorkoutSet } from "@/constants/types";
-import WorkoutSetsDatabase from "./WorkoutSetsDatabase";
+import WorkoutSets from "./WorkoutSets";
 
 export type WorkoutRow = {
   id: number;
   name: string;
 };
 
-class WorkoutDatabase {
+class Workouts {
   private db: SQLite.SQLiteDatabase;
-  private workoutSetsDb: WorkoutSetsDatabase;
+  private workoutSetsDb: WorkoutSets;
 
   constructor(db: SQLite.SQLiteDatabase) {
     this.db = db;
-    this.workoutSetsDb = new WorkoutSetsDatabase(db);
+    this.workoutSetsDb = new WorkoutSets(db);
 
     this.addTestData();
   }
@@ -160,5 +160,5 @@ class WorkoutDatabase {
   }
 }
 
-const workoutDatabase = new WorkoutDatabase(database);
+const workoutDatabase = new Workouts(database);
 export default workoutDatabase;

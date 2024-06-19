@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 
-import workoutDatabase, { WorkoutRow } from "@/services/storage/WorkoutDatabase";
+import workoutDatabase, { WorkoutRow } from "@/services/database/Workouts";
 
 // async action
 export const fetchWorkouts = createAsyncThunk(

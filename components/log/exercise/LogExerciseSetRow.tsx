@@ -1,28 +1,24 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useContext } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
 
 import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
 
 import { colors } from "@/constants/colors";
 import settings from "@/constants/settings";
-import { LogSet } from "@/constants/types";
+import { useContext } from "react";
 
-interface WorkoutLogSetItemProps {
-  sets: LogSet[];
-  i: number;
-}
-
-interface SetItemProps {
-  log: LogBuilder;
+interface LogExerciseSetRowProps {
   i: number;
   j: number;
-  reps: string;
-  weight: string;
+  reps: number | null;
+  weight: number | null;
+  onRemoveSet: (i: number, j: number) => void;
 }
 
-function SetItem({ log, i, j, reps, weight }: SetItemProps) {
+export default function LogExerciseSetRow({ i, j, reps, weight, onRemoveSet }: LogExerciseSetRowProps) {
+  const log: LogBuilder = useContext(LogContext) as LogBuilder;
+
+  // updates the log without needing re-renders
   const onWeightChange = (text: string) => log.updateSetWeight(i, j, text);
   const onRepsChange = (text: string) => log.updateSetReps(i, j, text);
 
@@ -31,10 +27,10 @@ function SetItem({ log, i, j, reps, weight }: SetItemProps) {
       <View style={styles.setItem}>
         <Text style={styles.text}>W: </Text>
         <TextInput
-          defaultValue={weight}
+          defaultValue={weight ? `${weight}` : ""}
           inputMode="numeric"
           style={styles.inputContainer}
-          onBlur={(e) => onWeightChange(e.nativeEvent.text || "")}
+          onEndEditing={(e) => onWeightChange(e.nativeEvent.text || "")}
         />
         <Text style={styles.text}>{settings.weightUnit}</Text>
       </View>
@@ -42,42 +38,15 @@ function SetItem({ log, i, j, reps, weight }: SetItemProps) {
         <Text style={styles.text}>R: </Text>
         <TextInput
           placeholderTextColor={colors.textDark}
-          defaultValue={reps}
+          defaultValue={reps ? `${reps}` : ""}
           inputMode="numeric"
           style={styles.inputContainer}
-          onBlur={(e) => onRepsChange(e.nativeEvent.text || "")}
+          onEndEditing={(e) => onRepsChange(e.nativeEvent.text || "")}
         />
       </View>
-      <Pressable style={styles.icon} onPress={() => log.removeSet(i, j)}>
+      <Pressable style={styles.icon} onPress={() => onRemoveSet(i, j)}>
         <FontAwesome5 name="trash" size={16} color={colors.error} />
       </Pressable>
-    </View>
-  );
-}
-
-export default function LogExerciseSetItem({ i }: WorkoutLogSetItemProps) {
-  const log: LogBuilder | null = useContext(LogContext);
-
-  if (!log) {
-    return null;
-  }
-
-  return (
-    <View style={styles.setsContainer}>
-      <FlatList
-        data={log.sets[i].sets}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <SetItem
-            key={`${item.weight},${item.reps}`}
-            log={log}
-            reps={item.reps?.toString() || ""}
-            weight={item.weight?.toString() || ""}
-            i={i}
-            j={index}
-          />
-        )}
-      />
     </View>
   );
 }
@@ -92,13 +61,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 2,
     gap: 8,
-  },
-  setsContainer: {
-    backgroundColor: colors.inputBackground,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingBottom: 8,
-    paddingTop: 4,
   },
   icon: {
     paddingHorizontal: 8,

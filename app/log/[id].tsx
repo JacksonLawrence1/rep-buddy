@@ -1,14 +1,12 @@
+import { Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
-import DefaultPage from "@/components/pages/DefaultPage";
 import Log from "@/components/log/Log";
+import DefaultPage from "@/components/pages/DefaultPage";
 
-import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
-
-import { Text } from "react-native";
 
 export default function StartWorkout() {
-  const { id } = useLocalSearchParams<{id: string}>();
+  const { id, inProgress } = useLocalSearchParams<{id: string, inProgress?: string}>();
 
   if (!id) {
     return (
@@ -18,11 +16,7 @@ export default function StartWorkout() {
     )
   }
 
-  const log: LogBuilder = new LogBuilder(id);
-
   return (
-    <LogContext.Provider value={log}>
-      <Log log={log} />
-    </LogContext.Provider>
+    <Log id={+id} inProgress={inProgress ? true : false} />
   );
 }

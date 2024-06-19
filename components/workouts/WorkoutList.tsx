@@ -8,7 +8,7 @@ import WorkoutItem from "@/components/workouts/WorkoutItem";
 
 import { globalStyles } from "@/constants/styles";
 import { useEffect } from "react";
-import workoutDatabase from "@/services/storage/WorkoutDatabase";
+import workoutDatabase from "@/services/database/Workouts";
 
 interface WorkoutListProps {
   filter?: string;

@@ -2,7 +2,7 @@ import { MuscleGroup } from "@/constants/enums/muscleGroups";
 import { Exercise } from "@/constants/types";
 
 import { addExercise, replaceExercise } from "@/features/exercises";
-import exerciseDatabase from "@/services/storage/ExerciseDatabase";
+import exerciseDatabase from "@/services/database/Exercises";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { Builder } from "./Builder";
 

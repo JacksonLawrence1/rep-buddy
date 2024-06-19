@@ -1,60 +1,54 @@
-import { router } from "expo-router";
-import { useState } from "react";
-import { FlatList, View } from "react-native";
+import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
 
-import exerciseProvider from "@/services/ExerciseProvider";
+import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
 
+import LogContent from "@/components/log/LogContent";
 import DefaultPage from "@/components/pages/DefaultPage";
-import LogBuilder from "@/services/builders/LogBuilder";
-import Button from "../buttons/Button";
-import LogExerciseSet from "./LogExerciseSet";
-import Timer from "./Timer";
-
-import { globalStyles } from "@/constants/styles";
-import { LogExerciseSet as LogExerciseSetType } from "@/constants/types";
+import workoutDatabase from "@/services/database/Workouts";
+import { Alert } from "react-native";
+import { router } from "expo-router";
 
 type WorkoutLogProps = {
-  log: LogBuilder;
+  id: number;
+  inProgress?: boolean;
 };
 
-export default function Log({ log }: WorkoutLogProps) {
-  const [sets, setSets] = useState<LogExerciseSetType[]>(log.sets);
-  log.setState = setSets;
-
-  function onSwapExercise(index: number) {
-    router.navigate({ pathname: "workouts/builder/exercises" });
-    const unsubscribe = exerciseProvider.subscribe((exercise) => {
-      log.swapExercise(index, exercise);
-      unsubscribe(); 
-    })
-  }
-
-  function onAddExercise() {
-    router.navigate({ pathname: "workouts/builder/exercises" });
-    const unsubscribe = exerciseProvider.subscribe((exercise) => {
-      log.addExercise(exercise);
-      unsubscribe(); 
-    })
-  }
-
+function LogLoader(log: LogBuilder) {
   return (
-    <DefaultPage title={log.name}>
-      <View style={globalStyles.scrollContainer}>
-        <FlatList
-          data={sets}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <LogExerciseSet key={index} index={index} exerciseSet={item} onSwap={onSwapExercise} />
-          )}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-          ListFooterComponent={
-          <View style={{paddingVertical: 8}}>
-              <Button label="Add Exercise" icon="plus" theme="primary" onPress={onAddExercise} />
-          </View>
-          }
-        />
-      </View>
-      <Timer />
-    </DefaultPage>
+    <LogContext.Provider value={log}>
+      <LogContent log={log} />
+    </LogContext.Provider>
   );
+}
+
+export default function Log({ id, inProgress }: WorkoutLogProps) {
+  const content = useLoading(loadLog);
+
+  function loadLog(setContent: SetContentStateAction) {
+    const log = new LogBuilder();
+
+    // TODO: load an incomplete log if it exists
+    if (inProgress) {
+      // load incomplete log
+      return;
+    }
+
+    workoutDatabase
+      .getWorkout(id)
+      .then((workout) => {
+        if (!workout) {
+          throw new Error("Workout not found");
+        }
+
+        // create a new log, with the workout as the template
+        log.newWorkout(workout);
+        setContent(LogLoader(log));
+      })
+      .catch((error) => {
+        Alert.alert("Not Found", `${error}`);
+        router.back();
+      });
+  }
+
+  return <DefaultPage title="Workout">{content}</DefaultPage>;
 }

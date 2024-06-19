@@ -4,7 +4,7 @@ import { addWorkout, updateWorkout } from "@/features/workouts";
 import { Builder } from "@/services/builders/Builder";
 import workoutDatabase, {
   WorkoutRow,
-} from "@/services/storage/WorkoutDatabase";
+} from "@/services/database/Workouts";
 
 import { Exercise, Workout, WorkoutSet } from "@/constants/types";
 
