@@ -17,7 +17,12 @@ class ExerciseProvider {
   }
 
   pickExercise(exercise: Exercise) {
-    this.subscribers.forEach((callback) => callback(exercise));
+    this.subscribers.forEach((callback) => {
+      callback(exercise)
+
+      // automatically unsubscribe after the first callback
+      this.subscribers.delete(callback);
+    });
   }
 }
 

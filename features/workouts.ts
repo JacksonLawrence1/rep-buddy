@@ -20,7 +20,7 @@ const workouts = createSlice({
       const id = action.payload;
       return state.filter((workout) => workout.id !== id);
     },
-    replaceWorkout: (state, action) => {
+    updateWorkout: (state, action) => {
       const workout: WorkoutRow = action.payload;
 
       const index = state.findIndex((w) => w.id === workout.id);
@@ -40,7 +40,7 @@ const workouts = createSlice({
 });
 
 // non-async actions
-export const { addWorkout, deleteWorkout, replaceWorkout } = workouts.actions;
+export const { addWorkout, deleteWorkout, updateWorkout } = workouts.actions;
 export default workouts.reducer;
 
 // Selectors:

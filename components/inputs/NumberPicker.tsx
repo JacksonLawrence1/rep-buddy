@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Pressable, Text, View, StyleSheet } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { colors } from "@/constants/colors";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { colors } from "@/constants/colors";
 
 interface ButtonClickerProps {
   icon?: keyof typeof FontAwesome5.glyphMap | undefined;

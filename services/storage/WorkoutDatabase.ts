@@ -13,8 +13,8 @@ export type WorkoutRow = {
 interface WorkoutSetRow {
   sets: number;
   position: number;
-  workoutId: number;
-  exerciseId: number;
+  workout_id: number;
+  exercise_id: number;
 }
 
 interface WorkoutSetRowWithId extends WorkoutSetRow {
@@ -50,7 +50,7 @@ class WorkoutDatabase {
   async getWorkoutSets(id: number): Promise<WorkoutSetRowWithId[]> {
     try {
       const sets: WorkoutSetRowWithId[] = await this.db.getAllAsync(
-        `SELECT * FROM workoutSets WHERE workoutId = ? ORDER BY position ASC`,
+        `SELECT * FROM workoutSets WHERE workout_id = ? ORDER BY position ASC`,
         id,
       );
       return sets;
@@ -87,7 +87,7 @@ class WorkoutDatabase {
         workoutSets
           .map((set, i) =>
              `INSERT INTO workoutSets 
-              (sets, position, workoutId, exerciseId)
+              (sets, position, workout_id, exercise_id)
               VALUES 
               (${set.sets}, ${i}, ${workoutId}, ${set.exercise.id})`
           ).join("; "),
@@ -115,7 +115,7 @@ class WorkoutDatabase {
     }
   }
 
-  async addWorkout(name: string, workoutSets: WorkoutSet[]): Promise<number> {
+  async addWorkout(name: string, workoutSets: WorkoutSet[]): Promise<WorkoutRow> {
     try {
       const result = await this.db.runAsync(
         "INSERT INTO workouts (name) VALUES (?);",
@@ -126,7 +126,8 @@ class WorkoutDatabase {
       // insert the workout sets
       await this.insertWorkoutSets(workoutId, workoutSets);
 
-      return workoutId;
+      // return the row that was added
+      return { id: workoutId, name } as WorkoutRow;
     } catch (error) {
       throw new Error(`Error adding exercise: ${error}`);
     }
@@ -138,7 +139,7 @@ class WorkoutDatabase {
       await this.db.runAsync(`DELETE FROM workouts WHERE id = ?`, id);
 
       // delete the sets associated with the workout
-      await this.db.runAsync(`DELETE FROM workoutSets WHERE workoutId = ?`, id);
+      await this.db.runAsync(`DELETE FROM workoutSets WHERE workout_id = ?`, id);
     } catch (error) {
       throw new Error(`Error deleting workout with id ${id}: ${error}`);
     }
@@ -151,7 +152,7 @@ class WorkoutDatabase {
 
       // delete the old workout sets
       // PERF: might be better to only update the sets that have changed, but not sure how to do efficiently
-      await this.db.runAsync(`DELETE FROM workoutSets WHERE workoutId = ?`, id);
+      await this.db.runAsync(`DELETE FROM workoutSets WHERE workout_id = ?`, id);
 
       // insert the new workout sets
       await this.insertWorkoutSets(id, workoutSets);
@@ -170,9 +171,9 @@ class WorkoutDatabase {
 
     for (const row of sets) {
       try {
-        const exercise = await exerciseDatabase.getExercise(row.exerciseId);
+        const exercise = await exerciseDatabase.getExercise(row.exercise_id);
         if (!exercise) {
-          throw new Error(`Exercise with id ${row.exerciseId} not found`);
+          throw new Error(`Exercise with id ${row.exercise_id} not found`);
         }
         workoutSets.push({
           sets: row.sets,

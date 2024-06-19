@@ -1,11 +1,12 @@
-import {
-    Exercise,
-    Workout,
-    WorkoutSet,
-} from "@/constants/types";
+import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 
-import workoutDatabase from "../storage/WorkoutDatabase";
-import { Builder } from "./Builder";
+import { addWorkout, updateWorkout } from "@/features/workouts";
+import { Builder } from "@/services/builders/Builder";
+import workoutDatabase, {
+  WorkoutRow,
+} from "@/services/storage/WorkoutDatabase";
+
+import { Exercise, Workout, WorkoutSet } from "@/constants/types";
 
 type WorkoutSetIndexObject = number | [number, number] | undefined;
 
@@ -17,18 +18,17 @@ class WorkoutBuilder extends Builder {
 
   constructor(workout?: Workout) {
     super();
-    
+
     if (workout) {
       this.setWorkout(workout);
-      this.replacing = true;
-      return;
     }
   }
 
   setWorkout(workout: Workout): void {
     this.id = workout.id;
     this.name = workout.name;
-    this.workoutSets = workout.sets;
+    this.workoutSets = workout.sets; // TODO: replace exercise type in workoutsets to exerciseRow
+    this.replacing = true;
   }
 
   async nameExists(name: string): Promise<boolean> {
@@ -41,12 +41,14 @@ class WorkoutBuilder extends Builder {
 
   // if i exists, then we are replacing it, but not replacing its sets
   // might be good to implement some unit tests for this
-  addExercise(exercise: Exercise): void {
-    this.workoutSets.push({exercise: exercise, sets: 1});
+  addExercise(exercise: Exercise): WorkoutSet {
+    const workoutSet: WorkoutSet = { exercise: exercise, sets: 1 };
+    this.workoutSets.push(workoutSet);
+    return workoutSet;
   }
 
   replaceExercise(exercise: Exercise, i: number): void {
-    if (i < 0 || i >= this.length) {
+    if (i < 0 || i >= 20) {
       throw new Error("Index out of bounds: " + i.toString());
     }
 
@@ -70,27 +72,44 @@ class WorkoutBuilder extends Builder {
     this.workoutSets[i].sets = sets;
   }
 
+  private async updateWorkout(
+    dispatcher: Dispatch<UnknownAction>,
+  ): Promise<void> {
+    if (!this.id) {
+      throw new Error("No workout ID found while updating workout");
+    }
+
+    const row: WorkoutRow = await workoutDatabase.updateWorkout(
+      this.id,
+      this.name,
+      this.workoutSets,
+    );
+
+    dispatcher(updateWorkout(row));
+  }
+
+  private async addWorkout(dispatcher: Dispatch<UnknownAction>): Promise<void> {
+    const row: WorkoutRow = await workoutDatabase.addWorkout(
+      this.name,
+      this.workoutSets,
+    );
+    dispatcher(addWorkout(row));
+  }
+
   // returns the saved workout if needed
-  async save(): Promise<void> {
+  async save(dispatcher: Dispatch<UnknownAction>): Promise<void> {
     if (!this.name) {
       throw new Error("Workout name is required");
-    } 
-    
+    }
+
     try {
       const exists: boolean = await this.nameExists(this.name);
 
-      if (exists) {
+      if (exists && !this.replacing) {
         throw new Error(`Workout with name ${this.name} already exists`);
       }
 
-      // update the workout if it exists
-      if (this.replacing && this.id) {
-        await workoutDatabase.updateWorkout(this.id, this.name, this.workoutSets);
-        return;
-      }
-      
-      // add the workout if it doesn't exist
-      await workoutDatabase.addWorkout(this.name, this.workoutSets);
+      return this.replacing ? this.updateWorkout(dispatcher) : this.addWorkout(dispatcher);
     } catch (error) {
       throw new Error(`Error saving workout: ${error}`);
     }
@@ -98,5 +117,3 @@ class WorkoutBuilder extends Builder {
 }
 
 export default WorkoutBuilder;
-
-

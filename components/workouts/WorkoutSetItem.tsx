@@ -9,12 +9,17 @@ import { WorkoutSet } from "@/constants/types";
 
 interface WorkoutBaseProps {
   item: WorkoutSet;
-  onSetChange?: (sets: number) => void;
+  updateSet: (set: number) => void;
   onDelete?: () => void;
   onSwap?: () => void;
 }
 
-export default function WorkoutSetItem({ item, onSetChange, onDelete, onSwap }: WorkoutBaseProps) {
+export default function WorkoutSetItem({
+  item,
+  onDelete,
+  updateSet,
+  onSwap,
+}: WorkoutBaseProps) {
   // options on the popout menu
   const popoutMenuOptions: React.ReactNode[] = [];
 
@@ -24,7 +29,14 @@ export default function WorkoutSetItem({ item, onSetChange, onDelete, onSwap }: 
 
   // Ideally, use generic function to create this array, but this would involve annoying prop passing
   if (onSwap) {
-    popoutMenuOptions.push(<GenericMenuOption key={1} label="Swap" icon="exchange-alt" onPress={onSwap} />);
+    popoutMenuOptions.push(
+      <GenericMenuOption
+        key={1}
+        label="Swap"
+        icon="exchange-alt"
+        onPress={onSwap}
+      />,
+    );
   }
 
   return (
@@ -46,7 +58,7 @@ export default function WorkoutSetItem({ item, onSetChange, onDelete, onSwap }: 
           width: "100%",
         }}
       >
-        <NumberPicker start={item.sets} onChange={onSetChange || (() => undefined)} />
+        <NumberPicker start={item.sets} onChange={updateSet} />
       </View>
     </View>
   );

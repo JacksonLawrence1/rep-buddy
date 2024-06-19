@@ -1,18 +1,13 @@
 import { router } from "expo-router";
-import { Alert, FlatList, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
-import exerciseProvider from "@/services/ExerciseProvider";
+import workoutDatabase from "@/services/storage/WorkoutDatabase";
 
-import Button from "@/components/buttons/Button";
-import { TextInput } from "@/components/inputs/FormFields";
 import DefaultPage from "@/components/pages/DefaultPage";
-import WorkoutSetItem from "./WorkoutSetItem";
-
-import { globalStyles } from "@/constants/styles";
-import { WorkoutSet } from "@/constants/types";
-import { useState } from "react";
+import Loading from "@/components/primitives/Loading";
+import WorkoutBuilderForm from "@/components/workouts/WorkoutBuilderForm";
 
 type WorkoutBuilderComponentProps = {
   id?: number;
@@ -21,67 +16,42 @@ type WorkoutBuilderComponentProps = {
 export default function WorkoutBuilderComponent({
   id,
 }: WorkoutBuilderComponentProps) {
-  // TODO: big refactor
-  
-  const [workoutSets, setWorkoutSets] = useState<WorkoutSet[]>(workoutBuilder.workout.sets);
-  workoutBuilder.setWorkoutSets = setWorkoutSets;
+  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState<React.ReactNode>(<Loading />);
 
-  const dispatch = useDispatch();
+  // load workout asynchronously
+  useEffect(() => {
+    if (loading) {
+      setLoading(false);
 
-  function handleAddExercise(i?: number) {
-    router.navigate("/workouts/builder/exercises");
+      const builder = new WorkoutBuilder();
 
-    // on exercise selection, add to workout at the correct index
-    const unsubscribe = exerciseProvider.subscribe((exercise) => {
-      workoutBuilder.addExercise(exercise.id, i);
-      unsubscribe();
-    });
-  }
+      // if no id is passed in, then create a new workout
+      if (!id) {
+        setContent(<WorkoutBuilderForm workoutBuilder={builder} />);
+        return;
+      }
 
-  // save to storage
-  function saveWorkout() {
-    const error = workoutBuilder.save(dispatch);
+      // try to get the workouts from database
+      workoutDatabase
+        .getWorkout(id)
+        .then((workout) => {
+          if (workout) {
+            builder.setWorkout(workout);
+          }
 
-    if (error) {
-      Alert.alert(error.title, error.message);
-      return;
+          setContent(<WorkoutBuilderForm workoutBuilder={builder} />);
+        })
+        .catch((error) => {
+          Alert.alert(
+            "Not Found",
+            `${error}`,
+          );
+
+          router.back();
+        });
     }
+  }, [id, loading]);
 
-    router.back();
-  }
-
-  return (
-    <DefaultPage title="New Workout">
-      <View style={globalStyles.formContainer}>
-        <TextInput
-          title="Workout Name"
-          placeholder="Workout Name"
-          defaultValue={workoutBuilder.name}
-          onChangeText={(text) => workoutBuilder.name = text}
-        />
-        <View style={globalStyles.scrollContainer}>
-          <FlatList
-            data={workoutSets}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item, index }) => (
-              <WorkoutSetItem
-                key={index}
-                item={item}
-                onSetChange={(set) => workoutBuilder.updateWorkoutSet(index, set)}
-                onSwap={() => handleAddExercise(index)}
-                onDelete={() => workoutBuilder.removeWorkoutSet(index)}
-              />
-            )}
-            ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-            ListFooterComponent={() => (
-              <View style={{ paddingVertical: 8 }}>
-                <Button label="Add Exercise" theme="primary" onPress={() => handleAddExercise()} />
-              </View>
-            )}
-          />
-        </View>
-        <Button label="Save" theme="primary" onPress={saveWorkout} />
-      </View>
-    </DefaultPage>
-  );
+  return <DefaultPage title="New Workout">{content}</DefaultPage>;
 }

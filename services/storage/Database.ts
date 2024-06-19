@@ -10,7 +10,6 @@ class Database {
     this.initWorkouts();
     this.initWorkoutSets();
 
-    // WARNING: delete this when done testing
     this.clearTables();
   }
 
@@ -41,8 +40,11 @@ class Database {
        CREATE TABLE IF NOT EXISTS workoutSets (
         id INTEGER PRIMARY KEY NOT NULL,
         sets INTEGER,
-        FOREIGN KEY(workoutId) REFERENCES workouts(id),
-        FOREIGN KEY(exerciseId) REFERENCES exercises(id)
+        position INTEGER,
+        workout_id INTEGER, 
+        exercise_id INTEGER,
+        FOREIGN KEY (workout_id) REFERENCES workouts (id),
+        FOREIGN KEY (exercise_id) REFERENCES exercises (id)
       );`,
     );
   }
