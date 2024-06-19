@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   clicker: {
-    width: 32,
-    height: 32,
+    minWidth: 32,
+    minHeight: 32,
     padding: 10,
     borderRadius: 8,
     justifyContent: "center",

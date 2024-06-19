@@ -1,3 +1,4 @@
+import { MuscleGroup } from "@/constants/enums/muscleGroups";
 import * as SQLite from "expo-sqlite";
 
 class Database {
@@ -10,7 +11,10 @@ class Database {
     this.initWorkouts();
     this.initWorkoutSets();
 
+    // WARNING: Clear when done testing
     this.clearTables();
+    this.addTestExercises();
+    this.addTestWorkouts();
   }
 
   private initExercises() {
@@ -53,6 +57,48 @@ class Database {
     this.db.execSync("DELETE FROM exercises;");
     this.db.execSync("DELETE FROM workouts;");
     this.db.execSync("DELETE FROM workoutSets;");
+  }
+
+  // TODO: Delete this when done testing
+  private addTestExercises(): void {
+    const baseExercises = [
+      {
+        name: "Military Press",
+        muscleGroups: [MuscleGroup.SHOULDERS],
+      },
+      {
+        name: "Barbell Bench Press",
+        muscleGroups: [MuscleGroup.CHEST],
+      },
+      {
+        name: "Overhead Press",
+        muscleGroups: [MuscleGroup.SHOULDERS],
+      },
+      {
+        name: "Deadlift",
+        muscleGroups: [MuscleGroup.BACK],
+      },
+      {
+        name: "Barbell Squat",
+        muscleGroups: [MuscleGroup.LEGS],
+      },
+      {
+        name: "Dumbbell Curls",
+        muscleGroups: [MuscleGroup.BICEPS],
+      },
+    ];
+
+    for (const exercise of baseExercises) {
+      this.db.runSync(
+        `INSERT INTO exercises (name, muscleGroups) VALUES (?, ?);`,
+        exercise.name,
+        exercise.muscleGroups.join(","),
+      );
+    }
+  }
+
+  private addTestWorkouts(): void {
+
   }
 }
 

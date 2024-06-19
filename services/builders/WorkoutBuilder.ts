@@ -27,7 +27,7 @@ class WorkoutBuilder extends Builder {
   setWorkout(workout: Workout): void {
     this.id = workout.id;
     this.name = workout.name;
-    this.workoutSets = workout.sets; // TODO: replace exercise type in workoutsets to exerciseRow
+    this.workoutSets = workout.sets;
     this.replacing = true;
   }
 
@@ -55,7 +55,7 @@ class WorkoutBuilder extends Builder {
     this.workoutSets[i].exercise = exercise;
   }
 
-  removeWorkoutSet(i: number): void {
+  deleteExercise(i: number): void {
     this.workoutSets.splice(i, 1);
   }
 
@@ -72,9 +72,7 @@ class WorkoutBuilder extends Builder {
     this.workoutSets[i].sets = sets;
   }
 
-  private async updateWorkout(
-    dispatcher: Dispatch<UnknownAction>,
-  ): Promise<void> {
+  private async updateWorkout(dispatcher: Dispatch<UnknownAction>): Promise<void> {
     if (!this.id) {
       throw new Error("No workout ID found while updating workout");
     }

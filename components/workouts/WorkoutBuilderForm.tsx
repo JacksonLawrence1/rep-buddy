@@ -1,39 +1,33 @@
 import { router } from "expo-router";
 import { Alert, FlatList, View } from "react-native";
+import { useDispatch } from "react-redux";
 
-import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
+import useWorkoutSets from "@/hooks/useWorkoutSets";
 import exerciseProvider from "@/services/ExerciseProvider";
+import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
 
 import Button from "@/components/buttons/Button";
 import { TextInput } from "@/components/inputs/FormFields";
 import WorkoutSetItem from "@/components/workouts/WorkoutSetItem";
 
 import { globalStyles } from "@/constants/styles";
-import { useState } from "react";
-import { WorkoutSet } from "@/constants/types";
-import { useDispatch } from "react-redux";
 
 type WorkoutBuilderFormProps = {
   workoutBuilder: WorkoutBuilder;
 };
 
 export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFormProps) {
-  const [workoutSets, setWorkoutSets] = useState<WorkoutSet[]>(workoutBuilder.workoutSets);
+  // custom hook to manage workout sets
+  const { workoutSets, addExercise, replaceExercise, deleteExercise } = useWorkoutSets(workoutBuilder);
+
   const dispatch = useDispatch();
 
   // add a fresh exercise set to the workout using the exercise picker
   function onAddExercise() {
     router.navigate("/workouts/builder/exercises");
 
-    // listen for the exercise when picked
-    // automatically unsubscribed when clicked back (see app/workouts/exercises.tsx)
     exerciseProvider.subscribe((exercise) => {
-      // BUG: doing this duplicates the first set added so instead just copy from the builder's workoutSets
-      // const workoutSet = workoutBuilder.addExercise(exercise);
-      // setWorkoutSets([...workoutSets, newSet]);
-      
-      workoutBuilder.addExercise(exercise);
-      setWorkoutSets([...workoutBuilder.workoutSets]);
+      addExercise(exercise);
     });
   }
 
@@ -42,21 +36,12 @@ export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFor
     router.navigate("/workouts/builder/exercises");
 
     exerciseProvider.subscribe((exercise) => {
-      workoutBuilder.replaceExercise(exercise, i);
-
-      // mutate array to update state
-      setWorkoutSets(workoutSets.map((set, index) => {
-        if (index === i) {
-          return workoutBuilder.workoutSets[i];
-        }
-        return set;
-      }));
+      replaceExercise(exercise, i);
     });
   }
 
   function onDeleteExercise(i: number) {
-    workoutBuilder.removeWorkoutSet(i);
-    setWorkoutSets(workoutSets.filter((_, index) => index !== i));
+    deleteExercise(i);
   }
 
   async function saveWorkout() {
