@@ -52,21 +52,25 @@ export default function Layout() {
               <Stack.Screen name="index" />
 
               <Stack.Screen name="workouts/index" />
-              <Stack.Screen name="workouts/builder/new" />
-              <Stack.Screen name="workouts/builder/[id]" />
+              <Stack.Screen name="workouts/new/index" />
+              <Stack.Screen name="workouts/edit/[id]" />
               <Stack.Screen
-                name="workouts/builder/exercises"
+                name="exercises/picker"
                 options={{ presentation: "modal" }}
               />
 
               <Stack.Screen name="exercises/index" />
 
               <Stack.Screen
-                name="exercises/builder/new"
+                name="exercises/new/index"
                 options={{ presentation: "modal" }}
               />
               <Stack.Screen
-                name="exercises/builder/[id]"
+                name="exercises/edit/[id]"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="exercises/history/[id]"
                 options={{ presentation: "modal" }}
               />
             </Stack>

@@ -8,48 +8,34 @@ import { Exercise } from "@/constants/types";
 import exerciseProvider from "@/services/ExerciseProvider";
 
 import { useState } from "react";
+import { router } from "expo-router";
 
 interface ChooseExerciseProps {
   title?: string;
-  onPress?: (exercise: Exercise) => void; // when an exercise is selected
-  onAdd?: () => void; // called when user clicks new exercise button
-  onEdit?: (exercise: Exercise) => void; // called when an exercise is edited
-  onExit?: () => void; // called when user exits the exercise picker
 }
 
-export default function ExercisePicker({
-  title,
-  onPress,
-  onAdd,
-  onEdit,
-  onExit,
-}: ChooseExerciseProps) {
+// when we exit the exercise picker
+function onExit() {
+  exerciseProvider.clearSubscribers();
+}
+
+export default function ExercisePicker({ title }: ChooseExerciseProps) {
   // wrap the onPress function to also call the exercise provider
-  const handleExerciseSelection = onPress
-    ? (exercise: Exercise) => {
-        exerciseProvider.pickExercise(exercise);
-        onPress(exercise);
-      }
-    : undefined;
+  const handleExerciseSelection = (exercise: Exercise) => {
+    exerciseProvider.pickExercise(exercise);
+    router.back(); // go back to the previous screen
+  }
 
   const [filter, setFilter] = useState("");
 
   return (
     <DefaultPage title={title || "Your Exercises"} callback={onExit}>
-      <Searchbar placeholder="Search for an exercise" onChangeText={setFilter} />
-      <ExerciseList
-        filter={filter}
-        onItemPress={handleExerciseSelection}
-        onEdit={onEdit}
+      <Searchbar
+        placeholder="Search for an exercise"
+        onChangeText={setFilter}
       />
-      {onAdd && (
-        <Button
-          label="Add New Exercise"
-          theme="primary"
-          icon={"plus"}
-          onPress={onAdd}
-        />
-      )}
+      <ExerciseList filter={filter} onItemPress={handleExerciseSelection} />
+      <Button label="Add New Exercise" theme="primary" icon={"plus"} />
     </DefaultPage>
   );
 }

@@ -28,6 +28,7 @@ export default class WorkoutSets {
     this.db = db;
   }
 
+  // SQL queries
   private async _getWorkoutSets(workout_id: number): Promise<WorkoutSetRowWithId[]> {
     return this.db.getAllAsync(
       `SELECT * FROM workoutSets WHERE workout_id = ? ORDER BY position ASC`,
@@ -56,6 +57,7 @@ export default class WorkoutSets {
         .join("; "),
     );
   }
+
 
   // gets all the workout sets associated with a workout id
   async getWorkoutSets(workout_id: number): Promise<WorkoutSet[]> {

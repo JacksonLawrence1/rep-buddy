@@ -1,23 +1,16 @@
-import {
-    Exercise,
-    Log,
-    LogExerciseSet,
-    Workout
-} from "@/constants/types";
-
-import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
+import { Exercise, Log, LogExerciseSet, Workout } from "@/constants/types";
 import { createContext } from "react";
+
+import history from "@/services/database/History";
+
 import { Builder } from "./Builder";
 
 export default class LogBuilder extends Builder {
-  id?: number;
-  name: string = "";
   date?: Date;
   sets: LogExerciseSet[] = [];
 
   newWorkout(workout: Workout): void {
     this.id = workout.id;
-    this.name = workout.name;
     this.date = new Date();
     this.sets = workout.sets.map((set) => ({
       exercise: set.exercise,
@@ -30,7 +23,6 @@ export default class LogBuilder extends Builder {
 
   loadExistingWorkout(log: Log): void {
     this.id = log.id;
-    this.name = log.name;
     this.date = new Date(log.date);
     this.sets = log.sets.map((set) => ({
       exercise: set.exercise,
@@ -58,7 +50,7 @@ export default class LogBuilder extends Builder {
       Math.floor((duration % 3600000) / 60000),
       Math.floor((duration % 60000) / 1000),
     ];
-    
+
     return time.map((t) => (t < 10 ? `0${t}` : t)).join(":");
   }
 
@@ -96,7 +88,7 @@ export default class LogBuilder extends Builder {
     this.updateStore();
   }
 
-  swapExercise(i: number, exercise: Exercise): void {
+  swapExercise(exercise: Exercise, i: number): void {
     this.sets[i].exercise = exercise;
     this.updateStore();
   }
@@ -104,7 +96,7 @@ export default class LogBuilder extends Builder {
   updateSetReps(i: number, j: number, reps: string): void {
     if (isNaN(+reps)) {
       return;
-    } 
+    }
 
     this.sets[i].sets[j].reps = reps === "" ? null : +reps;
     this.updateStore();
@@ -119,9 +111,33 @@ export default class LogBuilder extends Builder {
     this.updateStore();
   }
 
-  async save(dispatcher: Dispatch<UnknownAction>): Promise<void> {
-    // TODO: save to storage
-    // dispatcher(workoutLogService.addWorkoutLog(log));
+  async addWorkoutToHistory(): Promise<void> {
+    if (!this.date) {
+      throw new Error("Date could not be found");
+    }
+
+    if (!this.id) {
+      // TODO: implement starting a workout from scratch
+      throw new Error(
+        "Workout ID could not be found, if you are trying to start a workout from scratch, this has not been implemented yet.",
+      );
+    }
+
+    // adds the workout to the workout history database
+    await history.addWorkoutHistory(
+      this.id,
+      this.date,
+      this.durationNum,
+      this.sets,
+    );
+  }
+
+  async save(): Promise<void> {
+    try {
+      return await this.addWorkoutToHistory();
+    } catch (error) {
+      throw new Error(`Error saving workout: ${error}`);
+    }
   }
 }
 

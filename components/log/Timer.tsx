@@ -1,12 +1,17 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { useContext, useEffect, useState } from "react";
 
-import { colors } from "@/constants/colors";
 import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
+
+import Button from "@/components/buttons/Button";
+
+import { colors } from "@/constants/colors";
+import { router } from "expo-router";
 
 export default function Timer() {
   const log: LogBuilder | null = useContext(LogContext);
   const [timer, setTimer] = useState<string>("00:00:00");
+  const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
 
   useEffect(() => {
     if (!log) return;
@@ -22,10 +27,26 @@ export default function Timer() {
 
   if (!log) return null;
 
+  function saveWorkout() {
+    setSaveDisabled(true);
+
+    log!.save().then(() => {
+      router.back();
+      setSaveDisabled(false);
+    }).catch((error) => {
+      Alert.alert("Error", error.message);
+      setSaveDisabled(false);
+    });
+  }
+
   return (
     <View style={styles.footerContainer}>
       <View style={styles.timerContainer}>
         <Text style={styles.timerText}>{timer}</Text>
+      </View>
+      {/* TODO: change where finish icon is */}
+      <View style={{flex: 1}}>
+        <Button disabled={saveDisabled} label="Finish" theme="primary" onPress={saveWorkout} />
       </View>
     </View>
   );
@@ -41,13 +62,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     backgroundColor: colors.tertiary,
+    paddingHorizontal: 16,
   },
   timerContainer: {
-    width: '100%',
+    flex: 1,
     borderRadius: 8,
     justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 16,
   },
   timerText: {

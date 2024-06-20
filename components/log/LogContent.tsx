@@ -1,35 +1,28 @@
-import { router } from "expo-router";
 import { FlatList, View } from "react-native";
 
-import exerciseProvider from "@/services/ExerciseProvider";
+import useWorkoutLog from "@/hooks/useWorkoutLog";
 
-import Button from "../buttons/Button";
-import LogExercise from "./exercise/LogExercise";
-import Timer from "./Timer";
+import LogBuilder from "@/services/builders/LogBuilder";
+
+import Button from "@/components/buttons/Button";
+import LogExercise from "@/components/log/exercise/LogExercise";
+import Timer from "@/components/log/Timer";
 
 import { globalStyles } from "@/constants/styles";
-import useWorkoutLog from "@/hooks/useWorkoutLog";
-import LogBuilder from "@/services/builders/LogBuilder";
 
 type WorkoutLogProps = {
   log: LogBuilder;
 };
 
 export default function LogContent({ log }: WorkoutLogProps) {
-  const { exercises, addExercise, swapExercise, removeExercise } = useWorkoutLog(log);
+  const { exercises, pickExercise, removeExercise } = useWorkoutLog(log);
 
   function onSwapExercise(index: number) {
-    router.navigate({ pathname: "workouts/builder/exercises" });
-    exerciseProvider.subscribe((exercise) => {
-      swapExercise(exercise, index);
-    })
+    pickExercise((exercise) => log.swapExercise(exercise, index));
   }
 
   function onAddExercise() {
-    router.navigate({ pathname: "workouts/builder/exercises" });
-    exerciseProvider.subscribe((exercise) => {
-      addExercise(exercise);
-    })
+    pickExercise((exercise) => log.addExercise(exercise));
   }
 
   function onDeleteExercise(index: number) {

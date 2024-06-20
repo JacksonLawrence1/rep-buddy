@@ -17,10 +17,9 @@ class Workouts {
   constructor(db: SQLite.SQLiteDatabase) {
     this.db = db;
     this.workoutSetsDb = new WorkoutSets(db);
-
-    this.addTestData();
   }
 
+  // SQL queries
   private async _getWorkout(id: number): Promise<WorkoutRow | null> {
     return this.db.getFirstAsync(`SELECT * FROM workouts WHERE id = ?`, id);
   }
@@ -48,7 +47,6 @@ class Workouts {
     return this.db.runAsync(`DELETE FROM workouts WHERE id = ?;`, id);
   }
 
-
   private async _nameExists(
     name: string,
     filter?: string,
@@ -60,7 +58,8 @@ class Workouts {
     );
   }
 
-  async getWorkout(id: number): Promise<Workout | undefined> {
+
+  async getWorkout(id: number): Promise<Workout> {
     try {
       // get the name and id of the workout from the database
       const row: WorkoutRow | null = await this._getWorkout(id);
@@ -75,7 +74,7 @@ class Workouts {
       // compile the workout
       return { id, name: row.name, sets: workoutSets };
     } catch (error) {
-      throw new Error(`Error getting workout with id ${id}: ${error}`);
+      throw new Error(`Error getting workout: ${error}`);
     }
   }
 
@@ -148,15 +147,6 @@ class Workouts {
     } catch (error) {
       throw new Error(`Error whilst checking if workout name exists: ${error}`);
     }
-  }
-
-  private addTestData(): void {
-    this.db.execAsync(`
-      INSERT INTO workouts (name) VALUES ('Test Workout 1');
-      INSERT INTO workouts (name) VALUES ('Test Workout 2');
-      INSERT INTO workouts (name) VALUES ('Test Workout 3');
-      INSERT INTO workouts (name) VALUES ('Test Workout 4');
-    `);
   }
 }
 

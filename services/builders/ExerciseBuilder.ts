@@ -7,7 +7,6 @@ import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { Builder } from "./Builder";
 
 export default class ExerciseBuilder extends Builder {
-  id?: number;
   name: string = "";
   muscleGroups: Set<MuscleGroup> = new Set(); // store as set for easy toggling
   private replacing: boolean = false;

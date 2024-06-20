@@ -13,11 +13,10 @@ import { colors } from "@/constants/colors";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 export interface PopoutMenuOptions {
-  icon: keyof typeof FontAwesome5.glyphMap;
   options: React.ReactNode[];
 }
 
-type popoutMenuFn = () => void | undefined;
+type popoutMenuFn = () => void | Promise<void> | undefined;
 
 interface BaseOptionProps {
   onPress?: popoutMenuFn;
@@ -44,6 +43,11 @@ export function Edit({ onPress }: BaseOptionProps): React.ReactNode {
   return <GenericMenuOption label="Edit" onPress={onPress} icon="edit" />;
 }
 
+// easier to import this than to define it inline
+export function History({ onPress }: BaseOptionProps): React.ReactNode {
+  return <GenericMenuOption label="History" onPress={onPress} icon="history" />;
+}
+
 // because style is finnicky, defined this completely separately to generic option
 export function Delete({ onPress }: BaseOptionProps): React.ReactNode {
   return (
@@ -56,7 +60,7 @@ export function Delete({ onPress }: BaseOptionProps): React.ReactNode {
   );
 }
 
-export function PopoutMenu({ icon, options }: PopoutMenuOptions) {
+export function PopoutMenu({ options }: PopoutMenuOptions) {
   return (
     <View>
       <Menu
@@ -67,7 +71,7 @@ export function PopoutMenu({ icon, options }: PopoutMenuOptions) {
         }}
       >
         <MenuTrigger>
-          <FontAwesome5 name={icon} size={20} color={colors.text} />
+          <FontAwesome5 name="ellipsis-h" size={20} color={colors.text} />
         </MenuTrigger>
         <MenuOptions customStyles={menuStyles}>
           {options.map(option => option)}

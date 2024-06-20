@@ -11,10 +11,9 @@ import { Exercise, Workout, WorkoutSet } from "@/constants/types";
 type WorkoutSetIndexObject = number | [number, number] | undefined;
 
 class WorkoutBuilder extends Builder {
-  id?: number;
   name: string = "";
   workoutSets: WorkoutSet[] = [];
-  replacing: boolean = false;
+  private replacing: boolean = false;
 
   constructor(workout?: Workout) {
     super();

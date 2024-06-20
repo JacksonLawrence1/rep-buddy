@@ -10,7 +10,9 @@ class Database {
     this.initExercises();
     this.initWorkouts();
     this.initWorkoutSets();
-
+    this.initWorkoutHistory();
+    this.initExerciseHistory();
+  
     // WARNING: Clear when done testing
     this.clearTables();
     this.addTestExercises();
@@ -71,12 +73,11 @@ class Database {
       `PRAGMA journal_mode = WAL;
        CREATE TABLE IF NOT EXISTS exerciseHistory (
         id INTEGER PRIMARY KEY NOT NULL,
-        exercise_id INTEGER,
         workout_history_id INTEGER,
+        exercise_id INTEGER,
         position INTEGER,
-        sets TEXT,
         reps TEXT,
-        weight REAL,
+        weight TEXT,
         FOREIGN KEY (exercise_id) REFERENCES exercises (id)
         FOREIGN KEY (workout_history_id) REFERENCES workoutHistory (id)
       );`,
@@ -87,6 +88,8 @@ class Database {
     this.db.execSync("DELETE FROM exercises;");
     this.db.execSync("DELETE FROM workouts;");
     this.db.execSync("DELETE FROM workoutSets;");
+    this.db.execSync("DELETE FROM workoutHistory;");
+    this.db.execSync("DELETE FROM exerciseHistory;");
   }
 
   // TODO: Delete this when done testing
@@ -128,7 +131,12 @@ class Database {
   }
 
   private addTestWorkouts(): void {
-
+    this.db.execSync(`
+      INSERT INTO workouts (name) VALUES ('Test Workout 1');
+      INSERT INTO workouts (name) VALUES ('Test Workout 2');
+      INSERT INTO workouts (name) VALUES ('Test Workout 3');
+      INSERT INTO workouts (name) VALUES ('Test Workout 4');
+    `);
   }
 }
 

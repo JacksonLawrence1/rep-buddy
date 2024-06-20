@@ -55,12 +55,17 @@ class Exercises {
     return this.db.runAsync(`DELETE FROM exercises WHERE id = ?;`, id);
   }
 
-  async getExercise(id: number): Promise<Exercise | undefined> {
+  async getExercise(id: number): Promise<Exercise> {
     try {
       const row: ExerciseRow | null = await this._getExercise(id);
-      return row ? this.convertToExercise(row) : undefined;
+
+      if (!row) {
+        throw new Error(`Exercise with id ${id} not found`);
+      }
+
+      return this.convertToExercise(row);
     } catch (error) {
-      throw new Error(`Error getting exercise with id ${id}: ${error}`);
+      throw new Error(`${error}`);
     }
   }
 

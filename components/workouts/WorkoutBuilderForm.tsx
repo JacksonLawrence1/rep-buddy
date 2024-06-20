@@ -3,7 +3,6 @@ import { Alert, FlatList, View } from "react-native";
 import { useDispatch } from "react-redux";
 
 import useWorkoutSets from "@/hooks/useWorkoutSets";
-import exerciseProvider from "@/services/ExerciseProvider";
 import WorkoutBuilder from "@/services/builders/WorkoutBuilder";
 
 import Button from "@/components/buttons/Button";
@@ -18,26 +17,18 @@ type WorkoutBuilderFormProps = {
 
 export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFormProps) {
   // custom hook to manage workout sets
-  const { workoutSets, addExercise, replaceExercise, deleteExercise } = useWorkoutSets(workoutBuilder);
+  const { workoutSets, pickExercise, deleteExercise } = useWorkoutSets(workoutBuilder);
 
   const dispatch = useDispatch();
 
   // add a fresh exercise set to the workout using the exercise picker
   function onAddExercise() {
-    router.navigate("/workouts/builder/exercises");
-
-    exerciseProvider.subscribe((exercise) => {
-      addExercise(exercise);
-    });
+    pickExercise((exercise) => workoutBuilder.addExercise(exercise));
   }
 
   // swap out an exercise for another using the exercise picker
   function onSwapExercise(i: number) {
-    router.navigate("/workouts/builder/exercises");
-
-    exerciseProvider.subscribe((exercise) => {
-      replaceExercise(exercise, i);
-    });
+    pickExercise((exercise) => workoutBuilder.replaceExercise(exercise, i));
   }
 
   function onDeleteExercise(i: number) {

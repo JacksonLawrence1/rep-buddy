@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, StyleSheet, Pressable, Text } from "react-native";
+import { View, StyleSheet, Pressable, Text, StyleProp, ViewStyle } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 import { colors } from "@/constants/colors";
@@ -9,23 +9,37 @@ import { Theme, ThemeEnum } from "@/constants/enums/theme";
 export interface ButtonProps {
   label: string;
   theme?: Theme;
+  disabled?: boolean;
   icon?: keyof typeof FontAwesome5.glyphMap;
   size?: number;
   height?: number;
   onPress?: () => void;
 }
 
+function themeHelper(isPrimary: boolean, isDisabled: boolean, height: number | undefined) {
+  const styles: StyleProp<ViewStyle>[] = [buttonStyles.button, { height: height || 48 }];
+
+  if (isPrimary) {
+    styles.push(buttonStyles.primaryButton);
+  } else if (isDisabled) {
+    styles.push(buttonStyles.buttonDisabled);
+  }
+
+  return styles;
+}
+
 const BaseButton = React.forwardRef<View, ButtonProps>(
-  ({ label, height, theme, icon, size, onPress = () => undefined }, ref) => {
+  ({ label, height, theme, icon, size, disabled = false, onPress = () => undefined }, ref) => {
     const isPrimary: boolean = theme === ThemeEnum.Primary;
+    const hasIcon: boolean = icon !== undefined;
 
     return (
       <Pressable
-        style={[buttonStyles.button, {height: height || 48}, isPrimary && buttonStyles.primaryButton, icon === undefined && {justifyContent: "center"}]}
+        style={themeHelper(isPrimary, disabled, height)}
         onPress={onPress}
         ref={ref}
       >
-        <Text style={buttonStyles.text}>{label}</Text>
+        <Text style={[buttonStyles.text, !hasIcon && { textAlign: 'center' }]}>{label}</Text>
         {icon && (
           <FontAwesome5
             name={icon}
@@ -58,6 +72,10 @@ export const buttonStyles = StyleSheet.create({
     borderColor: colors.border,
     minHeight: 48,
   },
+  buttonDisabled: {
+    backgroundColor: colors.error,
+    borderWidth: 0,
+  },
   primaryButton: {
     backgroundColor: colors.primary,
     borderWidth: 0,
@@ -68,6 +86,7 @@ export const buttonStyles = StyleSheet.create({
     color: colors.text,
   },
   text: {
+    flex: 1,
     color: colors.text,
     fontSize: 20,
     paddingHorizontal: 16,
