@@ -26,6 +26,10 @@ export default function ExercisePicker({ title }: ChooseExerciseProps) {
     router.back(); // go back to the previous screen
   }
 
+  const onNewExercise = () => {
+    router.navigate("/exercises/new")
+  }
+
   const [filter, setFilter] = useState("");
 
   return (
@@ -35,7 +39,7 @@ export default function ExercisePicker({ title }: ChooseExerciseProps) {
         onChangeText={setFilter}
       />
       <ExerciseList filter={filter} onItemPress={handleExerciseSelection} />
-      <Button label="Add New Exercise" theme="primary" icon={"plus"} />
+      <Button label="Add New Exercise" theme="primary" icon={"plus"} onPress={onNewExercise} />
     </DefaultPage>
   );
 }

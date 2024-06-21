@@ -42,6 +42,18 @@ export class WorkoutHistory {
     return this.db.runAsync(`DELETE FROM workoutHistory WHERE id = ?;`, id);
   }
 
+  private async _deleteWorkoutsHistory(workout_id: number): Promise<SQLite.SQLiteRunResult> {
+    return this.db.runAsync(`DELETE FROM workoutHistory WHERE workout_id = ?;`, workout_id);
+  }
+  
+  private async _deleteAllExerciseHistoryForWorkout(workout_id: number): Promise<SQLite.SQLiteRunResult> {
+    return this.db.runAsync(`
+      DELETE FROM exerciseHistory
+      WHERE workout_history_id IN (
+        SELECT id FROM workoutHistory WHERE workout_id = ?
+      );
+      `, workout_id);
+  }
 
   // could add a limit, and a load more function at some point
   async getAllWorkoutHistory(): Promise<WorkoutHistoryRow[]> {
@@ -80,6 +92,18 @@ export class WorkoutHistory {
       return { id, workout_id, date, duration };
     } catch (error) {
       throw new Error(`Failed to insert workout history: ${error}`);
+    }
+  }
+
+  async deleteHistoryForWorkout(workout_id: number): Promise<void> {
+    try {
+      // delete exercises associated with the workout
+      await this._deleteAllExerciseHistoryForWorkout(workout_id);
+
+      // delete all workout history for the workout
+      await this._deleteWorkoutsHistory(workout_id);
+    } catch (error) {
+      throw new Error(`Failed to delete all workout history for workout with id ${workout_id}: ${error}`);
     }
   }
 

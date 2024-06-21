@@ -3,6 +3,7 @@ import * as SQLite from "expo-sqlite";
 import database from "@/services/database/Database";
 
 import { Workout, WorkoutSet } from "@/constants/types";
+import { WorkoutHistory } from "./WorkoutHistory";
 import WorkoutSets from "./WorkoutSets";
 
 export type WorkoutRow = {
@@ -13,10 +14,12 @@ export type WorkoutRow = {
 class Workouts {
   private db: SQLite.SQLiteDatabase;
   private workoutSetsDb: WorkoutSets;
+  private workoutHistoryDb: WorkoutHistory;
 
   constructor(db: SQLite.SQLiteDatabase) {
     this.db = db;
     this.workoutSetsDb = new WorkoutSets(db);
+    this.workoutHistoryDb = new WorkoutHistory(db);
   }
 
   // SQL queries
@@ -105,15 +108,18 @@ class Workouts {
     }
   }
 
-  async deleteWorkout(id: number): Promise<void> {
+  async deleteWorkout(workout_id: number): Promise<void> {
     try {
       // delete the workout
-      await this._deleteWorkout(id);
+      await this._deleteWorkout(workout_id);
 
       // delete all the sets associated with the workout
-      await this.workoutSetsDb.deleteWorkoutSets(id);
+      await this.workoutSetsDb.deleteWorkoutSets(workout_id);
+
+      // delete the workout history (which also deletes the exercise history)
+      await this.workoutHistoryDb.deleteHistoryForWorkout(workout_id);
     } catch (error) {
-      throw new Error(`Error deleting workout with id ${id}: ${error}`);
+      throw new Error(`Error deleting workout with id ${workout_id}: ${error}`);
     }
   }
 

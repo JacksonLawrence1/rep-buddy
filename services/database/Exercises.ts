@@ -3,6 +3,7 @@ import { Exercise } from "@/constants/types";
 
 import * as SQLite from "expo-sqlite";
 import database from "./Database";
+import { ExerciseHistory } from "./ExerciseHistory";
 
 export type ExerciseRow = {
   id: number;
@@ -12,9 +13,11 @@ export type ExerciseRow = {
 
 class Exercises {
   db: SQLite.SQLiteDatabase;
+  exerciseHistorydb: ExerciseHistory;
 
   constructor(db: SQLite.SQLiteDatabase) {
     this.db = db;
+    this.exerciseHistorydb = new ExerciseHistory(db);
   }
 
   // SQL queries
@@ -104,6 +107,10 @@ class Exercises {
   async deleteExercise(id: number): Promise<number | undefined> {
     try {
       await this._deleteExercise(id);
+    
+      // delete history for the exercise
+      await this.exerciseHistorydb.deleteExerciseHistory(id);
+
       return id; // return the id of the deleted exercise if successful
     } catch (error) {
       throw new Error(`Error deleting exercise: ${error}`);

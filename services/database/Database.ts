@@ -1,4 +1,3 @@
-import { MuscleGroup } from "@/constants/enums/muscleGroups";
 import * as SQLite from "expo-sqlite";
 
 class Database {
@@ -12,11 +11,6 @@ class Database {
     this.initWorkoutSets();
     this.initWorkoutHistory();
     this.initExerciseHistory();
-  
-    // WARNING: Clear when done testing
-    this.clearTables();
-    this.addTestExercises();
-    this.addTestWorkouts();
   }
 
   private initExercises() {
@@ -90,53 +84,6 @@ class Database {
     this.db.execSync("DELETE FROM workoutSets;");
     this.db.execSync("DELETE FROM workoutHistory;");
     this.db.execSync("DELETE FROM exerciseHistory;");
-  }
-
-  // TODO: Delete this when done testing
-  private addTestExercises(): void {
-    const baseExercises = [
-      {
-        name: "Military Press",
-        muscleGroups: [MuscleGroup.SHOULDERS],
-      },
-      {
-        name: "Barbell Bench Press",
-        muscleGroups: [MuscleGroup.CHEST],
-      },
-      {
-        name: "Overhead Press",
-        muscleGroups: [MuscleGroup.SHOULDERS],
-      },
-      {
-        name: "Deadlift",
-        muscleGroups: [MuscleGroup.BACK],
-      },
-      {
-        name: "Barbell Squat",
-        muscleGroups: [MuscleGroup.LEGS],
-      },
-      {
-        name: "Dumbbell Curls",
-        muscleGroups: [MuscleGroup.BICEPS],
-      },
-    ];
-
-    for (const exercise of baseExercises) {
-      this.db.runSync(
-        `INSERT INTO exercises (name, muscleGroups) VALUES (?, ?);`,
-        exercise.name,
-        exercise.muscleGroups.join(","),
-      );
-    }
-  }
-
-  private addTestWorkouts(): void {
-    this.db.execSync(`
-      INSERT INTO workouts (name) VALUES ('Test Workout 1');
-      INSERT INTO workouts (name) VALUES ('Test Workout 2');
-      INSERT INTO workouts (name) VALUES ('Test Workout 3');
-      INSERT INTO workouts (name) VALUES ('Test Workout 4');
-    `);
   }
 }
 

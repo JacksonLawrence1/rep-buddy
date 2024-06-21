@@ -2,11 +2,11 @@ import * as SqLite from 'expo-sqlite';
 
 import database from '@/services/database/Database';
 
-import { ExerciseHistory, ExerciseHistoryRow, ExerciseHistoryDisplay } from '@/services/database/ExerciseHistory';
+import { ExerciseHistory, ExerciseHistoryDisplay, ExerciseHistoryRow } from '@/services/database/ExerciseHistory';
 import { WorkoutHistory, WorkoutHistoryRow } from '@/services/database/WorkoutHistory';
 
-import exerciseDatabase from '@/services/database/Exercises'
-import workoutDatabase from '@/services/database/Workouts'
+import exerciseDatabase from '@/services/database/Exercises';
+import workoutDatabase from '@/services/database/Workouts';
 
 import { Exercise, LogExerciseSet, Workout } from '@/constants/types';
 
@@ -104,13 +104,8 @@ class History {
     return this.exerciseHistory.addExerciseHistory(workoutHistory.id, sets);
   }
 
-  async deleteWorkoutHistory(id: number) {
-    // delete all exercise history associated with the workout
-    // could keep the exercise history, but would have orphaned data
-    await this.exerciseHistory.deleteExerciseHistory(id);
-
-    // delete the workout history
-    return this.workoutHistory.deleteWorkoutHistory(id);
+  async deleteWorkoutHistory(workout_history_id: number) {
+    return this.workoutHistory.deleteWorkoutHistory(workout_history_id);
   }
 
   async deleteExerciseHistory(id: number) {

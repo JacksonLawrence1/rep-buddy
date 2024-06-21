@@ -82,7 +82,7 @@ export class ExerciseHistory {
             `INSERT INTO exerciseHistory 
               (workout_history_id, exercise_id, position, reps, weight)
               VALUES 
-              (${workout_history_id}, ${set.exercise_id}, ${i}, ${set.reps}, ${set.weight})`,
+              (${workout_history_id}, ${set.exercise_id}, ${i}, '${set.reps}', '${set.weight}')`,
         )
         .join("; "),
     );
@@ -117,16 +117,12 @@ export class ExerciseHistory {
 
   // public functions to interact with database
   // get all the exercise history associated with a workout
-  async getWorkoutHistory(
-    workout_id: number,
-  ): Promise<ExerciseHistoryRow[]> {
+  async getWorkoutHistory(workout_id: number): Promise<ExerciseHistoryRow[]> {
     return this._getExerciseHistoryFromWorkout(workout_id);
   }
 
   // get all the exercise history associated with an single exercise
-  async getExerciseHistory(
-    exercise_id: number,
-  ): Promise<ExerciseHistoryRow[]> {
+  async getExerciseHistory(exercise_id: number): Promise<ExerciseHistoryRow[]> {
     return this._getExerciseHistoryFromExercise(exercise_id);
   }
 
