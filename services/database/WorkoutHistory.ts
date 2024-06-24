@@ -46,6 +46,7 @@ export class WorkoutHistory {
     return this.db.runAsync(`DELETE FROM workoutHistory WHERE workout_id = ?;`, workout_id);
   }
   
+  // deletes ALL exercises associated with a workout id
   private async _deleteAllExerciseHistoryForWorkout(workout_id: number): Promise<SQLite.SQLiteRunResult> {
     return this.db.runAsync(`
       DELETE FROM exerciseHistory
@@ -53,6 +54,14 @@ export class WorkoutHistory {
         SELECT id FROM workoutHistory WHERE workout_id = ?
       );
       `, workout_id);
+  }
+
+  // deletes only exercises associated with a workout history
+  private async _deleteAllExerciseHistoryForWorkoutHistory(workout_history_id: number): Promise<SQLite.SQLiteRunResult> {
+    return this.db.runAsync(`
+      DELETE FROM exerciseHistory
+      WHERE workout_history_id = ?;
+      `, workout_history_id);
   }
 
   // could add a limit, and a load more function at some point
@@ -107,9 +116,13 @@ export class WorkoutHistory {
     }
   }
 
-  async deleteWorkoutHistory(id: number): Promise<void> {
+  async deleteWorkoutHistory(workout_history_id: number): Promise<void> {
     try {
-      await this._deleteWorkoutHistory(id);
+      // delete exercises associated with the workout_history_id
+      await this._deleteAllExerciseHistoryForWorkoutHistory(workout_history_id);
+
+      // delete single workout history
+      await this._deleteWorkoutHistory(workout_history_id);
     } catch (error) {
       throw new Error(`Failed to delete workout history: ${error}`);
     }

@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   setColumn: {
-    flex: 1,
+    flex: 0.75,
     alignItems: "center",
     paddingRight: 4,
   },

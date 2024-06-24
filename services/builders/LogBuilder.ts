@@ -54,6 +54,12 @@ export default class LogBuilder extends Builder {
     return time.map((t) => (t < 10 ? `0${t}` : t)).join(":");
   }
 
+  private condenseDuration(): number {
+    // only get the hours and minutes
+    const duration: number = this.durationNum;
+    return Math.floor(duration / 3600000) * 60 + Math.floor((duration % 3600000) / 60000);
+  }
+
   getReps(i: number, j: number): number | null {
     return this.sets[i].sets[j].reps;
   }
@@ -127,7 +133,7 @@ export default class LogBuilder extends Builder {
     await history.addWorkoutHistory(
       this.id,
       this.date,
-      this.durationNum,
+      this.condenseDuration(), // cut off till seconds, so we only have hours and minutes
       this.sets,
     );
   }
