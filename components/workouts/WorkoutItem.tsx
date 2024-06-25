@@ -39,7 +39,7 @@ export default function WorkoutItem({ id, name, onPress, edit, del, history }: W
 
   function onHistory() {
     router.navigate({
-      pathname: "/workouts/history/[id]",
+      pathname: "/workouts/history/all/[id]", // all histories for this workout
       params: { id: id },
     });
   }

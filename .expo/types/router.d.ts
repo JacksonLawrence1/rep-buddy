@@ -3,9 +3,9 @@ import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
 export namespace ExpoRouter {
-  type StaticRoutes = `/` | `/..\components\exercises\ExerciseHistoryItem` | `/..\components\history\HistoryList` | `/..\components\log\Timer` | `/..\components\workouts\WorkoutHistoryItem` | `/..\services\builders\LogBuilder` | `/..\services\database\Database` | `/..\services\database\History` | `/..\services\database\WorkoutHistory` | `/_sitemap` | `/exercises` | `/exercises/new` | `/exercises/picker` | `/exercises\history\[id]` | `/history` | `/log` | `/store` | `/workouts` | `/workouts/new` | `/workouts\history\[id]`;
-  type DynamicRoutes<T extends string> = `/exercises/edit/${SingleRoutePart<T>}` | `/exercises/history/${SingleRoutePart<T>}` | `/log/${SingleRoutePart<T>}` | `/workouts/edit/${SingleRoutePart<T>}` | `/workouts/history/${SingleRoutePart<T>}`;
-  type DynamicRouteTemplate = `/exercises/edit/[id]` | `/exercises/history/[id]` | `/log/[id]` | `/workouts/edit/[id]` | `/workouts/history/[id]`;
+  type StaticRoutes = `/` | `/..\components\exercises\ExerciseHistoryItem` | `/..\components\history\HistoryList` | `/..\components\workouts\WorkoutHistoryItem` | `/..\components\workouts\WorkoutItem` | `/..\hooks\useHistory` | `/_sitemap` | `/exercises` | `/exercises/new` | `/exercises/picker` | `/exercises\history\[id]` | `/history` | `/history\` | `/log` | `/store` | `/workouts` | `/workouts/new` | `/workouts\history\all\[id]` | `/workouts\history\details\[id]`;
+  type DynamicRoutes<T extends string> = `/exercises/edit/${SingleRoutePart<T>}` | `/exercises/history/${SingleRoutePart<T>}` | `/log/${SingleRoutePart<T>}` | `/workouts/edit/${SingleRoutePart<T>}` | `/workouts/history/all/${SingleRoutePart<T>}` | `/workouts/history/details/${SingleRoutePart<T>}`;
+  type DynamicRouteTemplate = `/exercises/edit/[id]` | `/exercises/history/[id]` | `/log/[id]` | `/workouts/edit/[id]` | `/workouts/history/all/[id]` | `/workouts/history/details/[id]`;
 
   export type RelativePathString = `./${string}` | `../${string}` | '..';
   export type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;

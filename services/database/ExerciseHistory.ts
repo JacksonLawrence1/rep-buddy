@@ -105,6 +105,13 @@ export class ExerciseHistory {
     );
   }
 
+  private async _getExerciseHistoryFromWorkoutHistory(workout_history_id: number): Promise<ExerciseHistoryRow[]> {
+    return this.db.getAllAsync(
+      `SELECT * FROM exerciseHistory WHERE workout_history_id = ?`,
+      workout_history_id,
+    );
+  }
+
   private async _getExerciseHistoryFromExercise(
     exercise_id: number,
   ): Promise<ExerciseHistoryRow[]> {
@@ -124,6 +131,11 @@ export class ExerciseHistory {
   // get all the exercise history associated with an single exercise
   async getExerciseHistory(exercise_id: number): Promise<ExerciseHistoryRow[]> {
     return this._getExerciseHistoryFromExercise(exercise_id);
+  }
+
+  // gets all the exercise history associated with a single workout history
+  async getWorkoutHistoryDetails(workout_history_id: number): Promise<ExerciseHistoryRow[]> {
+    return this._getExerciseHistoryFromWorkoutHistory(workout_history_id);
   }
 
   async addExerciseHistory(

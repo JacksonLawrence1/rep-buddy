@@ -3,6 +3,7 @@ import * as SQLite from 'expo-sqlite';
 export type WorkoutHistoryRow = {
   id: number;
   workout_id: number;
+  workout_name?: string;
   date: string; // as ISO string
   duration: number;
 };

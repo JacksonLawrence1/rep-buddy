@@ -3,19 +3,19 @@ import * as SqLite from "expo-sqlite";
 import database from "@/services/database/Database";
 
 import {
-  ExerciseHistory,
-  ExerciseHistoryDisplay,
-  ExerciseHistoryRow,
+    ExerciseHistory,
+    ExerciseHistoryDisplay,
+    ExerciseHistoryRow,
 } from "@/services/database/ExerciseHistory";
 import {
-  WorkoutHistory,
-  WorkoutHistoryRow,
+    WorkoutHistory,
+    WorkoutHistoryRow,
 } from "@/services/database/WorkoutHistory";
 
 import exerciseDatabase from "@/services/database/Exercises";
 import workoutDatabase from "@/services/database/Workouts";
 
-import { Exercise, LogExerciseSet, Workout } from "@/constants/types";
+import { LogExerciseSet } from "@/constants/types";
 
 class History {
   db: SqLite.SQLiteDatabase;
@@ -28,76 +28,88 @@ class History {
     this.workoutHistory = new WorkoutHistory(db);
   }
 
-  private async convertExerciseRow(
-    exerciseHistory: ExerciseHistoryRow,
-  ): Promise<ExerciseHistoryDisplay | undefined> {
-    try {
-      // get the workout history
-      const workoutHistory: WorkoutHistoryRow | undefined =
-        await this.workoutHistory.getWorkoutHistory(
-          exerciseHistory.workout_history_id,
-        );
-
-      if (!workoutHistory) {
-        return undefined;
-      }
-
-      // get the full exercise data
-      const exercise: Exercise = await exerciseDatabase.getExercise(
-        exerciseHistory.exercise_id,
-      );
-
-      // get the full workout data
-      const workout: Workout = await workoutDatabase.getWorkout(
-        workoutHistory.workout_id,
-      );
-
-      // create the display object
-      const display: ExerciseHistoryDisplay = {
-        id: exerciseHistory.id,
-        exerciseName: exercise.name,
-        workoutName: workout.name,
-        date: workoutHistory.date,
-        reps: exerciseHistory.reps.split(",").map(Number),
-        weight: exerciseHistory.weight.split(",").map(Number),
-      };
-
-      return display;
-    } catch (error) {
-      throw new Error(`${error}`);
-    }
-  }
-
   private async convertExerciseRows(
     rows: ExerciseHistoryRow[],
+    exerciseName?: string,
   ): Promise<ExerciseHistoryDisplay[]> {
-    const display: ExerciseHistoryDisplay[] = [];
+    const exerciseHistory: ExerciseHistoryDisplay[] = [];
 
     for (const row of rows) {
-      try {
-        const displayRow: ExerciseHistoryDisplay | undefined =
-          await this.convertExerciseRow(row);
+      let name: string | undefined = exerciseName;
 
-        // only add the row if it was successfully converted
-        if (displayRow) {
-          display.push(displayRow);
-        }
-      } catch (error) {
-        throw new Error(
-          `Error converting exercise history row: ${row} with error: ${error}`,
-        );
+      if (!name) {
+        const exercise = await exerciseDatabase.getExercise(row.exercise_id);
+        name = exercise.name;
+      }
+
+      const workoutDetails = await this.workoutHistory.getWorkoutHistory(
+        row.workout_history_id,
+      );
+
+      if (!workoutDetails) {
+        continue;
+      }
+
+      const workout = await workoutDatabase.getWorkout(
+        workoutDetails.workout_id,
+      );
+
+      exerciseHistory.push({
+        id: row.id,
+        exerciseName: name,
+        workoutName: workout.name,
+        date: workoutDetails.date,
+        reps: row.reps.split(",").map((rep) => parseInt(rep)),
+        weight: row.weight.split(",").map((weight) => parseFloat(weight)),
+      });
+    }
+
+    return exerciseHistory;
+  }
+
+  // adds a workout name to a list of workout history rows
+  private async appendWorkoutNames(
+    rows: WorkoutHistoryRow[],
+  ): Promise<WorkoutHistoryRow[]> {
+    const rowsWithName: WorkoutHistoryRow[] = [];
+
+    for (const row of rows) {
+      // only return rows that successfully get the workout name
+      const workout = await workoutDatabase.getWorkout(row.workout_id);
+
+      if (workout) {
+        rowsWithName.push({
+          ...row,
+          workout_name: workout.name,
+        });
       }
     }
 
-    return display;
+    return rowsWithName;
   }
 
   // gets all the exercise history for a specific exercise
   async getExerciseHistory(id: number): Promise<ExerciseHistoryDisplay[]> {
+    // get the exercise details, as it will be the same for all the rows
+    const exercise = await exerciseDatabase.getExercise(id);
+
+    // get the rows from the database
     const rows: ExerciseHistoryRow[] =
       await this.exerciseHistory.getExerciseHistory(id);
-    // PERF: this is inefficient, as we don't need to fetch the exercise data for every row
-    return this.convertExerciseRows(rows); // get complete data, like workout name, exercise name, etc.
+
+    // convert the rows to the display format
+    return this.convertExerciseRows(rows, exercise.name);
+  }
+
+  async getWorkoutExerciseHistory(
+    workout_history_id: number,
+  ): Promise<ExerciseHistoryDisplay[]> {
+    // get the details for all the exercises in that single workout history
+    const rows: ExerciseHistoryRow[] =
+      await this.exerciseHistory.getWorkoutHistoryDetails(workout_history_id);
+
+    // convert rows, without exercise name provided, as each row will have (likely) different exercise
+    return this.convertExerciseRows(rows);
   }
 
   async getWorkoutHistory(workout_id: number): Promise<WorkoutHistoryRow[]> {
@@ -114,8 +126,14 @@ class History {
     }
   }
 
+  // as we display different workouts, we need to get the workout name for each row
   async getAllWorkoutHistory(): Promise<WorkoutHistoryRow[]> {
-    return await this.workoutHistory.getAllWorkoutHistory();
+    try {
+      const rows = await this.workoutHistory.getAllWorkoutHistory();
+      return this.appendWorkoutNames(rows);
+    } catch (error) {
+      throw new Error(`Failed to get workout history: ${error}`);
+    }
   }
 
   async addWorkoutHistory(

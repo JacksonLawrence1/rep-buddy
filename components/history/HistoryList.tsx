@@ -1,70 +1,30 @@
-import { FlatList, View, Text, Alert } from "react-native";
+import { FlatList, View, Text, Alert, StyleSheet } from "react-native";
 
 import { globalStyles } from "@/constants/styles";
 import { useState } from "react";
-import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
-import DefaultPage from "../pages/DefaultPage";
-import { router } from "expo-router";
-
-type DeleteCallback = (id: number) => Promise<any>;
-type WithId = { id: number };
-
-interface HistoryListItemProps<T extends WithId> {
-  history: T;
-  onDelete: DeleteCallback;
-}
+import {
+  DeleteCallback,
+  HistoryListItemProps,
+  WithId,
+} from "./HistoryComponent";
+import { colors } from "@/constants/colors";
 
 interface HistoryListProps<T extends WithId> {
   history: T[];
   HistoryRenderer: React.ComponentType<HistoryListItemProps<T>>;
   onDelete: DeleteCallback;
+  title?: string;
 }
 
-interface HistoryListFactoryProps<T extends WithId> {
-  id: number;
-  onGetHistory: (id: number) => Promise<T[]>;
-  HistoryRenderer: React.ComponentType<HistoryListItemProps<T>>;
-  onDelete: DeleteCallback;
-}
-
-export default function HistoryList<T extends WithId>({ id, onGetHistory, HistoryRenderer, onDelete }: HistoryListFactoryProps<T>) {
-  const content = useLoading(loadExerciseHistory);
-
-  function loadExerciseHistory(setContent: SetContentStateAction) {
-    onGetHistory(id)
-      .then((history) => {
-        setContent(
-          <HistoryListRenderer
-            history={history}
-            HistoryRenderer={HistoryRenderer}
-            onDelete={onDelete}
-          />,
-        );
-      })
-      .catch(() => {
-        Alert.alert(
-          "Error",
-          "There was an error loading the history. Please try restarting the app.",
-        );
-
-        router.back();
-      });
-  }
-
-  return (
-    <DefaultPage title="History" theme={"modal"}>
-      {content}
-    </DefaultPage>
-  );
-}
-
-function HistoryListRenderer<T extends WithId>({
+export default function HistoryList<T extends WithId>({
   history,
   HistoryRenderer,
   onDelete,
+  title,
 }: HistoryListProps<T>) {
   const [historyList, setHistory] = useState<T[]>(history);
 
+  // pass onDelete at top level, as trying to re-render list from child components would require propogating state up
   async function deleteHistory(id: number) {
     try {
       await onDelete(id);
@@ -77,7 +37,7 @@ function HistoryListRenderer<T extends WithId>({
   if (history.length === 0) {
     return (
       <View style={globalStyles.scrollContainer}>
-        <View style={{flex: 0.75, justifyContent: 'center'}}>
+        <View style={{ flex: 0.75, justifyContent: "center" }}>
           <Text style={globalStyles.title}>No history was found</Text>
         </View>
       </View>
@@ -85,13 +45,34 @@ function HistoryListRenderer<T extends WithId>({
   }
 
   return (
-    <View style={globalStyles.scrollContainer}>
-      <FlatList
-        data={historyList}
-        renderItem={({ item }) => <HistoryRenderer history={item} onDelete={deleteHistory} />}
-        keyExtractor={(item) => item.id.toString()}
-        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-      />
-    </View>
+    <>
+      {title &&
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>{title}</Text>
+      </View>}
+      <View style={globalStyles.scrollContainer}>
+        <FlatList
+          data={historyList}
+          renderItem={({ item }) => (
+            <HistoryRenderer history={item} onDelete={deleteHistory} />
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+        />
+      </View>
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    color: colors.text,
+    fontFamily: "Rubik-Regular",
+  },
+  titleContainer: {
+    flexWrap: "wrap",
+    alignSelf: "stretch",
+    paddingHorizontal: 8,
+  },
+});

@@ -7,7 +7,7 @@ import settings from "@/constants/settings";
 
 interface ExerciseHistoryItemProps {
   history: ExerciseHistoryDisplay;
-  onDelete: (id: number) => void;
+  onDelete?: (id: number) => void;
 }
 
 function ColumnTitle({ title }: { title: string }) {
@@ -24,9 +24,11 @@ export default function ExerciseHistoryItem({
 }: ExerciseHistoryItemProps) {
   const popoutMenuOptions: React.ReactNode[] = [];
 
-  popoutMenuOptions.unshift(
-    <Delete key={2} onPress={() => onDelete(history.id)} />,
-  );
+  if (onDelete) {
+    popoutMenuOptions.unshift(
+      <Delete key={2} onPress={() => onDelete(history.id)} />,
+    );
+  }
 
   // reps and weight should always be the same length
   if (history.reps.length !== history.weight.length) {
@@ -39,7 +41,7 @@ export default function ExerciseHistoryItem({
         <Text style={styles.date}>{settings.convertDate(history.date)}</Text>
         <PopoutMenu options={popoutMenuOptions} />
         <Text style={styles.title}>
-          {history.workoutName || "Unknown Workout"}
+          {history.workoutName}
         </Text>
       </View>
       <View style={styles.content}>

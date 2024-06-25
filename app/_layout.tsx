@@ -51,12 +51,19 @@ export default function Layout() {
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
 
+              <Stack.Screen name="history/index" />
+
               <Stack.Screen name="workouts/index" />
               <Stack.Screen name="workouts/new/index" />
               <Stack.Screen name="workouts/edit/[id]" />
 
               <Stack.Screen 
-                name="workouts/history/[id]"
+                name="workouts/history/all/[id]"
+                options={{ presentation: "modal" }}
+              />
+
+              <Stack.Screen 
+                name="workouts/history/details/[id]"
                 options={{ presentation: "modal" }}
               />
 

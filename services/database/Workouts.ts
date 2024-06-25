@@ -31,6 +31,13 @@ class Workouts {
     return this.db.getAllAsync(`SELECT * FROM workouts`);
   }
 
+  private async _getWorkoutByHistoryId(workout_history_id: number): Promise<WorkoutRow | null> {
+    return this.db.getFirstAsync(
+      `SELECT * FROM workouts WHERE id = (SELECT workout_id FROM workoutHistory WHERE id = ?)`,
+      workout_history_id,
+    );
+  }
+
   private async _insertWorkout(name: string): Promise<SQLite.SQLiteRunResult> {
     return this.db.runAsync("INSERT INTO workouts (name) VALUES (?);", name);
   }
@@ -76,6 +83,21 @@ class Workouts {
 
       // compile the workout
       return { id, name: row.name, sets: workoutSets };
+    } catch (error) {
+      throw new Error(`Error getting workout: ${error}`);
+    }
+  }
+
+  async getWorkoutByHistoryId(workout_history_id: number): Promise<WorkoutRow> {
+    try {
+      // get the name and id of the workout from the database
+      const row: WorkoutRow | null = await this._getWorkoutByHistoryId(workout_history_id);
+
+      if (!row) {
+        throw new Error(`Workout with history id ${workout_history_id} not found`);
+      }
+
+      return row;
     } catch (error) {
       throw new Error(`Error getting workout: ${error}`);
     }

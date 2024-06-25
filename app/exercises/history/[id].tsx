@@ -1,26 +1,21 @@
 import { useModal } from "@/hooks/useModal";
 
-import useId from "@/hooks/useId";
-import HistoryList from "@/components/history/HistoryList";
 import historyDatabase from "@/services/database/History";
-import ExerciseHistoryItem from "@/components/exercises/ExerciseHistoryItem";
+import exerciseDatabase from "@/services/database/Exercises";
+import useHistory from "@/hooks/useHistory";
 
 export default function ExerciseHistory() {
   useModal();
 
-  function onInit(id: number) {
-    return (
-      <HistoryList
-        id={id}
-        onGetHistory={historyDatabase.getExerciseHistory.bind(historyDatabase)}
-        onDelete={historyDatabase.deleteExerciseHistory.bind(historyDatabase)}
-        HistoryRenderer={ExerciseHistoryItem}
-      />
-    );
+  // creating new functions prevents instance changing from child component state re-renders 
+  async function getHistory(id: number) {
+    return historyDatabase.getExerciseHistory(id);
   }
 
-  return useId(
-    onInit,
-    "Could not find exercise, please try restarting the app.",
-  );
+  async function getExerciseName(id: number) {
+    const exercise = await exerciseDatabase.getExercise(id);
+    return exercise.name;
+  }
+
+  return useHistory("exercise", "Exercise History", getHistory, getExerciseName);
 }

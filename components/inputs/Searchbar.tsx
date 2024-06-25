@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
   searchbarContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
     height: 48,
     width: "100%",
     paddingHorizontal: 16,
