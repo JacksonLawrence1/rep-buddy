@@ -10,10 +10,34 @@ interface ExerciseHistoryItemProps {
   onDelete?: (id: number) => void;
 }
 
+interface HeadingProps {
+  title: string;
+  menuOptions: React.ReactNode[];
+  date?: string;
+}
+
 function ColumnTitle({ title }: { title: string }) {
   return (
     <View style={styles.columnTitleContainer}>
       <Text style={styles.columnTitle}>{title}</Text>
+    </View>
+  );
+}
+
+function HeadingRenderer({ title, menuOptions, date }: HeadingProps) {
+  if (date) {
+    return (<View style={styles.titleContainer}>
+      {date && <Text style={styles.date}>{settings.convertDate(date)}</Text>}
+      <PopoutMenu options={menuOptions} />
+      <Text style={[styles.title, { flexBasis: '100%' }]}>{title}</Text>
+    </View>
+    );
+  }
+
+  return (
+    <View style={styles.titleContainer}>
+      <Text style={styles.title}>{title}</Text>
+      <PopoutMenu options={menuOptions} />
     </View>
   );
 }
@@ -37,13 +61,7 @@ export default function ExerciseHistoryItem({
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.date}>{settings.convertDate(history.date)}</Text>
-        <PopoutMenu options={popoutMenuOptions} />
-        <Text style={styles.title}>
-          {history.workoutName}
-        </Text>
-      </View>
+      <HeadingRenderer title={history.workoutName} menuOptions={popoutMenuOptions} date={history.date} />
       <View style={styles.content}>
         <View style={styles.setColumn}>
           <ColumnTitle title="Set" />
@@ -96,7 +114,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   title: {
-    flexBasis: "100%",
     fontSize: 18,
     fontFamily: "Rubik-Regular",
     color: colors.text,

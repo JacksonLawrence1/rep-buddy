@@ -15,6 +15,11 @@ export interface HistoryListItemProps<T extends WithId> {
   onDelete?: DeleteCallback;
 }
 
+export interface HistoryDetails {
+  title?: string;
+  date?: string;
+}
+
 interface HistoryComponentProps<T extends WithId> {
   title?: string;
   modal?: boolean;
@@ -22,7 +27,7 @@ interface HistoryComponentProps<T extends WithId> {
   onGetHistory: (id: number) => Promise<T[]>;
   HistoryListItem: React.ComponentType<HistoryListItemProps<T>>;
   onDelete: DeleteCallback;
-  onGetTitle?: (id: number) => Promise<string>;
+  onGetDetails?: (id: number) => Promise<HistoryDetails>;
 }
 
 export default function HistoryComponent<T extends WithId>({
@@ -30,23 +35,23 @@ export default function HistoryComponent<T extends WithId>({
   modal = true,
   id,
   onGetHistory,
-  onGetTitle,
+  onGetDetails,
   HistoryListItem,
   onDelete,
 }: HistoryComponentProps<T>) {
   const content = useLoading(loadExerciseHistory);
 
-  async function getTitle(): Promise<string | undefined> {
-    if (!onGetTitle) {
+  async function getDetails(): Promise<HistoryDetails | undefined> {
+    if (!onGetDetails) {
       return;
     }
 
-    return await onGetTitle(id);
+    return await onGetDetails(id);
   }
 
   async function loadExerciseHistory(setContent: SetContentStateAction) {
     try {
-      const title = await getTitle();
+      const details = await getDetails();
       const history = await onGetHistory(id);
 
       setContent(
@@ -54,7 +59,7 @@ export default function HistoryComponent<T extends WithId>({
           history={history}
           HistoryRenderer={HistoryListItem}
           onDelete={onDelete}
-          title={title}
+          {...details} // pass title/date if provided
         />,
       );
     } catch {

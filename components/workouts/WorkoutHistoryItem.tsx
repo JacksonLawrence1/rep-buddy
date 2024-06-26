@@ -18,7 +18,7 @@ interface WorkoutHistoryItemProps {
 }
 
 // Only show hours and minutes, and don't show hours if it's 0
-function convertDuration(duration: number) {
+export function convertDuration(duration: number) {
   let durationString: string = `${duration <= 60 ? duration % 60 : 1}m`;
   const hours = Math.floor(duration / 60);
 

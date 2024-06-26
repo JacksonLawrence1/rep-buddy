@@ -12,6 +12,7 @@ import { router } from "expo-router";
 
 interface ChooseExerciseProps {
   title?: string;
+  disable?: boolean;
 }
 
 // when we exit the exercise picker
@@ -19,9 +20,11 @@ function onExit() {
   exerciseProvider.clearSubscribers();
 }
 
-export default function ExercisePicker({ title }: ChooseExerciseProps) {
+export default function ExercisePicker({ title, disable = false, }: ChooseExerciseProps) {
   // wrap the onPress function to also call the exercise provider
   const handleExerciseSelection = (exercise: Exercise) => {
+    if (disable) return; // if we just want to use it as a list
+
     exerciseProvider.pickExercise(exercise);
     router.back(); // go back to the previous screen
   }

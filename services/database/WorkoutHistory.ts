@@ -17,17 +17,15 @@ export class WorkoutHistory {
 
   // SQL queries
   private async _getAllWorkoutHistory(): Promise<WorkoutHistoryRow[]> {
-    // TODO: sort the workouts by their date
-    return this.db.getAllAsync(`SELECT * FROM workoutHistory`);
+    return this.db.getAllAsync(`SELECT * FROM workoutHistory ORDER BY date DESC`);
   }
 
   private async _getAllHistoryForWorkout(workout_id: number): Promise<WorkoutHistoryRow[]> {
-    // TODO: sort the workouts by their date
-    return this.db.getAllAsync(`SELECT * FROM workoutHistory WHERE workout_id = ?`, workout_id);
+    return this.db.getAllAsync(`SELECT * FROM workoutHistory WHERE workout_id = ? ORDER BY date DESC`, workout_id);
   }
 
   private async _getWorkoutHistoryById(id: number): Promise<WorkoutHistoryRow | null> {
-    return this.db.getFirstAsync(`SELECT * FROM workoutHistory WHERE id = ?`, id);
+    return this.db.getFirstAsync(`SELECT * FROM workoutHistory WHERE id = ? ORDER BY date DESC`, id);
   }
 
   private async _insertWorkoutHistory(workout_id: number, date: string, duration: number): Promise<SQLite.SQLiteRunResult> {

@@ -112,6 +112,20 @@ class History {
     return this.convertExerciseRows(rows);
   }
 
+  async getWorkoutHistoryDetails(workout_history_id: number): Promise<WorkoutHistoryRow> {
+    try {
+      const row = await this.workoutHistory.getWorkoutHistory(workout_history_id);
+
+      if (row === undefined) {
+        throw new Error(`No workout history found with id: ${workout_history_id}`);
+      }
+
+      return row;
+    } catch (error) {
+      throw new Error(`Failed to get workout history details: ${error}`);
+    }
+  }
+
   async getWorkoutHistory(workout_id: number): Promise<WorkoutHistoryRow[]> {
     try {
       const row = await this.workoutHistory.getAllHistoryForWorkout(workout_id);

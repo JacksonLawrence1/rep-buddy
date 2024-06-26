@@ -7,6 +7,6 @@ export default function Exercises() {
   resetState(useNavigation(), ["index"]);
 
   return (
-    <ExercisePicker />
+    <ExercisePicker disable={true} />
   );
 }

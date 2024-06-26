@@ -8,12 +8,14 @@ import {
   WithId,
 } from "./HistoryComponent";
 import { colors } from "@/constants/colors";
+import settings from "@/constants/settings";
 
 interface HistoryListProps<T extends WithId> {
   history: T[];
   HistoryRenderer: React.ComponentType<HistoryListItemProps<T>>;
   onDelete: DeleteCallback;
   title?: string;
+  date?: string;
 }
 
 export default function HistoryList<T extends WithId>({
@@ -21,6 +23,7 @@ export default function HistoryList<T extends WithId>({
   HistoryRenderer,
   onDelete,
   title,
+  date,
 }: HistoryListProps<T>) {
   const [historyList, setHistory] = useState<T[]>(history);
 
@@ -48,7 +51,8 @@ export default function HistoryList<T extends WithId>({
     <>
       {title &&
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+        {title && <Text style={styles.title}>{title}</Text>}
+        {date && <Text style={styles.date}>{settings.convertDate(date)}</Text>}
       </View>}
       <View style={globalStyles.scrollContainer}>
         <FlatList
@@ -68,6 +72,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     color: colors.text,
+    fontFamily: "Rubik-Regular",
+  },
+  date: {
+    fontSize: 16,
+    color: colors.textDark,
     fontFamily: "Rubik-Regular",
   },
   titleContainer: {

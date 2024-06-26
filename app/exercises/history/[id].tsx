@@ -14,7 +14,7 @@ export default function ExerciseHistory() {
 
   async function getExerciseName(id: number) {
     const exercise = await exerciseDatabase.getExercise(id);
-    return exercise.name;
+    return { title: exercise.name };
   }
 
   return useHistory("exercise", "Exercise History", getHistory, getExerciseName);

@@ -13,7 +13,7 @@ export default function WorkoutHistoryPage() {
 
   async function getWorkoutName(id: number) {
     const workout = await workoutDatabase.getWorkout(id);
-    return workout.name;
+    return { title: workout.name };
   }
 
   return useHistory("workout", "Workout History", getHistory, getWorkoutName);

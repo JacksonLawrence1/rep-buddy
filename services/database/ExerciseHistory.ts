@@ -95,19 +95,9 @@ export class ExerciseHistory {
     return this.db.runAsync(`DELETE FROM exerciseHistory WHERE id = ?;`, id);
   }
 
-  private async _getExerciseHistoryFromWorkout(
-    workout_id: number,
-  ): Promise<ExerciseHistoryRow[]> {
-    return this.db.getAllAsync(
-      // TODO: sort the exercises by their position in the workout
-      `SELECT * FROM workoutHistory WHERE workout_id = ?`,
-      workout_id,
-    );
-  }
-
   private async _getExerciseHistoryFromWorkoutHistory(workout_history_id: number): Promise<ExerciseHistoryRow[]> {
     return this.db.getAllAsync(
-      `SELECT * FROM exerciseHistory WHERE workout_history_id = ?`,
+      `SELECT * FROM exerciseHistory WHERE workout_history_id = ? ORDER BY position`,
       workout_history_id,
     );
   }
@@ -115,19 +105,18 @@ export class ExerciseHistory {
   private async _getExerciseHistoryFromExercise(
     exercise_id: number,
   ): Promise<ExerciseHistoryRow[]> {
-    // TODO: sort the exercises by their workout date, if the same workout date, then sort by position
+    // sort the exercises by their workout date, if the same workout date, then sort by position
     return this.db.getAllAsync(
-      `SELECT * FROM exerciseHistory WHERE exercise_id = ?`,
+      `SELECT * FROM exerciseHistory
+       JOIN workoutHistory ON workoutHistory.id = exerciseHistory.workout_history_id 
+       WHERE exercise_id = ?
+       ORDER BY workoutHistory.date DESC, exerciseHistory.position
+      `,
       exercise_id,
     );
   }
 
   // public functions to interact with database
-  // get all the exercise history associated with a workout
-  async getWorkoutHistory(workout_id: number): Promise<ExerciseHistoryRow[]> {
-    return this._getExerciseHistoryFromWorkout(workout_id);
-  }
-
   // get all the exercise history associated with an single exercise
   async getExerciseHistory(exercise_id: number): Promise<ExerciseHistoryRow[]> {
     return this._getExerciseHistoryFromExercise(exercise_id);
