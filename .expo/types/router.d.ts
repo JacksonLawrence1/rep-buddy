@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
 export namespace ExpoRouter {
-  type StaticRoutes = `/` | `/..\components\exercises\ExerciseHistoryItem` | `/..\components\exercises\ExercisePicker` | `/..\components\history\HistoryComponent` | `/..\components\history\HistoryList` | `/..\components\workouts\WorkoutHistoryItem` | `/..\hooks\useHistory` | `/..\services\database\History` | `/..\services\database\WorkoutHistory` | `/..\services\database\Workouts` | `/_sitemap` | `/exercises` | `/exercises/new` | `/exercises/picker` | `/exercises\` | `/exercises\history\[id]` | `/history` | `/log` | `/store` | `/workouts` | `/workouts/new` | `/workouts\history\all\[id]` | `/workouts\history\details\[id]`;
+  type StaticRoutes = `/` | `/..\hooks\useHistory` | `/..\services\database\History` | `/..\services\database\WorkoutHistory` | `/_sitemap` | `/exercises` | `/exercises/new` | `/exercises/picker` | `/history` | `/log` | `/store` | `/workouts` | `/workouts/new`;
   type DynamicRoutes<T extends string> = `/exercises/edit/${SingleRoutePart<T>}` | `/exercises/history/${SingleRoutePart<T>}` | `/log/${SingleRoutePart<T>}` | `/workouts/edit/${SingleRoutePart<T>}` | `/workouts/history/all/${SingleRoutePart<T>}` | `/workouts/history/details/${SingleRoutePart<T>}`;
   type DynamicRouteTemplate = `/exercises/edit/[id]` | `/exercises/history/[id]` | `/log/[id]` | `/workouts/edit/[id]` | `/workouts/history/all/[id]` | `/workouts/history/details/[id]`;
 

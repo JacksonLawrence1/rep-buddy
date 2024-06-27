@@ -1,9 +1,8 @@
-import { FlatList, View, Text, Alert, StyleSheet } from "react-native";
+import { FlatList, View, Text, StyleSheet } from "react-native";
 
 import { globalStyles } from "@/constants/styles";
 import { useState } from "react";
 import {
-  DeleteCallback,
   HistoryListItemProps,
   WithId,
 } from "./HistoryComponent";
@@ -13,7 +12,6 @@ import settings from "@/constants/settings";
 interface HistoryListProps<T extends WithId> {
   history: T[];
   HistoryRenderer: React.ComponentType<HistoryListItemProps<T>>;
-  onDelete: DeleteCallback;
   title?: string;
   date?: string;
 }
@@ -21,20 +19,14 @@ interface HistoryListProps<T extends WithId> {
 export default function HistoryList<T extends WithId>({
   history,
   HistoryRenderer,
-  onDelete,
   title,
   date,
 }: HistoryListProps<T>) {
   const [historyList, setHistory] = useState<T[]>(history);
 
-  // pass onDelete at top level, as trying to re-render list from child components would require propogating state up
-  async function deleteHistory(id: number) {
-    try {
-      await onDelete(id);
-      setHistory((history) => history.filter((item) => item.id !== id));
-    } catch (error) {
-      Alert.alert("Delete History Error", `Could not delete history: ${error}`);
-    }
+  // delete a history item from the list
+  function deleteHistory(id: number) {
+    setHistory((history) => history.filter((item) => item.id !== id));
   }
 
   if (history.length === 0) {

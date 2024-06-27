@@ -1,13 +1,14 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 
 import { ExerciseHistoryDisplay } from "@/services/database/ExerciseHistory";
 import { colors } from "@/constants/colors";
 import { Delete, PopoutMenu } from "@/components/primitives/PopoutMenus";
 import settings from "@/constants/settings";
+import historyDatabase from "@/services/database/History";
 
 interface ExerciseHistoryItemProps {
   history: ExerciseHistoryDisplay;
-  onDelete?: (id: number) => void;
+  onDelete?: (id: number) => void; // used to update the state of list of history
 }
 
 interface HeadingProps {
@@ -50,7 +51,14 @@ export default function ExerciseHistoryItem({
 
   if (onDelete) {
     popoutMenuOptions.unshift(
-      <Delete key={2} onPress={() => onDelete(history.id)} />,
+      <Delete key={2} onPress={async () => {
+        try {
+          await historyDatabase.deleteExerciseHistory(history.id);
+          onDelete(history.id); // update the state
+        } catch {
+          Alert.alert("Error", "Could not delete exercise history");
+        }
+      }} />,
     );
   }
 
@@ -61,7 +69,7 @@ export default function ExerciseHistoryItem({
 
   return (
     <View style={styles.container}>
-      <HeadingRenderer title={history.workoutName} menuOptions={popoutMenuOptions} date={history.date} />
+      <HeadingRenderer title={history.exerciseName} menuOptions={popoutMenuOptions} date={history.date} />
       <View style={styles.content}>
         <View style={styles.setColumn}>
           <ColumnTitle title="Set" />

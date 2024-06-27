@@ -15,16 +15,11 @@ export default function History() {
     return historyDatabase.getAllWorkoutHistory();
   }
 
-  async function deleteHistory(id: number) {
-    return historyDatabase.deleteExerciseHistory(id);
-  }
-
   return <HistoryComponent 
     title="Your History"
     modal={false}
     id={-1}
     onGetHistory={getHistory}
-    onDelete={deleteHistory}
     HistoryListItem={WorkoutHistoryItem}
   />;
 }

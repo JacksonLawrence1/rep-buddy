@@ -6,13 +6,12 @@ import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
 import DefaultPage from "../pages/DefaultPage";
 import HistoryList from "./HistoryList";
 
-export type DeleteCallback = (id: number) => Promise<any>;
 export type WithId = { id: number };
 
 export interface HistoryListItemProps<T extends WithId> {
   name?: string;
   history: T;
-  onDelete?: DeleteCallback;
+  onDelete?: (id: number) => void;
 }
 
 export interface HistoryDetails {
@@ -26,7 +25,6 @@ interface HistoryComponentProps<T extends WithId> {
   id: number;
   onGetHistory: (id: number) => Promise<T[]>;
   HistoryListItem: React.ComponentType<HistoryListItemProps<T>>;
-  onDelete: DeleteCallback;
   onGetDetails?: (id: number) => Promise<HistoryDetails>;
 }
 
@@ -37,7 +35,6 @@ export default function HistoryComponent<T extends WithId>({
   onGetHistory,
   onGetDetails,
   HistoryListItem,
-  onDelete,
 }: HistoryComponentProps<T>) {
   const content = useLoading(loadExerciseHistory);
 
@@ -58,7 +55,6 @@ export default function HistoryComponent<T extends WithId>({
         <HistoryList
           history={history}
           HistoryRenderer={HistoryListItem}
-          onDelete={onDelete}
           {...details} // pass title/date if provided
         />,
       );

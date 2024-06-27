@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 
 import { WorkoutHistoryRow } from "@/services/database/WorkoutHistory";
@@ -11,6 +11,7 @@ import {
 
 import { colors } from "@/constants/colors";
 import settings from "@/constants/settings";
+import historyDatabase from "@/services/database/History";
 
 interface WorkoutHistoryItemProps {
   history: WorkoutHistoryRow;
@@ -35,7 +36,7 @@ export default function WorkoutHistoryItem({
 }: WorkoutHistoryItemProps) {
   const popoutMenuOptions: React.ReactNode[] = [];
 
-  // view details of an single workout entry
+  // route to view details of an single workout entry
   function onViewDetails() {
     router.navigate({
       pathname: "/workouts/history/details/[id]",
@@ -43,6 +44,7 @@ export default function WorkoutHistoryItem({
     });
   }
 
+  // view details of an single workout entry
   popoutMenuOptions.unshift(
     <GenericMenuOption
       icon="history"
@@ -54,7 +56,14 @@ export default function WorkoutHistoryItem({
 
   if (onDelete) {
     popoutMenuOptions.unshift(
-      <Delete key={2} onPress={() => onDelete(history.id)} />,
+      <Delete key={2} onPress={async () => {
+        try {
+          await historyDatabase.deleteWorkoutHistory(history.id);
+          onDelete(history.id);
+        } catch {
+          Alert.alert("Error", "There was an error deleting the workout. Please try restarting the app.");
+        }
+      }} />,
     );
   }
 

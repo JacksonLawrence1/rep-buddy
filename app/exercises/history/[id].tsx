@@ -1,21 +1,19 @@
 import { useModal } from "@/hooks/useModal";
 
-import historyDatabase from "@/services/database/History";
-import exerciseDatabase from "@/services/database/Exercises";
-import useHistory from "@/hooks/useHistory";
+import useHistory, { HistoryType } from "@/hooks/useHistory";
 
 export default function ExerciseHistory() {
   useModal();
 
-  // creating new functions prevents instance changing from child component state re-renders 
-  async function getHistory(id: number) {
-    return historyDatabase.getExerciseHistory(id);
+  const historySettings = {
+    type: HistoryType.Exercise,
+    pageTitle: "Exercise History",
+    modal: true,
+    title: true,
+    itemTitle: true,
+    swapTitle: true,
+    itemDate: true,
   }
 
-  async function getExerciseName(id: number) {
-    const exercise = await exerciseDatabase.getExercise(id);
-    return { title: exercise.name };
-  }
-
-  return useHistory("exercise", "Exercise History", getHistory, getExerciseName);
+  return useHistory(historySettings);
 }

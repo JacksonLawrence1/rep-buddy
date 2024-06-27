@@ -16,6 +16,7 @@ export class WorkoutHistory {
   }
 
   // SQL queries
+  // TODO: ensure that the date is actually being sorted correctly
   private async _getAllWorkoutHistory(): Promise<WorkoutHistoryRow[]> {
     return this.db.getAllAsync(`SELECT * FROM workoutHistory ORDER BY date DESC`);
   }
