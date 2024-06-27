@@ -37,7 +37,7 @@ export default function WorkoutList({
             id={item.id}
             key={item.id}
             name={item.name}
-            onPress={onPress && (() => onPress(item.id))}
+            onPress={onPress}
             del={true}
             edit={true}
             history={true}

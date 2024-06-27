@@ -1,10 +1,17 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 
-import { ExerciseHistoryDisplay } from "@/services/database/ExerciseHistory";
-import { colors } from "@/constants/colors";
-import { Delete, PopoutMenu } from "@/components/primitives/PopoutMenus";
-import settings from "@/constants/settings";
+import { showAlert } from "@/features/alerts";
+
 import historyDatabase from "@/services/database/History";
+import { ExerciseHistoryDisplay } from "@/services/database/ExerciseHistory";
+
+import { Delete, PopoutMenu } from "@/components/primitives/PopoutMenus";
+import DeleteAlert from "@/components/primitives/DeleteAlert";
+
+import { colors } from "@/constants/colors";
+import settings from "@/constants/settings";
 
 interface ExerciseHistoryItemProps {
   history: ExerciseHistoryDisplay;
@@ -27,11 +34,12 @@ function ColumnTitle({ title }: { title: string }) {
 
 function HeadingRenderer({ title, menuOptions, date }: HeadingProps) {
   if (date) {
-    return (<View style={styles.titleContainer}>
-      {date && <Text style={styles.date}>{settings.convertDate(date)}</Text>}
-      <PopoutMenu options={menuOptions} />
-      <Text style={[styles.title, { flexBasis: '100%' }]}>{title}</Text>
-    </View>
+    return (
+      <View style={styles.titleContainer}>
+        {date && <Text style={styles.date}>{settings.convertDate(date)}</Text>}
+        <PopoutMenu options={menuOptions} />
+        <Text style={[styles.title, { flexBasis: "100%" }]}>{title}</Text>
+      </View>
     );
   }
 
@@ -48,17 +56,27 @@ export default function ExerciseHistoryItem({
   onDelete,
 }: ExerciseHistoryItemProps) {
   const popoutMenuOptions: React.ReactNode[] = [];
+  const dispatch = useDispatch();
+  const [deleteAlert, setDeleteAlert] = useState(false);
+
+  async function handleDelete() {
+    try {
+      await historyDatabase.deleteExerciseHistory(history.id);
+      onDelete && onDelete(history.id);
+    } catch {
+      dispatch(
+        showAlert({
+          title: "Error while deleting exercise",
+          description:
+            "Could not delete exercise history, please try restarting the app",
+        }),
+      );
+    }
+  }
 
   if (onDelete) {
     popoutMenuOptions.unshift(
-      <Delete key={2} onPress={async () => {
-        try {
-          await historyDatabase.deleteExerciseHistory(history.id);
-          onDelete(history.id); // update the state
-        } catch {
-          Alert.alert("Error", "Could not delete exercise history");
-        }
-      }} />,
+      <Delete key={2} onPress={() => setDeleteAlert(true)} />,
     );
   }
 
@@ -69,7 +87,12 @@ export default function ExerciseHistoryItem({
 
   return (
     <View style={styles.container}>
-      <HeadingRenderer title={history.exerciseName} menuOptions={popoutMenuOptions} date={history.date} />
+      <DeleteAlert visible={deleteAlert} setVisible={setDeleteAlert} label="History" deleteFunction={handleDelete} />
+      <HeadingRenderer
+        title={history.exerciseName}
+        menuOptions={popoutMenuOptions}
+        date={history.date}
+      />
       <View style={styles.content}>
         <View style={styles.setColumn}>
           <ColumnTitle title="Set" />
@@ -80,7 +103,7 @@ export default function ExerciseHistoryItem({
           ))}
         </View>
         <View style={styles.weightColumn}>
-          <View style={{ width: '100%', paddingHorizontal: 8 }}>
+          <View style={{ width: "100%", paddingHorizontal: 8 }}>
             <ColumnTitle title={`Weight (${settings.weightUnit})`} />
           </View>
           {history.weight.map((item, index) => (

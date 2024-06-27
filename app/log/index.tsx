@@ -3,6 +3,7 @@ import { router, useNavigation } from "expo-router";
 import { resetState } from "@/hooks/useModal";
 
 import WorkoutPicker from "@/components/workouts/WorkoutPicker";
+import { AlertContextProps } from "@/components/primitives/Alert";
 
 export default function Workouts() {
   // navigation state on reload: index -> here
@@ -18,7 +19,14 @@ export default function Workouts() {
     });
   }
 
+  const alertSettings: AlertContextProps = {
+    enabled: true,
+    description: "Are you sure you want to start this workout? You can only have one workout in progress at a time.",
+    cancelText: "Cancel",
+    submitText: "Start Workout",
+  };
+
   return (
-    <WorkoutPicker title="Choose Workout" onPress={onStartWorkout} />
+    <WorkoutPicker title="Choose Workout" onPress={onStartWorkout} alertSettings={alertSettings} />
   );
 }

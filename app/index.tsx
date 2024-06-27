@@ -6,10 +6,30 @@ import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/pages/PageContainer";
 
 import { colors } from "@/constants/colors";
+import Alert from "@/components/primitives/Alert";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "./store";
+import { alertDetails, hideAlert } from "@/features/alerts";
 
 export default function Index() {
+  const alert = useSelector((state: RootState) => alertDetails(state.alerts));
+  const dispatch = useDispatch();
+
+  function handleAlert(visible: boolean) {
+    if (!visible) {
+      dispatch(hideAlert());
+    }
+  }
+
   return (
       <PageContainer>
+      <Alert 
+        visible={alert.visible}
+        title={alert?.title}
+        description={alert?.description} 
+        cancelText="Close"
+        setVisible={handleAlert}
+      />
         <View style={styles.titleContainer}>
           <Text style={styles.titleTop}>EZ</Text>
           <Text style={styles.titleBottom}>Workout Planner</Text>

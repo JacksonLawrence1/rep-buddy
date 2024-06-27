@@ -1,8 +1,9 @@
 import { router } from "expo-router";
-import { Alert } from "react-native";
 
 import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
 
+import { showAlert } from "@/features/alerts";
+import { useDispatch } from "react-redux";
 import DefaultPage from "../pages/DefaultPage";
 import HistoryList from "./HistoryList";
 
@@ -37,6 +38,7 @@ export default function HistoryComponent<T extends WithId>({
   HistoryListItem,
 }: HistoryComponentProps<T>) {
   const content = useLoading(loadExerciseHistory);
+  const dispatch = useDispatch();
 
   async function getDetails(): Promise<HistoryDetails | undefined> {
     if (!onGetDetails) {
@@ -58,11 +60,9 @@ export default function HistoryComponent<T extends WithId>({
           {...details} // pass title/date if provided
         />,
       );
-    } catch {
-      Alert.alert(
-        "Error",
-        "There was an error loading the history. Please try restarting the app.",
-      );
+    } catch (error) {
+      console.error(error);
+      dispatch(showAlert({ title: "Error while loading history", description: "There was an error loading the history. Please try restarting the app." }));
       router.back();
     }
   }

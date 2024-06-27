@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import ExerciseBuilder from "@/services/builders/ExerciseBuilder";
 
@@ -11,6 +11,7 @@ import TagEnum from "@/components/primitives/TagEnum";
 import { MuscleGroupValues } from "@/constants/enums/muscleGroups";
 import { globalStyles } from "@/constants/styles";
 import { useDispatch } from "react-redux";
+import { showAlert } from "@/features/alerts";
 
 interface ExerciseBuilderFormProps {
   exercise: ExerciseBuilder;
@@ -28,8 +29,7 @@ export default function ExerciseBuilderForm({ exercise }: ExerciseBuilderFormPro
         router.back();
       })
       .catch((error) => {
-        // TODO: format alert correctly on errors
-        Alert.alert("Error", error.message);
+        dispatch(showAlert({ title: "Error while saving exercise", description: error.message }));
 
         // re-enable button
       });

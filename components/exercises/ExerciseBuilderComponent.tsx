@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { Alert } from "react-native";
 
 import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
 
@@ -8,6 +7,8 @@ import exerciseDatabase from "@/services/database/Exercises";
 
 import DefaultPage from "@/components/pages/DefaultPage";
 import ExerciseBuilderForm from "@/components/exercises/ExerciseBuilderForm";
+import { showAlert } from "@/features/alerts";
+import { useDispatch } from "react-redux";
 
 interface ExerciseBuilderComponentProps {
   id?: number; // optionally pass in an id to edit an exercise
@@ -17,6 +18,7 @@ export default function ExerciseBuilderComponent({
   id,
 }: ExerciseBuilderComponentProps) {
   const content = useLoading(loadExercise);
+  const dispatch = useDispatch();
 
   // fetch content asynchronously and show loading spinner (see useLoading.tsx)
   function loadExercise(setContent: SetContentStateAction) {
@@ -38,10 +40,11 @@ export default function ExerciseBuilderComponent({
         setContent(<ExerciseBuilderForm exercise={builder} />);
       })
       .catch(() => {
-        Alert.alert(
-          "Not Found",
-          "The exercise chosen could not be found, please try restarting the app.",
-        );
+        // custom alert
+        dispatch(showAlert({
+          title: "Not Found", 
+          description: "The exercise chosen could not be found, please try restarting the app."
+        }));
 
         router.back();
       });

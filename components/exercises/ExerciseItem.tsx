@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { Alert } from "react-native";
 import { useDispatch } from "react-redux";
 
 import { AppDispatch } from "@/app/store";
@@ -12,6 +11,9 @@ import { Delete, Edit, History } from "@/components/primitives/PopoutMenus";
 
 import { colors } from "@/constants/colors";
 import { Exercise } from "@/constants/types";
+import { showAlert } from "@/features/alerts";
+import { useState } from "react";
+import DeleteAlert from "../primitives/DeleteAlert";
 
 interface ExerciseItemProps {
   exercise: Exercise;
@@ -29,13 +31,14 @@ export default function ExerciseItem({
   history = false,
 }: ExerciseItemProps) {
   const dispatch = useDispatch<AppDispatch>();
+  const [deleteAlert, setDeleteAlert] = useState(false);
 
   async function onDelete() {
     try {
       await exerciseDatabase.deleteExercise(exercise.id);
       dispatch(deleteExercise(exercise.id));
     } catch (error) {
-      Alert.alert("Exercise Error", `Could not delete exercise: ${error}`);
+      dispatch(showAlert({ title: "Error while deleting exercise", description: `Could not delete exercise: ${error}` }));
     }
   }
 
@@ -67,15 +70,18 @@ export default function ExerciseItem({
 
   // add menu options
   if (del) {
-    popoutMenuOptions.unshift(<Delete key={2} onPress={onDelete} />);
+    popoutMenuOptions.unshift(<Delete key={2} onPress={() => setDeleteAlert(true)} />);
   }
 
   return (
-    <ListItem
-      label={exercise.name}
-      onPress={onPress}
-      popoutMenuOptions={{ options: popoutMenuOptions }}
-      backgroundColor={colors.tertiary}
-    />
+    <>
+      <DeleteAlert visible={deleteAlert} setVisible={setDeleteAlert} deleteFunction={onDelete} label="Exercise" />
+      <ListItem
+        label={exercise.name}
+        onPress={onPress}
+        popoutMenuOptions={{ options: popoutMenuOptions }}
+        backgroundColor={colors.tertiary}
+      />
+    </>
   );
 }

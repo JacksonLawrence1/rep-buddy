@@ -33,10 +33,7 @@ export default function useHistory(settings: HistorySettings) {
   async function getExerciseHistory(
     id: number,
   ) {
-    // get history based on type
-    const history = settings.type === HistoryType.Workout ?
-      await historyDatabase.getWorkoutExerciseHistory(id) :
-      await historyDatabase.getExerciseHistory(id);
+    const history = settings.type === HistoryType.Workout ? await historyDatabase.getWorkoutExerciseHistory(id) : await historyDatabase.getExerciseHistory(id);
 
     // HACK: hijack data so details we want are displayed correctly
     history.forEach((row) => {

@@ -1,17 +1,22 @@
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useDispatch } from "react-redux";
 
+import { showAlert } from "@/features/alerts";
+
+import historyDatabase from "@/services/database/History";
 import { WorkoutHistoryRow } from "@/services/database/WorkoutHistory";
 
 import {
-  Delete,
-  GenericMenuOption,
-  PopoutMenu,
+    Delete,
+    GenericMenuOption,
+    PopoutMenu,
 } from "@/components/primitives/PopoutMenus";
+import DeleteAlert from "../primitives/DeleteAlert";
 
 import { colors } from "@/constants/colors";
 import settings from "@/constants/settings";
-import historyDatabase from "@/services/database/History";
 
 interface WorkoutHistoryItemProps {
   history: WorkoutHistoryRow;
@@ -35,6 +40,8 @@ export default function WorkoutHistoryItem({
   onDelete,
 }: WorkoutHistoryItemProps) {
   const popoutMenuOptions: React.ReactNode[] = [];
+  const [deleteAlert, setDeleteAlert] = useState(false);
+  const dispatch = useDispatch();
 
   // route to view details of an single workout entry
   function onViewDetails() {
@@ -42,6 +49,23 @@ export default function WorkoutHistoryItem({
       pathname: "/workouts/history/details/[id]",
       params: { id: history.id },
     });
+  }
+
+  async function handleDelete() {
+    try {
+      await historyDatabase.deleteWorkoutHistory(history.id);
+      onDelete && onDelete(history.id);
+    } catch (error) {
+      console.error(error);
+
+      dispatch(
+        showAlert({
+          title: "Error while deleting workout",
+          description:
+            "There was an error deleting the workout. Please try restarting the app.",
+        }),
+      );
+    }
   }
 
   // view details of an single workout entry
@@ -55,16 +79,7 @@ export default function WorkoutHistoryItem({
   );
 
   if (onDelete) {
-    popoutMenuOptions.unshift(
-      <Delete key={2} onPress={async () => {
-        try {
-          await historyDatabase.deleteWorkoutHistory(history.id);
-          onDelete(history.id);
-        } catch {
-          Alert.alert("Error", "There was an error deleting the workout. Please try restarting the app.");
-        }
-      }} />,
-    );
+    popoutMenuOptions.unshift(<Delete key={2} onPress={() => setDeleteAlert(true)} />);
   }
 
   return (
@@ -81,6 +96,14 @@ export default function WorkoutHistoryItem({
           Duration: {convertDuration(history.duration)}
         </Text>
       </View>
+      {onDelete && (
+        <DeleteAlert
+          label="History"
+          visible={deleteAlert}
+          setVisible={setDeleteAlert}
+          deleteFunction={handleDelete}
+        />
+      )}
     </View>
   );
 }

@@ -9,7 +9,7 @@ export const fetchWorkouts = createAsyncThunk(
 );
 
 const workouts = createSlice({
-  name: "exercises",
+  name: "workouts",
   initialState: [] as WorkoutRow[], // workout rows only contain name and id for efficiency
   reducers: {
     addWorkout: (state, action) => {

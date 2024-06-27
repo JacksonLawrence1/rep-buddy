@@ -37,31 +37,37 @@ class History {
     for (const row of rows) {
       let name: string | undefined = exerciseName;
 
-      if (!name) {
-        const exercise = await exerciseDatabase.getExercise(row.exercise_id);
-        name = exercise.name;
-      }
+      try {
+        if (!name) {
+          const exercise = await exerciseDatabase.getExercise(row.exercise_id);
+          name = exercise.name;
+        }
 
-      const workoutDetails = await this.workoutHistory.getWorkoutHistory(
-        row.workout_history_id,
-      );
+        const workoutDetails = await this.workoutHistory.getWorkoutHistory(
+          row.workout_history_id,
+        );
 
-      if (!workoutDetails) {
+        if (!workoutDetails) {
+          continue;
+        }
+
+        const workout = await workoutDatabase.getWorkout(
+          workoutDetails.workout_id,
+        );
+
+        exerciseHistory.push({
+          id: row.id,
+          exerciseName: name,
+          workoutName: workout.name,
+          date: workoutDetails.date,
+          reps: row.reps.split(",").map((rep) => parseInt(rep)),
+          weight: row.weight.split(",").map((weight) => parseFloat(weight)),
+        });
+      } catch (error) {
+        console.error(error);
+        // TODO: cleanup database if we can't find the exercise id / workout id
         continue;
       }
-
-      const workout = await workoutDatabase.getWorkout(
-        workoutDetails.workout_id,
-      );
-
-      exerciseHistory.push({
-        id: row.id,
-        exerciseName: name,
-        workoutName: workout.name,
-        date: workoutDetails.date,
-        reps: row.reps.split(",").map((rep) => parseInt(rep)),
-        weight: row.weight.split(",").map((weight) => parseFloat(weight)),
-      });
     }
 
     return exerciseHistory;

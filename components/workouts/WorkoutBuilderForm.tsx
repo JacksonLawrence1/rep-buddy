@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { Alert, FlatList, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { useDispatch } from "react-redux";
 
 import useWorkoutSets from "@/hooks/useWorkoutSets";
@@ -10,6 +10,7 @@ import { TextInput } from "@/components/inputs/FormFields";
 import WorkoutSetItem from "@/components/workouts/WorkoutSetItem";
 
 import { globalStyles } from "@/constants/styles";
+import { showAlert } from "@/features/alerts";
 
 type WorkoutBuilderFormProps = {
   workoutBuilder: WorkoutBuilder;
@@ -44,10 +45,7 @@ export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFor
         router.back();
       })
       .catch((error) => {
-        // TODO: format alert correctly on errors
-        Alert.alert("Error", error.message);
-
-        // re-enable button
+        dispatch(showAlert({ title: "Error", description: error.message }));
       });
   }
 

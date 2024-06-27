@@ -93,15 +93,17 @@ export default class WorkoutSets {
     for (const row of sets) {
       try {
         const exercise = await exerciseDatabase.getExercise(row.exercise_id);
+
         if (!exercise) {
           throw new Error(`Exercise with id ${row.exercise_id} not found`);
         }
+
         workoutSets.push({
           sets: row.sets,
           exercise: exercise,
         });
-      } catch (error) {
-        throw new Error(`Error uncompressing set: ${row} - ${error}`);
+      } catch {
+        continue; // skip the set if the exercise is not found
       }
     }
 

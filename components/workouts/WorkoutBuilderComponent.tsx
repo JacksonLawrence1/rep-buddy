@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { Alert } from "react-native";
 
 import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
 
@@ -8,6 +7,8 @@ import workoutDatabase from "@/services/database/Workouts";
 
 import DefaultPage from "@/components/pages/DefaultPage";
 import WorkoutBuilderForm from "@/components/workouts/WorkoutBuilderForm";
+import { showAlert } from "@/features/alerts";
+import { useDispatch } from "react-redux";
 
 type WorkoutBuilderComponentProps = {
   id?: number;
@@ -17,6 +18,7 @@ export default function WorkoutBuilderComponent({
   id,
 }: WorkoutBuilderComponentProps) {
   const content = useLoading(loadWorkout);
+  const dispatch = useDispatch();
 
   function loadWorkout(setContent: SetContentStateAction): void {
     const builder = new WorkoutBuilder();
@@ -38,8 +40,7 @@ export default function WorkoutBuilderComponent({
         setContent(<WorkoutBuilderForm workoutBuilder={builder} />);
       })
       .catch((error) => {
-        Alert.alert("Not Found", `${error}`);
-
+        dispatch(showAlert({ title: "Workout Not Found", description: `${error}` }));
         router.back();
       });
   }

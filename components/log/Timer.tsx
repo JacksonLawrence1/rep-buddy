@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useContext, useEffect, useState } from "react";
 
 import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
 
 import Button from "@/components/buttons/Button";
+import Alert from "@/components/primitives/Alert";
 
 import { colors } from "@/constants/colors";
 import { router } from "expo-router";
@@ -11,7 +12,7 @@ import { router } from "expo-router";
 export default function Timer() {
   const log: LogBuilder | null = useContext(LogContext);
   const [timer, setTimer] = useState<string>("00:00:00");
-  const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
+  const [finish, setFinish] = useState(false);
 
   useEffect(() => {
     if (!log) return;
@@ -28,14 +29,9 @@ export default function Timer() {
   if (!log) return null;
 
   function saveWorkout() {
-    setSaveDisabled(true);
-
-    log!.save().then(() => {
+    log!.save().finally(() => {
       router.back();
-      setSaveDisabled(false);
-    }).catch((error) => {
-      Alert.alert("Error", error.message);
-      setSaveDisabled(false);
+    }).catch((e) => {
     });
   }
 
@@ -46,8 +42,9 @@ export default function Timer() {
       </View>
       {/* TODO: change where finish icon is */}
       <View style={{flex: 1}}>
-        <Button disabled={saveDisabled} label="Finish" theme="primary" onPress={saveWorkout} />
+        <Button label="Finish" theme="primary" onPress={() => setFinish(true)} />
       </View>
+      <Alert visible={finish} setVisible={setFinish} title="Finish your Workout?" description="Are you sure you want to finish the workout? Any unfinished sets won't be recorded." onSubmit={saveWorkout} submitText="Finish" />
     </View>
   );
 }
