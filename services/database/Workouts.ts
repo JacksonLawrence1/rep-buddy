@@ -5,32 +5,24 @@ import database from "@/services/database/Database";
 import { Workout, WorkoutSet } from "@/constants/types";
 import { WorkoutHistory } from "./WorkoutHistory";
 import WorkoutSets from "./WorkoutSets";
+import DatabaseBase from "./DatabaseBase";
 
 export type WorkoutRow = {
   id: number;
   name: string;
 };
 
-class Workouts {
-  private db: SQLite.SQLiteDatabase;
+class Workouts extends DatabaseBase<WorkoutRow> {
   private workoutSetsDb: WorkoutSets;
   private workoutHistoryDb: WorkoutHistory;
 
   constructor(db: SQLite.SQLiteDatabase) {
-    this.db = db;
+    super(db, "workouts"); 
     this.workoutSetsDb = new WorkoutSets(db);
     this.workoutHistoryDb = new WorkoutHistory(db);
   }
 
   // SQL queries
-  private async _getWorkout(id: number): Promise<WorkoutRow | null> {
-    return this.db.getFirstAsync(`SELECT * FROM workouts WHERE id = ?`, id);
-  }
-
-  private async _getAllWorkouts(): Promise<WorkoutRow[]> {
-    return this.db.getAllAsync(`SELECT * FROM workouts`);
-  }
-
   private async _getWorkoutByHistoryId(workout_history_id: number): Promise<WorkoutRow | null> {
     return this.db.getFirstAsync(
       `SELECT * FROM workouts WHERE id = (SELECT workout_id FROM workoutHistory WHERE id = ?)`,
@@ -53,26 +45,10 @@ class Workouts {
     );
   }
 
-  private async _deleteWorkout(id: number): Promise<SQLite.SQLiteRunResult> {
-    return this.db.runAsync(`DELETE FROM workouts WHERE id = ?;`, id);
-  }
-
-  private async _nameExists(
-    name: string,
-    filter?: string,
-  ): Promise<WorkoutRow | null> {
-    return this.db.getFirstAsync(
-      `SELECT * FROM exercises WHERE name = ? AND name != ?`,
-      name,
-      filter || "",
-    );
-  }
-
-
   async getWorkout(id: number): Promise<Workout> {
     try {
       // get the name and id of the workout from the database
-      const row: WorkoutRow | null = await this._getWorkout(id);
+      const row: WorkoutRow | null = await this._getRow(id);
 
       if (!row) {
         throw new Error(`Workout with id ${id} not found`);
@@ -105,7 +81,7 @@ class Workouts {
 
   async getWorkouts(): Promise<WorkoutRow[]> {
     try {
-      const rows: WorkoutRow[] = await this._getAllWorkouts();
+      const rows: WorkoutRow[] = await this._getAllRows();
       return rows;
     } catch (error) {
       throw new Error(`Error getting workouts: ${error}`);
@@ -133,7 +109,7 @@ class Workouts {
   async deleteWorkout(workout_id: number): Promise<void> {
     try {
       // delete the workout
-      await this._deleteWorkout(workout_id);
+      await this._deleteRow(workout_id);
 
       // delete all the sets associated with the workout
       await this.workoutSetsDb.deleteWorkoutSets(workout_id);
@@ -165,15 +141,6 @@ class Workouts {
       return { id, name };
     } catch (error) {
       throw new Error(`Error updating workout with id ${id}: ${error}`);
-    }
-  }
-
-  async nameExists(name: string, filter?: string): Promise<boolean> {
-    try {
-      const row: WorkoutRow | null = await this._nameExists(name, filter);
-      return row !== null;
-    } catch (error) {
-      throw new Error(`Error whilst checking if workout name exists: ${error}`);
     }
   }
 }

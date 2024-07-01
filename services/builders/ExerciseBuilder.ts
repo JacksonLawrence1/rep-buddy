@@ -78,15 +78,16 @@ export default class ExerciseBuilder extends Builder {
     }
 
     try {
-      const exists: boolean = await exerciseDatabase.nameExists(this.name);
+      // check if the name already exists, ignoring the exercise we loaded
+      const exists: boolean = await exerciseDatabase.nameExists(this.name, this.id);
 
-      if (exists && !this.replacing) {
-        throw new Error("Exercise name already exists");
+      if (exists) {
+        throw new Error(`An Exercise with the name ${this.name} already exists`);
       }
 
       return this.replacing ? this.replace(dispatcher) : this.add(dispatcher);
-    } catch (error) {
-      throw new Error(`Error saving exercise: ${error}`);
+    } catch (error: any) {
+      throw new Error(`Could not save exercise. ${error.message}.`);
     }
   }
 }

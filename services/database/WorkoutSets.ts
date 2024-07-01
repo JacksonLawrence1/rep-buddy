@@ -1,6 +1,7 @@
 import { WorkoutSet } from '@/constants/types';
 import * as SQLite from 'expo-sqlite';
 import exerciseDatabase from './Exercises';
+import DatabaseBase from './DatabaseBase';
 
 interface WorkoutSetRow {
   sets: number;
@@ -21,11 +22,9 @@ export interface WorkoutSetRowWithId extends WorkoutSetRow {
   id: number;
 }
 
-export default class WorkoutSets {
-  db: SQLite.SQLiteDatabase;
-
+export default class WorkoutSets extends DatabaseBase<WorkoutSetRowWithId> {
   constructor(db: SQLite.SQLiteDatabase) {
-    this.db = db;
+    super(db, 'workoutSets');
   }
 
   // SQL queries

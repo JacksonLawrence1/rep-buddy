@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import DatabaseBase from './DatabaseBase';
 
 export type WorkoutHistoryRow = {
   id: number;
@@ -8,16 +9,17 @@ export type WorkoutHistoryRow = {
   duration: number;
 };
 
-export class WorkoutHistory {
-  db: SQLite.SQLiteDatabase;
-
+export class WorkoutHistory extends DatabaseBase<WorkoutHistoryRow> {
   constructor(db: SQLite.SQLiteDatabase) {
-    this.db = db;
+    super(db, 'workoutHistory');
   }
 
-  // SQL queries
   // TODO: ensure that the date is actually being sorted correctly
-  private async _getAllWorkoutHistory(): Promise<WorkoutHistoryRow[]> {
+
+  // SQL queries
+  //
+  // polymorphic method to get rows in sorted order
+  protected async _getAllRows(): Promise<WorkoutHistoryRow[]> {
     return this.db.getAllAsync(`SELECT * FROM workoutHistory ORDER BY date DESC`);
   }
 
@@ -36,10 +38,6 @@ export class WorkoutHistory {
       date, // as ISO string
       duration,
     );
-  }
-
-  private async _deleteWorkoutHistory(id: number): Promise<SQLite.SQLiteRunResult> {
-    return this.db.runAsync(`DELETE FROM workoutHistory WHERE id = ?;`, id);
   }
 
   private async _deleteWorkoutsHistory(workout_id: number): Promise<SQLite.SQLiteRunResult> {
@@ -67,7 +65,7 @@ export class WorkoutHistory {
   // could add a limit, and a load more function at some point
   async getAllWorkoutHistory(): Promise<WorkoutHistoryRow[]> {
     try  {
-      return await this._getAllWorkoutHistory();
+      return await this._getAllRows();
     } catch (error) {
       throw new Error(`Failed to get workout history: ${error}`);
     }
@@ -122,7 +120,7 @@ export class WorkoutHistory {
       await this._deleteAllExerciseHistoryForWorkoutHistory(workout_history_id);
 
       // delete single workout history
-      await this._deleteWorkoutHistory(workout_history_id);
+      await this._deleteRow(workout_history_id);
     } catch (error) {
       throw new Error(`Failed to delete workout history: ${error}`);
     }

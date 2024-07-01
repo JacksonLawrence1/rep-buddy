@@ -22,7 +22,7 @@ export default function Alert({
   setVisible,
   title,
   description,
-  cancelText = "Cancel",
+  cancelText,
   submitText,
   onClose,
   onSubmit,
@@ -56,14 +56,14 @@ export default function Alert({
                 onPress={handleOnClose}
                 style={[styles.button, styles.cancelBtn]}
               >
-                <Text style={styles.buttonText}>{cancelText}</Text>
+                <Text style={styles.buttonText}>{cancelText || "Cancel"}</Text>
               </Pressable>
-              {submitText && ( // only show submit button if submitText is provided
+              {onSubmit && ( // only show submit button if we have a submit function, defaults to "Exit" as the text
                 <Pressable
                   onPress={handleOnSubmit}
                   style={[styles.button, styles.submitBtn]}
                 >
-                  <Text style={styles.buttonText}>{submitText}</Text>
+                  <Text style={styles.buttonText}>{submitText || "Yes"}</Text>
                 </Pressable>
               )}
             </View>

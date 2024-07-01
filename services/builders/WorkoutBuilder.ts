@@ -30,10 +30,6 @@ class WorkoutBuilder extends Builder {
     this.replacing = true;
   }
 
-  async nameExists(name: string): Promise<boolean> {
-    return workoutDatabase.nameExists(name);
-  }
-
   get length(): number {
     return this.workoutSets.length;
   }
@@ -100,15 +96,16 @@ class WorkoutBuilder extends Builder {
     }
 
     try {
-      const exists: boolean = await this.nameExists(this.name);
+      // check if the name already exists, ignoring the workout we loaded
+      const exists: boolean = await workoutDatabase.nameExists(this.name, this.id);
 
-      if (exists && !this.replacing) {
-        throw new Error(`Workout with name ${this.name} already exists`);
+      if (exists) {
+        throw new Error(`A Workout with name ${this.name} already exists`);
       }
 
       return this.replacing ? this.updateWorkout(dispatcher) : this.addWorkout(dispatcher);
-    } catch (error) {
-      throw new Error(`Error saving workout: ${error}`);
+    } catch (error: any) {
+      throw new Error(`Could not save workout. ${error.message}.`);
     }
   }
 }

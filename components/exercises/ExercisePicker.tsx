@@ -18,6 +18,7 @@ interface ChooseExerciseProps {
 // when we exit the exercise picker
 function onExit() {
   exerciseProvider.clearSubscribers();
+  router.back();
 }
 
 export default function ExercisePicker({ title, disable = false, }: ChooseExerciseProps) {

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
 export namespace ExpoRouter {
-  type StaticRoutes = `/` | `/..\components\exercises\ExerciseHistoryItem` | `/..\components\exercises\ExerciseItem` | `/..\components\history\HistoryComponent` | `/..\components\primitives\Alert` | `/..\components\primitives\DeleteAlert` | `/..\components\workouts\WorkoutHistoryItem` | `/..\hooks\useHistory` | `/..\services\database\History` | `/..\services\database\WorkoutSets` | `/_sitemap` | `/exercises` | `/exercises/new` | `/exercises/picker` | `/history` | `/log` | `/store` | `/workouts` | `/workouts/new`;
+  type StaticRoutes = `/` | `/..\components\exercises\ExercisePicker` | `/..\components\log\Log` | `/..\components\pages\DefaultPage` | `/..\components\primitives\Alert` | `/..\services\builders\ExerciseBuilder` | `/..\services\builders\WorkoutBuilder` | `/..\services\database\DatabaseBase` | `/..\services\database\ExerciseHistory` | `/..\services\database\Exercises` | `/..\services\database\WorkoutHistory` | `/..\services\database\WorkoutSets` | `/..\services\database\Workouts` | `/_sitemap` | `/exercises` | `/exercises/new` | `/exercises/picker` | `/history` | `/log` | `/store` | `/workouts` | `/workouts/new`;
   type DynamicRoutes<T extends string> = `/exercises/edit/${SingleRoutePart<T>}` | `/exercises/history/${SingleRoutePart<T>}` | `/log/${SingleRoutePart<T>}` | `/workouts/edit/${SingleRoutePart<T>}` | `/workouts/history/all/${SingleRoutePart<T>}` | `/workouts/history/details/${SingleRoutePart<T>}`;
   type DynamicRouteTemplate = `/exercises/edit/[id]` | `/exercises/history/[id]` | `/log/[id]` | `/workouts/edit/[id]` | `/workouts/history/all/[id]` | `/workouts/history/details/[id]`;
 

@@ -4,6 +4,7 @@ import { Exercise } from "@/constants/types";
 import * as SQLite from "expo-sqlite";
 import database from "./Database";
 import { ExerciseHistory } from "./ExerciseHistory";
+import DatabaseBase from "./DatabaseBase";
 
 export type ExerciseRow = {
   id: number;
@@ -11,33 +12,19 @@ export type ExerciseRow = {
   muscleGroups: string;
 };
 
-class Exercises {
-  db: SQLite.SQLiteDatabase;
+class Exercises extends DatabaseBase<ExerciseRow> {
   exerciseHistorydb: ExerciseHistory;
 
   constructor(db: SQLite.SQLiteDatabase) {
-    this.db = db;
+    super(db, "exercises");
     this.exerciseHistorydb = new ExerciseHistory(db);
   }
 
   // SQL queries
-  private async _getExercise(id: number): Promise<ExerciseRow | null> {
-    return this.db.getFirstAsync(`SELECT * FROM exercises WHERE id = ?`, id);
-  }
-
-  private async _getAllExercises(): Promise<ExerciseRow[]> {
-    return this.db.getAllAsync(`SELECT * FROM exercises`);
-  }
-
-  private async _nameExists(name: string, filter?: string): Promise<ExerciseRow | null> {
-    return this.db.getFirstAsync(
-      `SELECT * FROM exercises WHERE name = ? AND name != ?`,
-      name,
-      filter || "",
-    );
-  }
-
-  private async _insertExercise(name: string, muscleGroups: MuscleGroup[]): Promise<SQLite.SQLiteRunResult> {
+  private async _insertExercise(
+    name: string,
+    muscleGroups: MuscleGroup[],
+  ): Promise<SQLite.SQLiteRunResult> {
     return this.db.runAsync(
       "INSERT INTO exercises (name, muscleGroups) VALUES (?, ?);",
       name,
@@ -45,7 +32,11 @@ class Exercises {
     );
   }
 
-  private async _updateExercise(id: number, name: string, muscleGroups: MuscleGroup[]): Promise<SQLite.SQLiteRunResult> {
+  private async _updateExercise(
+    id: number,
+    name: string,
+    muscleGroups: MuscleGroup[],
+  ): Promise<SQLite.SQLiteRunResult> {
     return this.db.runAsync(
       `UPDATE exercises SET name = ?, muscleGroups = ? WHERE id = ?;`,
       name,
@@ -54,13 +45,9 @@ class Exercises {
     );
   }
 
-  private async _deleteExercise(id: number): Promise<SQLite.SQLiteRunResult> {
-    return this.db.runAsync(`DELETE FROM exercises WHERE id = ?;`, id);
-  }
-
   async getExercise(id: number): Promise<Exercise> {
     try {
-      const row: ExerciseRow | null = await this._getExercise(id);
+      const row: ExerciseRow | null = await this._getRow(id);
 
       if (!row) {
         throw new Error(`Exercise with id ${id} not found`);
@@ -74,19 +61,10 @@ class Exercises {
 
   async getExercises(): Promise<Exercise[]> {
     try {
-      const rows: ExerciseRow[] = await this._getAllExercises();
+      const rows: ExerciseRow[] = await this._getAllRows();
       return rows.map((row) => this.convertToExercise(row));
     } catch (error) {
       throw new Error(`Error getting exercises: ${error}`);
-    }
-  }
-
-  async nameExists(name: string, filter?: string): Promise<boolean> {
-    try {
-      const row: ExerciseRow | null = await this._nameExists(name, filter);
-      return row !== null;
-    } catch (error) {
-      throw new Error(`Error checking if exercise name exists: ${error}`);
     }
   }
 
@@ -106,8 +84,8 @@ class Exercises {
 
   async deleteExercise(id: number): Promise<number | undefined> {
     try {
-      await this._deleteExercise(id);
-    
+      await this._deleteRow(id);
+
       // delete history for the exercise
       await this.exerciseHistorydb.deleteExerciseHistory(id);
 
@@ -130,12 +108,11 @@ class Exercises {
         id,
         name: newName,
         muscleGroups,
-      } as Exercise
+      } as Exercise;
     } catch (error) {
       throw new Error(`Error replacing exercise: ${error}`);
     }
   }
-
 
   private convertToExercise(row: ExerciseRow): Exercise {
     return {

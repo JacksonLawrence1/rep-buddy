@@ -40,11 +40,13 @@ export default function DefaultPage({
   children,
 }: DefaultPageProps) {
 
+  // with a callback you should ensure the user can navigate back somehow
   function goBack() {
     if (callback) {
       callback();
+    } else {
+      router.back();
     }
-    router.back();
   }
 
   return (

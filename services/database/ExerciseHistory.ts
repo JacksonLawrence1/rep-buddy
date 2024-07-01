@@ -1,6 +1,7 @@
 import * as SQLite from "expo-sqlite";
 
 import { LogExerciseSet } from "@/constants/types";
+import DatabaseBase from "./DatabaseBase";
 
 // how the data is stored in the database
 export interface ExerciseHistoryRow {
@@ -30,11 +31,9 @@ interface LogExerciseSetRow {
   weight: string;
 }
 
-export class ExerciseHistory {
-  db: SQLite.SQLiteDatabase;
-
+export class ExerciseHistory extends DatabaseBase<ExerciseHistoryRow> {
   constructor(db: SQLite.SQLiteDatabase) {
-    this.db = db;
+    super(db, "exerciseHistory");
   }
 
   private convertSetsToRow(sets: LogExerciseSet[]): LogExerciseSetRow[] {
@@ -88,13 +87,6 @@ export class ExerciseHistory {
     );
   }
 
-  // deletes the a single set history for an exercise
-  private async _deleteExerciseHistory(
-    id: number,
-  ): Promise<SQLite.SQLiteRunResult> {
-    return this.db.runAsync(`DELETE FROM exerciseHistory WHERE id = ?;`, id);
-  }
-
   private async _getExerciseHistoryFromWorkoutHistory(workout_history_id: number): Promise<ExerciseHistoryRow[]> {
     return this.db.getAllAsync(
       `SELECT * FROM exerciseHistory WHERE workout_history_id = ? ORDER BY position`,
@@ -143,7 +135,7 @@ export class ExerciseHistory {
   // delete history for a single exercise entry, not all entries
   async deleteExerciseHistory(id: number): Promise<number | undefined> {
     try {
-      await this._deleteExerciseHistory(id);
+      await this._deleteRow(id);
       return id; // return the id of the deleted exercise history if successful
     } catch (error) {
       throw new Error(`Error deleting exercise history: ${error}`);
