@@ -1,13 +1,12 @@
-import { FlatList, View, Text, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
+import settings from "@/constants/settings";
 import { globalStyles } from "@/constants/styles";
 import { useState } from "react";
 import {
-  HistoryListItemProps,
-  WithId,
+    HistoryListItemProps,
+    WithId,
 } from "./HistoryComponent";
-import { colors } from "@/constants/colors";
-import settings from "@/constants/settings";
 
 interface HistoryListProps<T extends WithId> {
   history: T[];
@@ -43,8 +42,8 @@ export default function HistoryList<T extends WithId>({
     <>
       {title &&
       <View style={styles.titleContainer}>
-        {title && <Text style={styles.title}>{title}</Text>}
-        {date && <Text style={styles.date}>{settings.convertDate(date)}</Text>}
+        {title && <Text style={globalStyles.listTitle}>{title}</Text>}
+        {date && <Text style={globalStyles.dateTitle}>{settings.convertDate(date)}</Text>}
       </View>}
       <View style={globalStyles.scrollContainer}>
         <FlatList
@@ -61,16 +60,6 @@ export default function HistoryList<T extends WithId>({
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    color: colors.text,
-    fontFamily: "Rubik-Regular",
-  },
-  date: {
-    fontSize: 16,
-    color: colors.textDark,
-    fontFamily: "Rubik-Regular",
-  },
   titleContainer: {
     flexWrap: "wrap",
     alignSelf: "stretch",

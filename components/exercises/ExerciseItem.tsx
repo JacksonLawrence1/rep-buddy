@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { useDispatch } from "react-redux";
 
 import { AppDispatch } from "@/app/store";
@@ -12,6 +11,7 @@ import { Delete, Edit, History } from "@/components/primitives/PopoutMenus";
 import { colors } from "@/constants/colors";
 import { Exercise } from "@/constants/types";
 import { showAlert } from "@/features/alerts";
+import { gotoExerciseEdit, gotoExerciseHistory } from "@/features/routes";
 import { useState } from "react";
 import DeleteAlert from "../primitives/DeleteAlert";
 
@@ -42,35 +42,19 @@ export default function ExerciseItem({
     }
   }
 
-  // what we do when we want to edit an exercise
-  function onEdit() {
-    router.navigate({
-      pathname: "/exercises/edit/[id]",
-      params: { id: exercise.id },
-    });
-  }
-
-  function onHistory() {
-    router.navigate({
-      pathname: "/exercises/history/[id]",
-      params: { id: exercise.id },
-    });
-  }
-
   // options on the popout menu
   const popoutMenuOptions: React.ReactNode[] = [];
 
   if (edit) {
-    popoutMenuOptions.unshift(<Edit key={0} onPress={onEdit} />);
+    popoutMenuOptions.unshift(<Edit onPress={() => gotoExerciseEdit(exercise.id)} />);
   }
 
   if (history) {
-    popoutMenuOptions.unshift(<History key={1} onPress={onHistory} />);
+    popoutMenuOptions.unshift(<History onPress={() => gotoExerciseHistory(exercise.id)} />);
   }
 
-  // add menu options
   if (del) {
-    popoutMenuOptions.unshift(<Delete key={2} onPress={() => setDeleteAlert(true)} />);
+    popoutMenuOptions.unshift(<Delete onPress={() => setDeleteAlert(true)} />);
   }
 
   return (

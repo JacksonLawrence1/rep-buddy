@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
@@ -17,6 +16,7 @@ import DeleteAlert from "../primitives/DeleteAlert";
 
 import { colors } from "@/constants/colors";
 import settings from "@/constants/settings";
+import { gotoWorkoutHistoryDetails } from "@/features/routes";
 
 interface WorkoutHistoryItemProps {
   history: WorkoutHistoryRow;
@@ -39,16 +39,12 @@ export default function WorkoutHistoryItem({
   history,
   onDelete,
 }: WorkoutHistoryItemProps) {
-  const popoutMenuOptions: React.ReactNode[] = [];
   const [deleteAlert, setDeleteAlert] = useState(false);
   const dispatch = useDispatch();
 
   // route to view details of an single workout entry
   function onViewDetails() {
-    router.navigate({
-      pathname: "/workouts/history/details/[id]",
-      params: { id: history.id },
-    });
+    gotoWorkoutHistoryDetails(history.id);
   }
 
   async function handleDelete() {
@@ -68,18 +64,17 @@ export default function WorkoutHistoryItem({
     }
   }
 
-  // view details of an single workout entry
-  popoutMenuOptions.unshift(
+  const popoutMenuOptions: React.ReactNode[] = [
+    // view details of an single workout entry
     <GenericMenuOption
       icon="history"
-      key={1}
-      label="View Workout"
+      label="View Details"
       onPress={onViewDetails}
     />,
-  );
+  ];
 
   if (onDelete) {
-    popoutMenuOptions.unshift(<Delete key={2} onPress={() => setDeleteAlert(true)} />);
+    popoutMenuOptions.unshift(<Delete onPress={() => setDeleteAlert(true)} />);
   }
 
   return (

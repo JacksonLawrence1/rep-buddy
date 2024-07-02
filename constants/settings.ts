@@ -1,4 +1,4 @@
-import Settings from "@/services/Settings"
+import Settings from "@/services/storage/Settings"
 
 const settings: Settings = new Settings();
 

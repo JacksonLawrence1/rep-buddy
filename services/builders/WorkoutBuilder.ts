@@ -11,9 +11,7 @@ import { Exercise, Workout, WorkoutSet } from "@/constants/types";
 type WorkoutSetIndexObject = number | [number, number] | undefined;
 
 class WorkoutBuilder extends Builder {
-  name: string = "";
   workoutSets: WorkoutSet[] = [];
-  private replacing: boolean = false;
 
   constructor(workout?: Workout) {
     super();
@@ -27,7 +25,6 @@ class WorkoutBuilder extends Builder {
     this.id = workout.id;
     this.name = workout.name;
     this.workoutSets = workout.sets;
-    this.replacing = true;
   }
 
   get length(): number {
@@ -103,7 +100,7 @@ class WorkoutBuilder extends Builder {
         throw new Error(`A Workout with name ${this.name} already exists`);
       }
 
-      return this.replacing ? this.updateWorkout(dispatcher) : this.addWorkout(dispatcher);
+      return this.id ? this.updateWorkout(dispatcher) : this.addWorkout(dispatcher);
     } catch (error: any) {
       throw new Error(`Could not save workout. ${error.message}.`);
     }

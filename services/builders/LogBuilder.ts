@@ -1,16 +1,36 @@
-import { Exercise, Log, LogExerciseSet, Workout } from "@/constants/types";
 import { createContext } from "react";
 
 import history from "@/services/database/History";
+import { Builder } from "@/services/builders/Builder";
 
-import { Builder } from "./Builder";
+import { Exercise, LogExerciseSet, Workout } from "@/constants/types";
+import logStore, { StorageLog } from "../storage/LogStore";
 
 export default class LogBuilder extends Builder {
   date?: Date;
+  name: string = "Unnamed Workout";
   sets: LogExerciseSet[] = [];
+
+  initialiseStore(): void {
+    if (!this.id) {
+      throw new Error("No workout ID found while initialising log store");
+    }
+
+    if (!this.date) {
+      this.date = new Date();
+    }
+
+    logStore.initialiseStore(this.id, this.date, this.name, this.sets);
+  }
+
+  // update the store with the current sets
+  updateStore(): void {
+    logStore.updateStore(this.sets);
+  }
 
   newWorkout(workout: Workout): void {
     this.id = workout.id;
+    this.name = workout.name;
     this.date = new Date();
     this.sets = workout.sets.map((set) => ({
       exercise: set.exercise,
@@ -19,18 +39,18 @@ export default class LogBuilder extends Builder {
         weight: null,
       })),
     }));
+
+    this.initialiseStore();
   }
 
-  loadExistingWorkout(log: Log): void {
-    this.id = log.id;
-    this.date = new Date(log.date);
-    this.sets = log.sets.map((set) => ({
-      exercise: set.exercise,
-      sets: set.sets.map((s) => ({
-        reps: s.reps,
-        weight: s.weight,
-      })),
-    }));
+  // load the log from storage
+  loadExistingWorkout(store: StorageLog): void {
+    this.id = store.id;
+    this.name = store.name;
+    this.sets = store.sets;
+    this.date = new Date(store.date); // convert the date string to a Date object
+
+    this.initialiseStore();
   }
 
   get durationNum(): number {
@@ -68,12 +88,9 @@ export default class LogBuilder extends Builder {
     return this.sets[i].sets[j].weight;
   }
 
-  updateStore(): void {
-    // TODO: update in progress log in storage
-  }
-
   addSet(i: number): void {
     this.sets[i].sets.push({ reps: null, weight: null });
+    this.updateStore();
   }
 
   removeSet(i: number, j: number) {
@@ -140,6 +157,7 @@ export default class LogBuilder extends Builder {
 
   async save(): Promise<void> {
     try {
+      logStore.clearStore(); // clear the store after saving, so we don't load it from in progress
       return await this.addWorkoutToHistory();
     } catch (error) {
       throw new Error(`Error saving workout: ${error}`);
@@ -148,3 +166,19 @@ export default class LogBuilder extends Builder {
 }
 
 export const LogContext = createContext<LogBuilder | null>(null);
+
+// calling code conditionally based on types is tedious, so we do this instead
+
+export function createLogBuilderFromWorkout(workout: Workout): LogBuilder {
+  const logBuilder = new LogBuilder();
+  logBuilder.newWorkout(workout);
+
+  return logBuilder;
+}
+
+export function createLogBuilderFromStorage(store: StorageLog): LogBuilder {
+  const logBuilder = new LogBuilder();
+  logBuilder.loadExistingWorkout(store);
+
+  return logBuilder;
+}

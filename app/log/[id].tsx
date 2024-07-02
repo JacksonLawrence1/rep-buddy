@@ -1,8 +1,8 @@
 import { useLocalSearchParams } from "expo-router";
 
-import Log from "@/components/log/Log";
 import useId from "@/hooks/useId";
 
+import Log from "@/components/log/Log";
 
 export default function StartWorkout() {
   const { inProgress } = useLocalSearchParams<{inProgress?: string}>();

@@ -1,16 +1,17 @@
-import { useDispatch } from "react-redux";
-import { router } from "expo-router";
 import { useContext, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { WorkoutPickerContext } from "@/hooks/contexts/WorkoutPickerContext";
 
-import workoutDatabase from "@/services/database/Workouts";
 import { deleteWorkout } from "@/features/workouts";
+import { gotoWorkoutEdit, gotoWorkoutHistory } from "@/features/routes";
+
+import workoutDatabase from "@/services/database/Workouts";
 
 import { AppDispatch } from "@/app/store";
-import { Delete, Edit, History } from "@/components/primitives/PopoutMenus";
-import ListItem from "@/components/primitives/ListItem";
 import Alert from "@/components/primitives/Alert";
+import ListItem from "@/components/primitives/ListItem";
+import { Delete, Edit, History } from "@/components/primitives/PopoutMenus";
 
 import { colors } from "@/constants/colors";
 import DeleteAlert from "../primitives/DeleteAlert";
@@ -40,20 +41,6 @@ export default function WorkoutItem({ id, name, onPress, edit, del, history }: W
     }
   }
 
-  function onEdit() {
-    router.navigate({
-      pathname: "/workouts/edit/[id]",
-      params: { id: id },
-    });
-  }
-
-  function onHistory() {
-    router.navigate({
-      pathname: "/workouts/history/all/[id]", // all histories for this workout
-      params: { id: id },
-    });
-  }
-
   function handleOnPress() {
     if (pickerSettings.enabled) {
       setPickAlert(true);
@@ -66,16 +53,15 @@ export default function WorkoutItem({ id, name, onPress, edit, del, history }: W
   const popoutMenuOptions: React.ReactNode[] = [];
 
   if (edit) {
-    popoutMenuOptions.unshift(<Edit key={0} onPress={onEdit} />);
+    popoutMenuOptions.unshift(<Edit onPress={() => gotoWorkoutEdit(id)} />);
   }
 
   if (history) {
-    popoutMenuOptions.unshift(<History key={1} onPress={onHistory} />);
+    popoutMenuOptions.unshift(<History onPress={() => gotoWorkoutHistory(id)} />);
   }
 
-  // add popout menu options
   if (del) {
-    popoutMenuOptions.unshift(<Delete key={2} onPress={() => setDeleteAlert(true)} />);
+    popoutMenuOptions.unshift(<Delete onPress={() => setDeleteAlert(true)} />);
   }
 
   return (

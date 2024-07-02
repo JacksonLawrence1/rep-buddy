@@ -31,6 +31,16 @@ export const globalStyles = StyleSheet.create({
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",
   },
+  listTitle: {
+    fontSize: 24,
+    color: colors.text,
+    fontFamily: "Rubik-Regular",
+  },
+  dateTitle: {
+    fontSize: 14,
+    color: colors.textDark,
+    fontFamily: "Rubik-Regular",
+  },
   contentContainer: {
     flex: 1,
     alignItems: "center",

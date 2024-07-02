@@ -1,29 +1,50 @@
 import { router } from "expo-router";
-import { useDispatch } from "react-redux";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import useLoading, { SetContentStateAction } from "@/hooks/useLoading";
 
-import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
+import LogBuilder, {
+  LogContext,
+  createLogBuilderFromStorage,
+  createLogBuilderFromWorkout,
+} from "@/services/builders/LogBuilder";
 import workoutDatabase from "@/services/database/Workouts";
+import logStore from "@/services/storage/LogStore";
 
 import { showAlert } from "@/features/alerts";
 
 import LogContent from "@/components/log/LogContent";
 import DefaultPage from "@/components/pages/DefaultPage";
-import Alert from "../primitives/Alert";
+import Alert from "@/components/primitives/Alert";
 
 type WorkoutLogProps = {
   id: number;
   inProgress?: boolean;
 };
 
-function LogLoader(log: LogBuilder) {
-  return (
-    <LogContext.Provider value={log}>
-      <LogContent log={log} />
-    </LogContext.Provider>
-  );
+// using the workout in memory, inject it into our log builder
+async function loadLogFromMemory(): Promise<LogBuilder> {
+  // check if there is a workout in progress in memory, it should exist as inProgress is true here
+  const store = await logStore.loadStore();
+
+  if (!store) {
+    throw new Error("Could not load in progress workout from memory");
+  }
+
+  return createLogBuilderFromStorage(store);
+}
+
+// setup the log builder using the workout as a base
+async function loadNewLog(workout_id: number): Promise<LogBuilder> {
+  // fetch the workout from the database
+  const workout = await workoutDatabase.getWorkout(workout_id);
+
+  if (!workout) {
+    throw new Error("Failed to load workout");
+  }
+
+  return createLogBuilderFromWorkout(workout);
 }
 
 export default function Log({ id, inProgress }: WorkoutLogProps) {
@@ -31,44 +52,36 @@ export default function Log({ id, inProgress }: WorkoutLogProps) {
   const dispatch = useDispatch();
   const [showExit, setShowExit] = useState(false);
 
-  function loadLog(setContent: SetContentStateAction) {
-    const log = new LogBuilder();
+  async function loadLog(setContent: SetContentStateAction) {
+    try {
+      // load the log from memory or from the database
+      const log = inProgress ? await loadLogFromMemory() : await loadNewLog(id);
 
-    // TODO: load an incomplete log if it exists
-    if (inProgress) {
-      // load incomplete log
-      return;
+      // display the content once loaded
+      setContent(
+        <LogContext.Provider value={log}>
+          <LogContent log={log} />
+        </LogContext.Provider>,
+      );
+    } catch (error) {
+      dispatch(showAlert({ title: "Failed to load", description: `${error}` }));
+      router.back();
     }
-
-    workoutDatabase
-      .getWorkout(id)
-      .then((workout) => {
-        if (!workout) {
-          throw new Error("Workout not found");
-        }
-
-        // create a new log, with the workout
-        log.newWorkout(workout);
-        setContent(LogLoader(log));
-      })
-      .catch((error) => {
-        dispatch(
-          showAlert({ title: "Workout Not Found", description: `${error}` }),
-        );
-        router.back();
-      });
-  }
-
-  function handleExit() {
-    setShowExit(true);
   }
 
   function exit() {
+    // if the user exits the workout, assume they don't want to load it again
+    logStore.clearStore();
+
     router.back();
   }
 
   return (
-    <DefaultPage title="Workout" callback={handleExit} theme="modal">
+    <DefaultPage
+      title="Workout"
+      callback={() => setShowExit(true)}
+      theme="modal"
+    >
       <Alert
         visible={showExit}
         setVisible={setShowExit}

@@ -4,11 +4,12 @@ import { StyleSheet, View } from "react-native";
 import { LogContext } from "@/services/builders/LogBuilder";
 
 import ListItem from "@/components/primitives/ListItem";
-import { Delete, GenericMenuOption } from "@/components/primitives/PopoutMenus";
+import { History, Delete, GenericMenuOption } from "@/components/primitives/PopoutMenus";
 import LogExerciseSets from "@/components/log/exercise/LogExerciseSets";
 
 import { colors } from "@/constants/colors";
 import { LogExerciseSet as LogExerciseSetType } from "@/constants/types";
+import { gotoExerciseHistory } from "@/features/routes";
 
 interface LogExerciseProps {
   index: number,
@@ -26,12 +27,11 @@ export default function LogExercise({ index, exerciseSet, onSwap, onDelete }: Lo
 
   // options on the popout menu
   const popoutMenuOptions: React.ReactNode[] = [
-    <Delete key={0} onPress={() => onDelete(index)} />,
+    <Delete key={0} onPress={() => onDelete(index)} />, // delete the whole exercise from the log
+    <GenericMenuOption key={1} label="Swap" icon="exchange-alt" onPress={() => onSwap(index)} />, // swap the exercise with another
+    <History key={2} onPress={() => gotoExerciseHistory(exerciseSet.exercise.id)} />, // view the exercise history
   ];
 
-  if (onSwap) {
-    popoutMenuOptions.push(<GenericMenuOption key={1} label="Swap" icon="exchange-alt" onPress={() => onSwap(index)} />);
-  }
 
   return (
     <View style={styles.workoutContainer}>
@@ -40,7 +40,6 @@ export default function LogExercise({ index, exerciseSet, onSwap, onDelete }: Lo
         backgroundColor={colors.tertiary}
         height={52}
         popoutMenuOptions={{
-          icon: "ellipsis-h",
           options: popoutMenuOptions,
         }}
       />

@@ -21,7 +21,7 @@ export default function Workouts() {
 
   const alertSettings: AlertContextProps = {
     enabled: true,
-    description: "Are you sure you want to start this workout? You can only have one workout in progress at a time.",
+    description: "You can only have one workout in progress at a time. Any workouts currently in progress will be overwritten. Are you sure you want to start this workout?",
     cancelText: "Cancel",
     submitText: "Start Workout",
   };

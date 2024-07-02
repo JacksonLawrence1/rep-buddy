@@ -1,4 +1,4 @@
-import { FlatList, View } from "react-native";
+import { FlatList, View, Text, StyleSheet } from "react-native";
 
 import useWorkoutLog from "@/hooks/useWorkoutLog";
 
@@ -9,6 +9,7 @@ import LogExercise from "@/components/log/exercise/LogExercise";
 import Timer from "@/components/log/Timer";
 
 import { globalStyles } from "@/constants/styles";
+import settings from "@/constants/settings";
 
 type WorkoutLogProps = {
   log: LogBuilder;
@@ -31,6 +32,10 @@ export default function LogContent({ log }: WorkoutLogProps) {
 
   return (
     <>
+      <View style={styles.titleContainer}>
+        <Text style={globalStyles.listTitle}>{log.name}</Text>
+        {log.date && <Text style={globalStyles.dateTitle}>{settings.convertDateObject(log.date)}</Text>}
+      </View>
       <View style={globalStyles.scrollContainer}>
         <FlatList
           data={exercises}
@@ -50,3 +55,12 @@ export default function LogContent({ log }: WorkoutLogProps) {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    paddingHorizontal: 16,
+    marginVertical: -8,
+    flexWrap: "wrap",
+    alignSelf: "stretch",
+  },
+});

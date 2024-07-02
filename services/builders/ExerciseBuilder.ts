@@ -7,9 +7,7 @@ import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { Builder } from "./Builder";
 
 export default class ExerciseBuilder extends Builder {
-  name: string = "";
   muscleGroups: Set<MuscleGroup> = new Set(); // store as set for easy toggling
-  private replacing: boolean = false;
 
   constructor(exercise?: Exercise) {
     super();
@@ -23,7 +21,6 @@ export default class ExerciseBuilder extends Builder {
     this.id = exercise.id;
     this.name = exercise.name;
     this.muscleGroups = new Set(exercise.muscleGroups);
-    this.replacing = true;
   }
 
   updateName(name: string): void {
@@ -85,7 +82,8 @@ export default class ExerciseBuilder extends Builder {
         throw new Error(`An Exercise with the name ${this.name} already exists`);
       }
 
-      return this.replacing ? this.replace(dispatcher) : this.add(dispatcher);
+      // replace if we have an id, otherwise add
+      return this.id ? this.replace(dispatcher) : this.add(dispatcher);
     } catch (error: any) {
       throw new Error(`Could not save exercise. ${error.message}.`);
     }

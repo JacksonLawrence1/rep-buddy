@@ -2,16 +2,22 @@ import { StyleSheet, View } from "react-native";
 
 import NumberPicker from "@/components/inputs/NumberPicker";
 import ListItem from "@/components/primitives/ListItem";
-import { Delete, GenericMenuOption } from "@/components/primitives/PopoutMenus";
+import {
+  History,
+  Delete,
+  GenericMenuOption,
+} from "@/components/primitives/PopoutMenus";
 
 import { colors } from "@/constants/colors";
 import { WorkoutSet } from "@/constants/types";
+import { gotoExerciseHistory } from "@/features/routes";
 
 interface WorkoutBaseProps {
   item: WorkoutSet;
   updateSet: (set: number) => void;
   onDelete?: () => void;
   onSwap?: () => void;
+  history?: boolean; // whether to show exercise history option
 }
 
 export default function WorkoutSetItem({
@@ -24,18 +30,23 @@ export default function WorkoutSetItem({
   const popoutMenuOptions: React.ReactNode[] = [];
 
   if (onDelete) {
-    popoutMenuOptions.push(<Delete key={0} onPress={onDelete} />);
+    popoutMenuOptions.push(<Delete onPress={onDelete} />);
   }
 
   // Ideally, use generic function to create this array, but this would involve annoying prop passing
   if (onSwap) {
     popoutMenuOptions.push(
       <GenericMenuOption
-        key={1}
         label="Swap"
         icon="exchange-alt"
         onPress={onSwap}
       />,
+    );
+  }
+
+  if (history) {
+    popoutMenuOptions.push(
+      <History onPress={() => gotoExerciseHistory(item.exercise.id)} />,
     );
   }
 
@@ -45,7 +56,6 @@ export default function WorkoutSetItem({
         label={item.exercise.name}
         backgroundColor={colors.tertiary}
         popoutMenuOptions={{
-          icon: "ellipsis-h",
           options: popoutMenuOptions,
         }}
       />

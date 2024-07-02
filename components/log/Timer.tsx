@@ -8,9 +8,12 @@ import Alert from "@/components/primitives/Alert";
 
 import { colors } from "@/constants/colors";
 import { router } from "expo-router";
+import { useDispatch } from "react-redux";
+import { showAlert } from "@/features/alerts";
 
 export default function Timer() {
   const log: LogBuilder | null = useContext(LogContext);
+  const dispatch = useDispatch();
   const [timer, setTimer] = useState<string>("00:00:00");
   const [finish, setFinish] = useState(false);
 
@@ -31,7 +34,8 @@ export default function Timer() {
   function saveWorkout() {
     log!.save().finally(() => {
       router.back();
-    }).catch((e) => {
+    }).catch((error) => {
+       dispatch(showAlert({ title: "Error while saving", description: error.message })); 
     });
   }
 

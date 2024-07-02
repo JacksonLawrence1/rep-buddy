@@ -1,6 +1,7 @@
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 
 export abstract class Builder {
+  name: string = "";
   id?: number;
   setState?: React.Dispatch<React.SetStateAction<any>>;
 

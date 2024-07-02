@@ -76,7 +76,7 @@ export default function ExerciseHistoryItem({
 
   if (onDelete) {
     popoutMenuOptions.unshift(
-      <Delete key={2} onPress={() => setDeleteAlert(true)} />,
+      <Delete onPress={() => setDeleteAlert(true)} />,
     );
   }
 
