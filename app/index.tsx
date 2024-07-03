@@ -60,6 +60,12 @@ export default function Index() {
           label="History"
           icon={"history"}
         />
+        <LinkButton
+          height={64}
+          href="/settings"
+          label="Settings"
+          icon={"cog"}
+        />
       </View>
       <View style={styles.footerContainer}>
         <Text style={styles.footerText}>Version: 1.0.0</Text>
