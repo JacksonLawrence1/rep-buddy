@@ -24,6 +24,9 @@ export default function LogExerciseSetRow({ i, j, reps, weight, onRemoveSet }: L
 
   return (
     <View style={styles.setContainer}>
+      <View style={styles.setColumn}>
+        <Text style={styles.text}>{j + 1}</Text>
+      </View>
       <View style={styles.setItem}>
         <Text style={styles.text}>W: </Text>
         <TextInput
@@ -75,6 +78,14 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontFamily: "Rubik-Regular",
     width: 42,
+  },
+  setColumn: {
+    height: "100%",
+    width: 32,
+    paddingLeft: 8,
+    justifyContent: "center",
+    borderRightWidth: 1,
+    borderColor: colors.border,
   },
   setItem: {
     flex: 1,

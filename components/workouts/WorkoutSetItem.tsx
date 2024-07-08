@@ -25,6 +25,7 @@ export default function WorkoutSetItem({
   onDelete,
   updateSet,
   onSwap,
+  history,
 }: WorkoutBaseProps) {
   // options on the popout menu
   const popoutMenuOptions: React.ReactNode[] = [];

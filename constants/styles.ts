@@ -35,6 +35,7 @@ export const globalStyles = StyleSheet.create({
     fontSize: 24,
     color: colors.text,
     fontFamily: "Rubik-Regular",
+    maxWidth: "100%",
   },
   dateTitle: {
     fontSize: 14,

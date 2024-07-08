@@ -7,17 +7,13 @@ import { Exercise, LogExerciseSet, Workout } from "@/constants/types";
 import logStore, { StorageLog } from "../storage/LogStore";
 
 export default class LogBuilder extends Builder {
-  date?: Date;
+  date: Date = new Date();
   name: string = "Unnamed Workout";
   sets: LogExerciseSet[] = [];
 
   initialiseStore(): void {
     if (!this.id) {
       throw new Error("No workout ID found while initialising log store");
-    }
-
-    if (!this.date) {
-      this.date = new Date();
     }
 
     logStore.initialiseStore(this.id, this.date, this.name, this.sets);
@@ -53,30 +49,9 @@ export default class LogBuilder extends Builder {
     this.initialiseStore();
   }
 
-  get durationNum(): number {
-    if (!this.date) {
-      throw new Error("No date found in log");
-    }
-
-    return Date.now() - this.date.getTime();
-  }
-
-  get duration(): string {
-    const duration: number = this.durationNum;
-
-    // format to hh:mm:ss, as a string
-    const time: [number, number, number] = [
-      Math.floor(duration / 3600000),
-      Math.floor((duration % 3600000) / 60000),
-      Math.floor((duration % 60000) / 1000),
-    ];
-
-    return time.map((t) => (t < 10 ? `0${t}` : t)).join(":");
-  }
-
   private condenseDuration(): number {
     // only get the hours and minutes
-    const duration: number = this.durationNum;
+    const duration: number = Date.now() - this.date.getTime();
     return Math.floor(duration / 3600000) * 60 + Math.floor((duration % 3600000) / 60000);
   }
 

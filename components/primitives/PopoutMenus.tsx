@@ -11,6 +11,7 @@ import { View, StyleSheet, Text } from "react-native";
 import { colors } from "@/constants/colors";
 
 import { FontAwesome5 } from "@expo/vector-icons";
+import { cloneElement, isValidElement } from "react";
 
 export interface PopoutMenuOptions {
   options: React.ReactNode[];
@@ -74,7 +75,13 @@ export function PopoutMenu({ options }: PopoutMenuOptions) {
           <FontAwesome5 name="ellipsis-h" size={20} color={colors.text} />
         </MenuTrigger>
         <MenuOptions customStyles={menuStyles}>
-          {options.map(option => option)}
+          {options.map((Option, i) => {
+            // we need to append a key to each option, without altering the original object
+            // typescript complains if we don't check if it's a valid react element
+            if (isValidElement(Option)) {
+              return cloneElement(Option, { key: i });
+            }
+          })}
         </MenuOptions>
       </Menu>
     </View>

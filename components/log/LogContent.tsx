@@ -1,4 +1,4 @@
-import { FlatList, View, Text, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import useWorkoutLog from "@/hooks/useWorkoutLog";
 
@@ -6,10 +6,10 @@ import LogBuilder from "@/services/builders/LogBuilder";
 
 import Button from "@/components/buttons/Button";
 import LogExercise from "@/components/log/exercise/LogExercise";
-import Timer from "@/components/log/Timer";
 
-import { globalStyles } from "@/constants/styles";
 import settings from "@/constants/settings";
+import { globalStyles } from "@/constants/styles";
+import LogFooter from "./LogFooter";
 
 type WorkoutLogProps = {
   log: LogBuilder;
@@ -51,7 +51,7 @@ export default function LogContent({ log }: WorkoutLogProps) {
           }
         />
       </View>
-      <Timer />
+      <LogFooter log={log} />
     </>
   );
 }

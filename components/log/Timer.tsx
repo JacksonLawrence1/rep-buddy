@@ -1,27 +1,33 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useContext, useEffect, useState } from "react";
-
-import LogBuilder, { LogContext } from "@/services/builders/LogBuilder";
-
-import Button from "@/components/buttons/Button";
-import Alert from "@/components/primitives/Alert";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text } from "react-native";
 
 import { colors } from "@/constants/colors";
-import { router } from "expo-router";
-import { useDispatch } from "react-redux";
-import { showAlert } from "@/features/alerts";
 
-export default function Timer() {
-  const log: LogBuilder | null = useContext(LogContext);
-  const dispatch = useDispatch();
-  const [timer, setTimer] = useState<string>("00:00:00");
-  const [finish, setFinish] = useState(false);
+function formatDuration(duration: number): string {
+  // format to hh:mm:ss, as a string
+  const time: [number, number, number] = [
+    Math.floor(duration / 3600000),
+    Math.floor((duration % 3600000) / 60000),
+    Math.floor((duration % 60000) / 1000),
+  ];
+
+  return time.map((t) => (t < 10 ? `0${t}` : t)).join(":");
+}
+
+function getDuration(date: Date): number {
+  return Date.now() - date.getTime();
+}
+
+interface TimerProps {
+  date: Date;
+}
+
+export default function Timer({ date }: TimerProps) {
+  const [timer, setTimer] = useState(getDuration(date));
 
   useEffect(() => {
-    if (!log) return;
-
     const interval = setInterval(() => {
-      setTimer(log.duration);
+      setTimer(getDuration(date));
     }, 500); // sometimes skips a second with 1000ms, so we update every 500ms
 
     return () => {
@@ -29,49 +35,10 @@ export default function Timer() {
     };
   });
 
-  if (!log) return null;
-
-  function saveWorkout() {
-    log!.save().finally(() => {
-      router.back();
-    }).catch((error) => {
-       dispatch(showAlert({ title: "Error while saving", description: error.message })); 
-    });
-  }
-
-  return (
-    <View style={styles.footerContainer}>
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>{timer}</Text>
-      </View>
-      {/* TODO: change where finish icon is */}
-      <View style={{flex: 1}}>
-        <Button label="Finish" theme="primary" onPress={() => setFinish(true)} />
-      </View>
-      <Alert visible={finish} setVisible={setFinish} title="Finish your Workout?" description="Are you sure you want to finish the workout? Any unfinished sets won't be recorded." onSubmit={saveWorkout} submitText="Finish" />
-    </View>
-  );
+  return <Text style={styles.timerText}>{formatDuration(timer)}</Text>;
 }
 
 const styles = StyleSheet.create({
-  footerContainer: {
-    marginTop: -12,
-    width: "100%",
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: colors.tertiary,
-    paddingHorizontal: 16,
-  },
-  timerContainer: {
-    flex: 1,
-    borderRadius: 8,
-    justifyContent: "center",
-    paddingHorizontal: 8,
-    paddingVertical: 16,
-  },
   timerText: {
     color: colors.text,
     fontFamily: "Rubik-Regular",
