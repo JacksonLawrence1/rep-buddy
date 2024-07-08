@@ -65,8 +65,6 @@ class History {
         });
       } catch (error) {
         console.error(error);
-        // TODO: cleanup database if we can't find the exercise id / workout id
-        continue;
       }
     }
 

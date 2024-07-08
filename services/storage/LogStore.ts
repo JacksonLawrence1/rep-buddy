@@ -5,10 +5,11 @@ export interface StorageLog {
   id: number; // change if we don't specify a workout
   name: string;
   date: string;
+  lastUpdated: number; // stored as a number as thats how Date.now() is stored
   sets: LogExerciseSet[];
 }
 
-class LogStore {
+export class LogStore {
   id: number | null = null;
   date: Date | null = null;
   name: string | null = null;
@@ -29,6 +30,7 @@ class LogStore {
       id: this.id,
       name: this.name,
       date: date.toISOString(),
+      lastUpdated: Date.now(),
       sets: sets || [],
     }));
   }
@@ -44,6 +46,7 @@ class LogStore {
       id: this.id,
       name: this.name,
       date: this.date.toISOString(),
+      lastUpdated: Date.now(),
       sets: sets,
     }));
   }
@@ -53,6 +56,13 @@ class LogStore {
     this.id = null;
     this.date = null;
     AsyncStorage.removeItem("log");
+  }
+
+  static isOlderThan24Hours(store: StorageLog): boolean {
+    const storeDate = new Date(store.date);
+    const diff = Date.now() - storeDate.getTime();
+
+    return diff > 24 * 60 * 60 * 1000;
   }
 }
 

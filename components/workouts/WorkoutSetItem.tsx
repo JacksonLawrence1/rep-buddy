@@ -14,7 +14,7 @@ import { gotoExerciseHistory } from "@/features/routes";
 
 interface WorkoutBaseProps {
   item: WorkoutSet;
-  updateSet: (set: number) => void;
+  updateSet?: (set: number) => void;
   onDelete?: () => void;
   onSwap?: () => void;
   history?: boolean; // whether to show exercise history option
@@ -37,11 +37,7 @@ export default function WorkoutSetItem({
   // Ideally, use generic function to create this array, but this would involve annoying prop passing
   if (onSwap) {
     popoutMenuOptions.push(
-      <GenericMenuOption
-        label="Swap"
-        icon="exchange-alt"
-        onPress={onSwap}
-      />,
+      <GenericMenuOption label="Swap" icon="exchange-alt" onPress={onSwap} />,
     );
   }
 
@@ -69,7 +65,7 @@ export default function WorkoutSetItem({
           width: "100%",
         }}
       >
-        <NumberPicker start={item.sets} onChange={updateSet} />
+        <NumberPicker value={item.sets} onChange={updateSet} />
       </View>
     </View>
   );

@@ -73,7 +73,8 @@ export default function Log({ id, inProgress }: WorkoutLogProps) {
     // if the user exits the workout, assume they don't want to load it again
     logStore.clearStore();
 
-    router.back();
+    // imo feels better to return to homepage instead of the previous page
+    router.dismissAll();
   }
 
   return (

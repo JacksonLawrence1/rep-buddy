@@ -1,5 +1,4 @@
 import React from "react";
-
 import { View, StyleSheet, Pressable, Text, StyleProp, ViewStyle } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
@@ -19,10 +18,14 @@ export interface ButtonProps {
 function themeHelper(isPrimary: boolean, isDisabled: boolean, height: number | undefined) {
   const styles: StyleProp<ViewStyle>[] = [buttonStyles.button, { height: height || 48 }];
 
+  // this is not great to look at 
   if (isPrimary) {
     styles.push(buttonStyles.primaryButton);
+    if (isDisabled) {
+      styles.push({ backgroundColor: colors.primaryAccent });
+    }
   } else if (isDisabled) {
-    styles.push(buttonStyles.buttonDisabled);
+    styles.push({ backgroundColor: colors.disabled });
   }
 
   return styles;
@@ -33,10 +36,17 @@ const BaseButton = React.forwardRef<View, ButtonProps>(
     const isPrimary: boolean = theme === ThemeEnum.Primary;
     const hasIcon: boolean = icon !== undefined;
 
+    // ensure that the onPress function is only called when the button is not disabled
+    function handlePress() {
+      if (!disabled) {
+        onPress();
+      }
+    }
+
     return (
       <Pressable
         style={themeHelper(isPrimary, disabled, height)}
-        onPress={onPress}
+        onPress={handlePress}
         ref={ref}
       >
         <Text style={[buttonStyles.text, !hasIcon && { textAlign: 'center' }]}>{label}</Text>
@@ -71,10 +81,6 @@ export const buttonStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
     minHeight: 48,
-  },
-  buttonDisabled: {
-    backgroundColor: colors.error,
-    borderWidth: 0,
   },
   primaryButton: {
     backgroundColor: colors.primary,

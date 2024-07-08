@@ -49,9 +49,10 @@ export default class LogBuilder extends Builder {
     this.initialiseStore();
   }
 
-  private condenseDuration(): number {
+  private condenseDuration(lastUpdated?: number): number {
     // only get the hours and minutes
-    const duration: number = Date.now() - this.date.getTime();
+    // if lastUpdated is not provided, use the current time
+    const duration: number = (lastUpdated || Date.now()) - this.date.getTime();
     return Math.floor(duration / 3600000) * 60 + Math.floor((duration % 3600000) / 60000);
   }
 
@@ -109,13 +110,12 @@ export default class LogBuilder extends Builder {
     this.updateStore();
   }
 
-  async addWorkoutToHistory(): Promise<void> {
+  async addWorkoutToHistory(lastUpdated?: number): Promise<void> {
     if (!this.date) {
       throw new Error("Date could not be found");
     }
 
     if (!this.id) {
-      // TODO: implement starting a workout from scratch
       throw new Error(
         "Workout ID could not be found, if you are trying to start a workout from scratch, this has not been implemented yet.",
       );
@@ -125,7 +125,7 @@ export default class LogBuilder extends Builder {
     await history.addWorkoutHistory(
       this.id,
       this.date,
-      this.condenseDuration(), // cut off till seconds, so we only have hours and minutes
+      this.condenseDuration(lastUpdated), // cut off till seconds, so we only have hours and minutes
       this.sets,
     );
   }

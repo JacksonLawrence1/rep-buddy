@@ -52,7 +52,6 @@ class WorkoutBuilder extends Builder {
   }
 
   updateWorkoutSet(i: WorkoutSetIndexObject, sets: number): void {
-    // TODO: implement complex workout sets
     if (typeof i !== "number") {
       throw new Error(`Not implemented complex workout sets yet: ${i}`);
     }

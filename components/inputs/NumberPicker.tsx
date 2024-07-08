@@ -11,19 +11,25 @@ interface ButtonClickerProps {
 }
 
 interface NumberPickerProps {
-  start: number;
-  onChange: (value: number) => void;
-}
-
-interface NumberPickerTestProps {
   value: number;
-  handleChange: (value: number) => void;
+  onChange?: (value: number) => void;
 }
 
 function ButtonClicker({ icon, onPress, disabled }: ButtonClickerProps) {
   return (
-    <Pressable disabled={disabled} onPress={onPress} style={[styles.clicker, {backgroundColor: disabled ? 'gray' : colors.backgroundDark}]}>
-        <FontAwesome5 name={icon} size={16} color={disabled ? 'lightgray' : colors.text} />
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      style={[
+        styles.clicker,
+        { backgroundColor: disabled ? "gray" : colors.backgroundDark },
+      ]}
+    >
+      <FontAwesome5
+        name={icon}
+        size={16}
+        color={disabled ? "lightgray" : colors.text}
+      />
     </Pressable>
   );
 }
@@ -31,47 +37,75 @@ function ButtonClicker({ icon, onPress, disabled }: ButtonClickerProps) {
 // might do an A/B test to see which one is more intuitive
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function NumberPicker1({ value, handleChange }: NumberPickerTestProps) {
+function NumberPicker1({ value, onChange }: NumberPickerProps) {
   return (
     <View style={styles.container}>
       <View style={alternatives.text}>
         <Text style={styles.textContainer}>Sets:</Text>
       </View>
       <View style={alternatives.inputContainer}>
-        <ButtonClicker icon="minus" disabled={value === 0} onPress={() => handleChange(value - 1)} />
+        {onChange && (
+          <ButtonClicker
+            icon="minus"
+            disabled={value === 0}
+            onPress={() => onChange(value - 1)}
+          />
+        )}
         <Text style={styles.textContainer}>{value}</Text>
-        <ButtonClicker icon="plus" disabled={value === 20} onPress={() => handleChange(value + 1)} />
+        {onChange && (
+          <ButtonClicker
+            icon="plus"
+            disabled={value === 20}
+            onPress={() => onChange(value + 1)}
+          />
+        )}
       </View>
     </View>
   );
 }
 
-function NumberPicker2({ value, handleChange }: NumberPickerTestProps) {
+function NumberPicker2({ value, onChange }: NumberPickerProps) {
   return (
     <View style={styles.container}>
-      <ButtonClicker icon="minus" disabled={value === 0} onPress={() => handleChange(value - 1)} />
+      {onChange && (
+        <ButtonClicker
+          icon="minus"
+          disabled={value === 0}
+          onPress={() => onChange(value - 1)}
+        />
+      )}
       <View style={styles.inputContainer}>
         <Text style={styles.textContainer}>Sets:</Text>
         <Text style={styles.textContainer}>{value}</Text>
       </View>
-      <ButtonClicker icon="plus" disabled={value === 20} onPress={() => handleChange(value + 1)} />
+      {onChange && (
+        <ButtonClicker
+          icon="plus"
+          disabled={value === 20}
+          onPress={() => onChange(value + 1)}
+        />
+      )}
     </View>
   );
 }
 
-
-export default function NumberPicker({ start, onChange }: NumberPickerProps) {
-  const [value, setValue] = useState(start);
+export default function NumberPicker({ value, onChange }: NumberPickerProps) {
+  const [startValue, setStartValue] = useState(value);
 
   function handleChange(newValue: number) {
+    if (!onChange) return;
+
     newValue = Math.max(0, Math.min(20, newValue)); // clamp between 0 and 99
 
-    setValue(newValue);
+    setStartValue(newValue);
     onChange(newValue);
   }
 
   return (
-    <NumberPicker2 value={value} handleChange={handleChange} />
+    <NumberPicker2
+      value={startValue}
+      onChange={onChange ? handleChange : undefined}
+    />
   );
 }
 

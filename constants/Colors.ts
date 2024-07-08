@@ -4,6 +4,7 @@
 
 export const colors = {
     primary: '#FF3E01',
+    primaryAccent: '#FF7C32',
     secondary: '#1F1F1F',
     tertiary: '#111111',
     background: '#2D2D2D',
@@ -13,6 +14,7 @@ export const colors = {
     error: '#B40000',
     warning: '#FFA500',
     success: '#2DAC00',
+    disabled: '#B0B0B0',
     greenTint: '#509937',
     border: '#787878',
     textDark: '#898989',

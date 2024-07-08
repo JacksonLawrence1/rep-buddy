@@ -19,7 +19,7 @@ export default function ListItem({ label, backgroundColor, height = 52, onPress,
         </View>
 
         <View style={styles.iconsContainer}>
-          {popoutMenuOptions && <PopoutMenu {...popoutMenuOptions} />}
+          {popoutMenuOptions && popoutMenuOptions.options.length > 0 && <PopoutMenu {...popoutMenuOptions} />}
         </View>
       </Pressable>
     </View>

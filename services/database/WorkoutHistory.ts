@@ -14,8 +14,6 @@ export class WorkoutHistory extends DatabaseBase<WorkoutHistoryRow> {
     super(db, 'workoutHistory');
   }
 
-  // TODO: ensure that the date is actually being sorted correctly
-
   // SQL queries
   //
   // polymorphic method to get rows in sorted order

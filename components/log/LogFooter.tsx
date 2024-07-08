@@ -1,7 +1,7 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, Text } from "react-native";
 import { useDispatch } from "react-redux";
 
 import { showAlert } from "@/features/alerts";
@@ -19,14 +19,15 @@ interface LogFooterProps {
 
 export default function LogFooter({ log }: LogFooterProps) {
   const dispatch = useDispatch();
+
   const [finish, setFinish] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   function saveWorkout() {
+    setButtonDisabled(true);
+
     log
       .save()
-      .finally(() => {
-        router.back();
-      })
       .catch((error) => {
         dispatch(
           showAlert({
@@ -34,6 +35,10 @@ export default function LogFooter({ log }: LogFooterProps) {
             description: error.message,
           }),
         );
+      })
+      .finally(() => {
+        router.back();
+        setButtonDisabled(false);
       });
   }
 
@@ -54,14 +59,36 @@ export default function LogFooter({ log }: LogFooterProps) {
 
   return (
     <View style={styles.footerContainer}>
-      <Pressable onPress={viewHistory}>
-        <FontAwesome5 name="history" size={32} color={log.id === undefined ? colors.textDark : colors.warning } />
-      </Pressable>
-      <View style={styles.timerContainer}>
+      {log.id && (
+        <Pressable
+          style={[styles.iconContainer, { backgroundColor: colors.primary }]}
+          onPress={viewHistory}
+        >
+          <FontAwesome5 name="history" size={24} color={colors.text} />
+          <Text style={styles.iconText}>History</Text>
+        </Pressable>
+      )}
+      <View
+        style={[
+          styles.timerContainer,
+          { alignItems: log.id ? "center" : "flex-start" },
+        ]}
+      >
         <Timer date={log.date} />
       </View>
-      <Pressable onPress={() => setFinish(true)}>
-        <FontAwesome5 name="flag" size={32} color={colors.greenTint} />
+      <Pressable
+        style={[
+          styles.iconContainer,
+          {
+            backgroundColor: buttonDisabled
+              ? colors.primaryAccent
+              : colors.primary,
+          },
+        ]}
+        onPress={() => !buttonDisabled && setFinish(true)}
+      >
+        <FontAwesome5 name="flag" size={24} color={colors.text} />
+        <Text style={styles.iconText}>Finish</Text>
       </Pressable>
       <Alert
         visible={finish}
@@ -84,19 +111,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 8,
     backgroundColor: colors.tertiary,
-    paddingHorizontal: 32,
+    padding: 12,
   },
   timerContainer: {
     borderRadius: 8,
     justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 8,
-    paddingVertical: 16,
+    paddingHorizontal: 24, // if we don't have a history button, timer needs to be centered
     flex: 1,
+    flexWrap: "nowrap",
   },
-  timerText: {
+  iconText: {
     color: colors.text,
     fontFamily: "Rubik-Regular",
-    fontSize: 38,
+    fontSize: 12,
+  },
+  iconContainer: {
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 4,
   },
 });

@@ -9,7 +9,7 @@ export default function useLoading(callback: LoadContentCallback) {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<React.ReactNode>(<Loading />);
 
-  // load workout asynchronously
+  // load asynchronously
   useEffect(() => {
     // prevents calling the callback multiple times
     if (loading) {

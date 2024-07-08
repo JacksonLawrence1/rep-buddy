@@ -11,6 +11,7 @@ import WorkoutSetItem from "@/components/workouts/WorkoutSetItem";
 
 import { globalStyles } from "@/constants/styles";
 import { showAlert } from "@/features/alerts";
+import { useState } from "react";
 
 type WorkoutBuilderFormProps = {
   workoutBuilder: WorkoutBuilder;
@@ -19,6 +20,7 @@ type WorkoutBuilderFormProps = {
 export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFormProps) {
   // custom hook to manage workout sets
   const { workoutSets, pickExercise, deleteExercise } = useWorkoutSets(workoutBuilder);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -37,7 +39,7 @@ export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFor
   }
 
   async function saveWorkout() {
-    // TODO: disable button while saving
+    setButtonDisabled(true);
     
     workoutBuilder
       .save(dispatch)
@@ -46,6 +48,9 @@ export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFor
       })
       .catch((error) => {
         dispatch(showAlert({ title: "Error", description: error.message }));
+      })
+      .finally(() => {
+        setButtonDisabled(false);
       });
   }
 
@@ -82,7 +87,7 @@ export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFor
           )}
         />
       </View>
-      <Button label="Save" theme="primary" onPress={saveWorkout} />
+      <Button label="Save" theme="primary" onPress={saveWorkout} disabled={buttonDisabled} />
     </View>
   );
 }

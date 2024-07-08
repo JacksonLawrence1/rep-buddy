@@ -12,26 +12,35 @@ import { MuscleGroupValues } from "@/constants/enums/muscleGroups";
 import { globalStyles } from "@/constants/styles";
 import { useDispatch } from "react-redux";
 import { showAlert } from "@/features/alerts";
+import { useState } from "react";
 
 interface ExerciseBuilderFormProps {
   exercise: ExerciseBuilder;
 }
 
-export default function ExerciseBuilderForm({ exercise }: ExerciseBuilderFormProps) {
+export default function ExerciseBuilderForm({
+  exercise,
+}: ExerciseBuilderFormProps) {
   const dispatch = useDispatch();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   async function saveExercise() {
-    // TODO: disable button while saving
-    
+    setButtonDisabled(true);
+
     exercise
       .save(dispatch)
       .then(() => {
-        router.back();
+        router.back(); 
       })
       .catch((error) => {
-        dispatch(showAlert({ title: "Error while saving exercise", description: error.message }));
-
-        // re-enable button
+        dispatch(
+          showAlert({
+            title: "Error while saving exercise",
+            description: error.message,
+          }),
+        );
+      }).finally(() => {
+        setButtonDisabled(false); // re-enable the button after either success or failure
       });
   }
 
@@ -57,7 +66,12 @@ export default function ExerciseBuilderForm({ exercise }: ExerciseBuilderFormPro
           </View>
         </InputField>
       </View>
-      <Button theme="primary" label="Save" onPress={saveExercise} />
+      <Button
+        theme="primary"
+        label="Save"
+        disabled={buttonDisabled}
+        onPress={saveExercise}
+      />
     </View>
   );
 }

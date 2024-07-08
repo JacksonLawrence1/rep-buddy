@@ -4,9 +4,10 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import Alert from "@/components/primitives/Alert";
 import { colors } from "@/constants/colors";
 import IconButton from "../buttons/IconButton";
-import logStore, { StorageLog } from "@/services/storage/LogStore";
+import logStore, { LogStore, StorageLog } from "@/services/storage/LogStore";
 import settings from "@/constants/settings";
 import { router } from "expo-router";
+import { createLogBuilderFromStorage } from "@/services/builders/LogBuilder";
 
 export default function ResumePopup() {
   // shows the popup if there is a workout in progress
@@ -23,7 +24,17 @@ export default function ResumePopup() {
         return;
       }
 
-      // TODO: if the date is > 24 hours ago, assume the workout is done and save that to storage
+      // assume workout was done if older than 24 hours, and add it to history 
+      if (LogStore.isOlderThan24Hours(store)) {
+        // for simplicity, make a new log builder as it already parses the storage log
+        const log = createLogBuilderFromStorage(store);
+
+        // last updated gets estimate of when finished, instead of using the default current time
+        log.addWorkoutToHistory(store.lastUpdated);
+        logStore.clearStore();
+        return;
+      }
+
       setLog(store);
     });
 

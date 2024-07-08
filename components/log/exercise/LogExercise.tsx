@@ -28,7 +28,7 @@ export default function LogExercise({ index, exerciseSet, onSwap, onDelete }: Lo
   // options on the popout menu
   const popoutMenuOptions: React.ReactNode[] = [
     <Delete key={0} onPress={() => onDelete(index)} />, // delete the whole exercise from the log
-    <GenericMenuOption key={1} label="Swap" icon="exchange-alt" onPress={() => onSwap(index)} />, // swap the exercise with another
+    <GenericMenuOption key={1} label="Swap Exercise" icon="exchange-alt" onPress={() => onSwap(index)} />, // swap the exercise with another
     <History key={2} onPress={() => gotoExerciseHistory(exerciseSet.exercise.id)} />, // view the exercise history
   ];
 
