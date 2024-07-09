@@ -86,8 +86,8 @@ class Exercises extends DatabaseBase<ExerciseRow> {
     try {
       await this._deleteRow(id);
 
-      // delete history for the exercise
-      await this.exerciseHistorydb.deleteExerciseHistory(id);
+      // delete all history for the exercise
+      await this.exerciseHistorydb.deleteAllExerciseHistory(id);
 
       return id; // return the id of the deleted exercise if successful
     } catch (error) {

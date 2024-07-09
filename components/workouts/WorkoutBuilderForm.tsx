@@ -75,7 +75,6 @@ export default function WorkoutBuilderForm({ workoutBuilder }: WorkoutBuilderFor
               onDelete={() => onDeleteExercise(index)}
             />
           )}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           ListFooterComponent={() => (
             <View style={{ paddingVertical: 8 }}>
               <Button

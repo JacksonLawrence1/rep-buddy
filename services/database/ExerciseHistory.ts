@@ -94,6 +94,10 @@ export class ExerciseHistory extends DatabaseBase<ExerciseHistoryRow> {
     );
   }
 
+  private async _deleteAllExerciseHistory(exercise_id: number): Promise<SQLite.SQLiteRunResult> {
+    return this.db.runAsync(`DELETE FROM exerciseHistory WHERE exercise_id = ?`, exercise_id);
+  }
+
   private async _getExerciseHistoryFromExercise(
     exercise_id: number,
   ): Promise<ExerciseHistoryRow[]> {
@@ -137,6 +141,14 @@ export class ExerciseHistory extends DatabaseBase<ExerciseHistoryRow> {
     try {
       await this._deleteRow(id);
       return id; // return the id of the deleted exercise history if successful
+    } catch (error) {
+      throw new Error(`Error deleting exercise history: ${error}`);
+    }
+  }
+  
+  async deleteAllExerciseHistory(exercise_id: number): Promise<void> {
+    try {
+      await this._deleteAllExerciseHistory(exercise_id);
     } catch (error) {
       throw new Error(`Error deleting exercise history: ${error}`);
     }

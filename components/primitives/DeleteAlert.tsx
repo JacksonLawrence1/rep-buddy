@@ -13,7 +13,7 @@ export default function DeleteAlert({ label, visible, setVisible, deleteFunction
         visible={visible} 
         setVisible={setVisible}
         title={`Delete ${label}?`} 
-        description={`Are you sure you want to delete this item? This action cannot be undone, and all associated data with it will be be lost.`} 
+        description={`Are you sure you want to delete this item? This action cannot be undone, and all associated data including its history will be be lost.`} 
         onSubmit={deleteFunction}
         submitText={`Delete ${label}`}
         cancelText="Cancel"

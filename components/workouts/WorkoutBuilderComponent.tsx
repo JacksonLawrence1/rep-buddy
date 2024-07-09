@@ -9,6 +9,7 @@ import DefaultPage from "@/components/pages/DefaultPage";
 import WorkoutBuilderForm from "@/components/workouts/WorkoutBuilderForm";
 import { showAlert } from "@/features/alerts";
 import { useDispatch } from "react-redux";
+import { useState } from "react";
 
 type WorkoutBuilderComponentProps = {
   id?: number;
@@ -18,6 +19,7 @@ export default function WorkoutBuilderComponent({
   id,
 }: WorkoutBuilderComponentProps) {
   const content = useLoading(loadWorkout);
+  const [title, setTitle] = useState("New Workout");
   const dispatch = useDispatch();
 
   function loadWorkout(setContent: SetContentStateAction): void {
@@ -37,6 +39,7 @@ export default function WorkoutBuilderComponent({
           builder.setWorkout(workout);
         }
 
+        setTitle("Editing Workout");
         setContent(<WorkoutBuilderForm workoutBuilder={builder} />);
       })
       .catch((error) => {
@@ -45,5 +48,5 @@ export default function WorkoutBuilderComponent({
       });
   }
 
-  return <DefaultPage title="New Workout">{content}</DefaultPage>;
+  return <DefaultPage title={title}>{content}</DefaultPage>;
 }

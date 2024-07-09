@@ -11,6 +11,8 @@ import LinkButton from "@/components/buttons/LinkButton";
 import ResumePopup from "@/components/log/ResumePopup";
 import PageContainer from "@/components/pages/PageContainer";
 import Alert from "@/components/primitives/Alert";
+import IconButton from "@/components/buttons/IconButton";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function Index() {
   const alert = useSelector((state: RootState) => alertDetails(state.alerts));
@@ -24,6 +26,9 @@ export default function Index() {
 
   return (
     <PageContainer>
+      <View style={styles.settingsContainer}>
+        <IconButton icon="cog" onPress={() => router.navigate("/settings")} />
+      </View>
       <Alert
         visible={alert.visible}
         title={alert?.title}
@@ -31,43 +36,34 @@ export default function Index() {
         cancelText="Close"
         setVisible={handleAlert}
       />
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleTop}>EZ</Text>
-        <Text style={styles.titleBottom}>Workout Planner</Text>
-      </View>
-      <View style={styles.buttonsContainer}>
-        <Button
-          height={64}
-          onPress={() => router.navigate("/log")}
-          label="Start Workout"
-          theme="primary"
-        />
-        <LinkButton
-          height={64}
-          href="/workouts"
-          label="Workouts"
-          icon={"plus"}
-        />
-        <LinkButton
-          height={64}
-          href="/exercises"
-          label="Exercises"
-          icon={"dumbbell"}
-        />
-        <LinkButton
-          height={64}
-          href="/history"
-          label="History"
-          icon={"history"}
-        />
-        <LinkButton
-          height={64}
-          href="/settings"
-          label="Settings"
-          icon={"cog"}
-        />
-      </View>
-      <View style={styles.footerContainer}>
+      <View style={styles.homeContainer}>
+        <FontAwesome5 name="dumbbell" size={128} color={colors.textDark} />
+        <View style={styles.buttonsContainer}>
+          <LinkButton
+            height={64}
+            href="/workouts"
+            label="Workouts"
+            icon={"plus"}
+          />
+          <LinkButton
+            height={64}
+            href="/exercises"
+            label="Exercises"
+            icon={"dumbbell"}
+          />
+          <LinkButton
+            height={64}
+            href="/history"
+            label="History"
+            icon={"history"}
+          />
+          <Button
+            height={64}
+            onPress={() => router.navigate("/log")}
+            label="Start Workout"
+            theme="primary"
+          />
+        </View>
         <Text style={styles.footerText}>Version: 1.0.0</Text>
       </View>
       <ResumePopup />
@@ -76,12 +72,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 64,
-  },
   titleTop: {
     fontSize: 64,
     color: colors.text,
@@ -94,16 +84,21 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik-Regular",
     textTransform: "uppercase",
   },
+  settingsContainer: {
+    position: "absolute",
+    paddingTop: 8,
+    right: 16,
+  },
+  homeContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 64,
+    paddingHorizontal: 16,
+  },
   buttonsContainer: {
     justifyContent: "space-between",
-    alignItems: "center",
     gap: 16,
-    paddingHorizontal: 32,
-  },
-  footerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 16,
   },
   footerText: {
     color: colors.textDark,

@@ -37,7 +37,7 @@ export default function WorkoutSetItem({
   // Ideally, use generic function to create this array, but this would involve annoying prop passing
   if (onSwap) {
     popoutMenuOptions.push(
-      <GenericMenuOption label="Swap" icon="exchange-alt" onPress={onSwap} />,
+      <GenericMenuOption label="Swap Exercise" icon="exchange-alt" onPress={onSwap} />,
     );
   }
 

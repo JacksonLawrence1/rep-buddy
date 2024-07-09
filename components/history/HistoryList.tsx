@@ -52,7 +52,7 @@ export default function HistoryList<T extends WithId>({
             <HistoryRenderer history={item} onDelete={deleteHistory} />
           )}
           keyExtractor={(item) => item.id.toString()}
-          ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
         />
       </View>
     </>
